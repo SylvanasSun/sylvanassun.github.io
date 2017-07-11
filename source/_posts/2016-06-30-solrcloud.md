@@ -4,12 +4,13 @@ title:      "SolrCloud初体验"
 subtitle:   "SolrCloud快速入门"
 date:       2016-06-30 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-js-module.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - 全文检索
+    - Solr
 tags:
-    - 后端开发
-    - solr
+    - Solr
     - 全文检索引擎
 ---
 

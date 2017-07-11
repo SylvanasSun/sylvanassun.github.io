@@ -4,11 +4,12 @@ title:      "如何安装与搭建一个Nginx服务器"
 subtitle:   "Nginx initiation"
 date:       2016-06-24 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-unix-linux.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - 负载均衡
+    - Nginx
 tags:
-    - 后端开发
     - Nginx
 ---
 

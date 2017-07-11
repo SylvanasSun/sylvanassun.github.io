@@ -4,9 +4,11 @@ title:      "探秘HotSpot虚拟机中的对象"
 subtitle:   "HotSpot Object"
 date:       2016-09-05 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - JVM
 tags:
     - JVM
     - Java

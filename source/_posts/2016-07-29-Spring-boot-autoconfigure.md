@@ -4,12 +4,14 @@ title:      "浅谈Spring Boot自动配置的运作原理"
 subtitle:   "Spring Boot AutoConfiguration"
 date:       2016-07-29 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - Spring Boot
 tags:
-    - 后端开发
     - Spring
+    - Spring Boot
     - Java
 ---
 

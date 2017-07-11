@@ -4,12 +4,15 @@ title:         《Algorithms,4th Edition》读书笔记-散列表
 subtitle:   "介绍散列表与如何处理碰撞冲突"
 date:       2017-04-13 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-unix-linux.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - Algorithms
+    - 数据结构
+    - HashTable
 tags:
     - 数据结构
-    - 符号表
+    - HashTable
+    - Algorithms
     - 2017
 ---
 

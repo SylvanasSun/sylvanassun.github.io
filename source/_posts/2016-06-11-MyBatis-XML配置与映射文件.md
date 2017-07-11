@@ -4,11 +4,12 @@ title:      "MyBatis-XML配置与映射文件"
 subtitle:   "MyBatis入门-02"
 date:       2016-06-11
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-rwd.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - MyBatis
 tags:
-    - 后端开发
     - Java
     - MyBatis
 ---

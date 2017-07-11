@@ -4,11 +4,13 @@ title:         谈谈如何实现一个非阻塞的线程安全的集合
 subtitle:   "通过实现一个ConcurrentStack为例讲解了CAS指令"
 date:       2017-05-29 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-unix-linux.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - 多线程
+    - CAS
 tags:
-    - 数据结构
+    - CAS
     - 多线程
     - 2017
 ---

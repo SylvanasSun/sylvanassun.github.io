@@ -4,11 +4,12 @@ title:      "Spring MVC原理及流程"
 subtitle:   "Spring MVC workflow"
 date:       2016-06-15
 author:     "Sylvanas Sun"
-header-img: "img/home-bg-art.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - Spring
 tags:
-    - 后端开发
     - Java
     - SpringMVC
 ---

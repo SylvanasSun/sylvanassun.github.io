@@ -4,11 +4,15 @@ title:         红黑树那点事儿
 subtitle:   "深入浅出红黑树的构造原理"
 date:       2017-06-16 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-unix-linux.jpg"
-header-mask: 0.3
 catalog:    true
-tags:
+categories: 
+    - Algorithms
     - 数据结构
+    - Tree
+tags:
+    - Tree
+    - 数据结构
+    - Algorithms
     - 2017
 ---
 

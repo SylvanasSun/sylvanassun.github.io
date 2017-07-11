@@ -4,11 +4,13 @@ title:         什么是动态规划?
 subtitle:   "了解动态规划的含义与作用"
 date:       2017-06-27 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-unix-linux.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - Algorithms
+    - 动态规划
 tags:
-    - 算法
+    - Algorithms
+    - 动态规划
     - 2017
 ---
 

@@ -7,8 +7,11 @@ author:     "Sylvanas Sun"
 header-img: "img/HadoopPost.jpg"
 header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - 大数据
+    - Hadoop
 tags:
-    - 后端开发
     - Hadoop
     - 大数据
 ---

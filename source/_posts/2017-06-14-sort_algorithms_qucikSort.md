@@ -4,11 +4,13 @@ title:         深入浅出排序算法(3)-快速排序
 subtitle:   ""
 date:       2017-06-14 16:30
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-unix-linux.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - Algorithms
+    - 排序算法
 tags:
-    - 算法
+    - 排序算法
+    - Algorithms
     - 2017
 ---
 

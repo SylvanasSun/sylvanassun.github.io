@@ -4,11 +4,12 @@ title:      "MyBatis学习笔记-01"
 subtitle:   "MyBatis入门"
 date:       2016-06-10
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-js-module.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - MyBatis
 tags:
-    - 后端开发
     - Java
     - MyBatis
 ---

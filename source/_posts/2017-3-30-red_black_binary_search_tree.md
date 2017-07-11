@@ -4,12 +4,15 @@ title:       《Algorithms,4th Edition》读书笔记-红黑二叉查找树
 subtitle:   "基于偏向红色左链接的红黑二叉查找树实现"
 date:       2017-03-30 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - Algorithms
+    - 数据结构
+    - Tree
 tags:
     - 数据结构
-    - 符号表
+    - Algorithms
+    - Tree
     - 2017
 ---
 

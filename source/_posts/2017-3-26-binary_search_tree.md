@@ -4,12 +4,15 @@ title:      《Algorithms,4th Edition》读书笔记-二叉查找树
 subtitle:   "使用二叉查找树实现符号表的一些操作实现"
 date:       2017-03-26 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - Algorithms
+    - 数据结构
+    - Tree
 tags:
     - 数据结构
-    - 符号表
+    - Tree
+    - Algorithms
     - 2017
 ---
 

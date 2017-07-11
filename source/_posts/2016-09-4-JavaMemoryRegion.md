@@ -4,9 +4,11 @@ title:      "Java虚拟机中的内存区域"
 subtitle:   "JVM MemoryRegion"
 date:       2016-09-04 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - JVM
 tags:
     - JVM
     - Java

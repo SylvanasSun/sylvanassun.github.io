@@ -4,12 +4,13 @@ title:      "Hadoop学习笔记(6)-Storm"
 subtitle:   "Storm QuickStart"
 date:       2016-07-19 18:00
 author:     "Sylvanas Sun"
-header-img: "img/StormPost.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - 大数据
+    - Storm
 tags:
-    - 后端开发
-    - Hadoop
+    - Storm
     - 大数据
 ---
 

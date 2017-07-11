@@ -4,11 +4,14 @@ title:      "使用链表做为Stack、Queue中的数据表示结构的基本思
 subtitle:   "LinkedStack&LinkedQueue"
 date:       2017-03-06 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - Algorithms
+    - 数据结构
+    - LinkedTable
 tags:
     - 数据结构
+    - LinkedTable
     - 2017
 ---
 

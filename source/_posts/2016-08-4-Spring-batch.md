@@ -4,11 +4,13 @@ title:      "Spring Batch数据批处理"
 subtitle:   "Spring Batch"
 date:       2016-08-04 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - Spring Boot
 tags:
-    - 后端开发
+    - Spring Boot
     - Spring
     - Java
 ---

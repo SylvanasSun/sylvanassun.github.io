@@ -4,11 +4,13 @@ title:      "谈谈几个常用的排序算法"
 subtitle:   "分析了常用排序算法的实现思路"
 date:       2017-03-20 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - Algorithms
+    - 排序算法
 tags:
-    - 算法
+    - Algorithms
+    - 排序算法
     - 2017
 ---
 

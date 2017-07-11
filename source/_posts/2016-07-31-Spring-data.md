@@ -4,11 +4,13 @@ title:      "Spring数据访问方案-Spring Data"
 subtitle:   "Spring Data"
 date:       2016-07-31 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - Spring Boot
 tags:
-    - 后端开发
+    - Spring Boot
     - Spring
     - Java
 ---

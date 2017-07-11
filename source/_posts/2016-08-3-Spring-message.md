@@ -4,11 +4,13 @@ title:      "Spring Boot消息通信"
 subtitle:   "Spring Message"
 date:       2016-08-03 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - Spring Boot
 tags:
-    - 后端开发
+    - Spring Boot
     - Spring 
     - Java
 ---

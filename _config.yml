@@ -4,10 +4,10 @@
 
 # Site
 title: SylvanasSun Blog
-subtitle: SylvanasSun的博客 | SylvanasSun Blog
+subtitle: 
 description: "这里是SylvanasSun的个人博客,与你一起发现更大的世界。"
 author: SylvanasSun
-language:
+language: zh-Hans
 timezone:
 
 # URL
@@ -26,6 +26,13 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
+
+# Local Search
+search:
+path: search.xml
+field: post
+format: html
+limit: 10000
 
 # Writing
 new_post_name: :title.md # File name of new posts
@@ -63,7 +70,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html

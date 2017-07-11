@@ -4,12 +4,15 @@ title:      "实现一个简单的HashMap"
 subtitle:   "Simple HashMap"
 date:       2017-01-12 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-miui6.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - Algorithms
+    - 数据结构
+    - HashTable
 tags:
-    - HashMap
-    - Java
+    - HashTable
+    - Algorithms
+    - 数据结构
 ---
 
 

@@ -4,12 +4,13 @@ title:         深入浅出排序算法(1)-堆排序
 subtitle:   "通过堆排序讲解堆与优先队列"
 date:       2017-06-09 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-unix-linux.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - Algorithms
+    - 排序算法
 tags:
-    - 数据结构
-    - 算法
+    - 排序算法
+    - Algorithms
     - 2017
 ---
 

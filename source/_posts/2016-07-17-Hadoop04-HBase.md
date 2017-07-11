@@ -4,11 +4,12 @@ title:      "Hadoop学习笔记(4)-HBase"
 subtitle:   "HBase QuickStart"
 date:       2016-07-17 18:00
 author:     "Sylvanas Sun"
-header-img: "img/HadoopPost.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - 大数据
+    - Hadoop
 tags:
-    - 后端开发
     - Hadoop
     - 大数据
 ---

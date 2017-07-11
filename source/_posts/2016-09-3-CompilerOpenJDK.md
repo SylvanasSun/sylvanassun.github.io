@@ -4,9 +4,11 @@ title:      "在CentOS7下手动编译JDK"
 subtitle:   "Compile OpenJDK"
 date:       2016-09-03 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-universe.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Java
+    - JVM
 tags:
     - JVM
     - Java

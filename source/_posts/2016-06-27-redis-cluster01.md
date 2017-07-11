@@ -4,12 +4,13 @@ title:      "如何搭建与维护一个Redis集群"
 subtitle:   "redis-cluster"
 date:       2016-06-27 18:00
 author:     "Sylvanas Sun"
-header-img: "img/post-bg-unix-linux.jpg"
-header-mask: 0.3
 catalog:    true
+categories: 
+    - 后端
+    - Database
+    - Redis
 tags:
-    - 后端开发
-    - redis
+    - Redis
 ---
 
 

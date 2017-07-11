@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="2017,多线程,CAS," />
+  <meta name="keywords" content="2017,CAS,多线程," />
 
 
 
@@ -94,7 +94,7 @@
 
 
 <meta name="description" content="概述 众所周知,想要在java中要实现一个线程安全的类有很多方法.最简单直接的即是使用synchronized关键字或ReentrantLock. 但是,这两种同步方法都是基于锁的,基于锁的同步方法是阻塞的,即未争夺到锁的线程需要阻塞等待(或挂起)直到锁可用. 这种方法具有一些明显的缺点:  被阻塞的线程无法去做任何其他事情,如果这个线程是优先级较高的线程甚至会发生非常不好的结果(优先级倒置).">
-<meta name="keywords" content="2017,多线程,CAS">
+<meta name="keywords" content="2017,CAS,多线程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="谈谈如何实现一个非阻塞的线程安全的集合">
 <meta property="og:url" content="https://sylvanassun.github.io/2017/05/29/2017-5-29-cas_concurrent_stack/index.html">
@@ -521,9 +521,9 @@
           
             <a href="/tags/2017/" rel="tag"># 2017</a>
           
-            <a href="/tags/多线程/" rel="tag"># 多线程</a>
-          
             <a href="/tags/CAS/" rel="tag"># CAS</a>
+          
+            <a href="/tags/多线程/" rel="tag"># 多线程</a>
           
         </div>
       
@@ -661,10 +661,10 @@
             
             
             <div class="site-state-item site-state-categories">
-              
+              <a href="/categories/index.html">
                 <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
-              
+              </a>
             </div>
           
 
@@ -672,10 +672,10 @@
             
             
             <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">36</span>
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">28</span>
                 <span class="site-state-item-name">标签</span>
-              
+              </a>
             </div>
           
 

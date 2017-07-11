@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java虚拟机中的内存区域 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述 &amp;nbsp;&amp;nbsp;对于C/C++程序员来说需要自己负责每一个对象生命开始到终结的维护.而对于Java程序员来说,则可以在Java虚拟机自动内存管理机制的帮助下,不需要为每一个new的对象去写delete/free代码,由虚拟机管理内存可以让我们把注意力放在实现业务逻辑上. &amp;nbsp;&amp;nbsp;但也正是因为Java虚拟机接管了内存控制的权力,所以一旦出现内存泄漏或溢出方面的异常问题,">
+<meta name="keywords" content="Java,JVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java虚拟机中的内存区域">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/09/04/2016-09-4-JavaMemoryRegion/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="概述 &amp;nbsp;&amp;nbsp;对于C/C++程序员来说需要自己负责每一个对象生命开始到终结的维护.而对于Java程序员来说,则可以在Java虚拟机自动内存管理机制的帮助下,不需要为每一个new的对象去写delete/free代码,由虚拟机管理内存可以让我们把注意力放在实现业务逻辑上. &amp;nbsp;&amp;nbsp;但也正是因为Java虚拟机接管了内存控制的权力,所以一旦出现内存泄漏或溢出方面的异常问题,">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f7j0psfbuaj20l90degne.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.889Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java虚拟机中的内存区域">
+<meta name="twitter:description" content="概述 &amp;nbsp;&amp;nbsp;对于C/C++程序员来说需要自己负责每一个对象生命开始到终结的维护.而对于Java程序员来说,则可以在Java虚拟机自动内存管理机制的帮助下,不需要为每一个new的对象去写delete/free代码,由虚拟机管理内存可以让我们把注意力放在实现业务逻辑上. &amp;nbsp;&amp;nbsp;但也正是因为Java虚拟机接管了内存控制的权力,所以一旦出现内存泄漏或溢出方面的异常问题,">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f7j0psfbuaj20l90degne.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-09-4-JavaMemoryRegion" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/04/2016-09-4-JavaMemoryRegion/" class="article-date">
+  <time datetime="2016-09-04T10:00:00.000Z" itemprop="datePublished">2016-09-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java虚拟机中的内存区域
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
+<p>&nbsp;&nbsp;对于C/C++程序员来说需要自己负责每一个对象生命开始到终结的维护.而对于Java程序员来说,则可以在Java虚拟机自动内存管理机制的帮助下,不需要为每一个new的对象去写delete/free代码,由虚拟机管理内存可以让我们把注意力放在实现业务逻辑上.</p>
+<p>&nbsp;&nbsp;但也正是因为Java虚拟机接管了内存控制的权力,所以一旦出现内存泄漏或溢出方面的异常问题,就需要了解虚拟机如何使用与维护内存,这样才能更好的排查错误解决异常.</p>
+<h3 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h3><hr>
+<p>&nbsp;&nbsp;Java虚拟机在执行Java程序时会把它所管理的内存划分为若干个不同的数据区域.这些区域都有着各自的用途,以及创建和销毁的时间,有的区域则会随着虚拟机进程的启动而存在,有些区域则会依赖于用户线程的启动和结束而创建和销毁.</p>
+<p>&nbsp;&nbsp;根据&lt;<java 虚拟机规范="">&gt;的规定,Java虚拟机管理的内存将会包括以下图所示的几个运行时数据区域.</java></p>
+<p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f7j0psfbuaj20l90degne.jpg" alt="运行时数据区域"></p>
+<h4 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h4><p>&nbsp;&nbsp;程序计数器(Program Counter Register)可以看作为当前线程所执行的字节码的行号指示器,它占用的内存很小.</p>
+<p>&nbsp;&nbsp;字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令,分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖程序计数器来完成.</p>
+<p>&nbsp;&nbsp;在Java虚拟机中,多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的.在任何一个确定的时刻,一个处理器(或多核CPU中的一个内核)都只会执行一条线程中的指令.为了线程切换后能够恢复到正确的执行位置,每一条线程都需要有一个独立的程序计数器,各条线程之间计数器互不影响,独立存储,这种类型的内存区域为”线程私有”的内存.</p>
+<p>&nbsp;&nbsp;如果线程正在执行的是一个Java方法,程序计数器记录的是正在执行的虚拟机字节码指令的地址;如果正在执行的是一个Native方法,程序计数器值则为空(Undefined).</p>
+<p>&nbsp;&nbsp;程序计数器内存区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError异常情况的区域.</p>
+<h4 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h4><p>&nbsp;&nbsp;Java虚拟机栈(Java Virtual Machine Stacks)与程序计数器一样,是线程私有的内存,它的生命周期与线程相同.</p>
+<p>&nbsp;&nbsp;虚拟机栈描述的是Java方法执行的内存模型:即每个Java方法在执行的同时都会创建一个栈帧(Stack Frame)用于存储局部变量表、操作数栈、动态链接、方法出口等信息.栈帧是方法运行时的基础数据结构.</p>
+<p>&nbsp;&nbsp;每一个方法从调用直至执行完成的过程,就对应着一个栈帧在虚拟机栈中入栈到出栈的过程.</p>
+<p>&nbsp;&nbsp;栈帧中的局部变量表存放了编译期可知的各种基本数据类型(boolean、byte、char、short、int、float、long、double)、对象引用类型(reference类型,它不等同于对象本身,可能是一个指向对象起始地址的引用指针,也可能是指向一个代表对象的句柄或其他与此对象相关的位置)和returnAddress类型(指向了一条字节码指令的地址).</p>
+<p>&nbsp;&nbsp;64位长度的long和double类型的数据会占用2个局部变量空间(Slot),其他的数据类型只占用1个.局部变量表所需的内存空间是在编译期间完成分配的.当进入一个方法时,这个方法需要在栈帧中分配多大的局部变量空间是完全确定的,在方法运行期间不会改变局部变量表的大小.</p>
+<p>&nbsp;&nbsp;Java虚拟机规范对虚拟机栈区域规定了两种异常情况:</p>
+<ol>
+<li><p>如果线程请求的栈深度大于虚拟机所允许的深度,将会抛出StackOverflowError异常.</p>
+</li>
+<li><p>如果虚拟机可以动态扩展,并在扩展时无法申请到足够的内存时,将会抛出OutOfMemoryError异常.</p>
+</li>
+</ol>
+<h4 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h4><p>&nbsp;&nbsp;本地方法栈(Native Method Stack)与虚拟机栈基本相似.它们之间的区别只不过是虚拟机栈为虚拟机执行Java方法(也就是字节码)服务,而本地方法栈则为虚拟机使用到的Native方法服务.</p>
+<p>&nbsp;&nbsp;Java虚拟机规范对本地方法栈没有强制的规定,具体的虚拟机可以自由实现它.例如Sun HotSpot虚拟机甚至将本地方法栈与虚拟机栈合二为一.</p>
+<p>&nbsp;&nbsp;与虚拟机栈相同,本地方法栈也会抛出StackOverflowError和OutOfMemoryError异常.</p>
+<h4 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h4><p>&nbsp;&nbsp;在大多数情况下,Java堆(Java Heap)是Java虚拟机所管理的内存中最大的一块.它是被所有线程共享的一块内存区域,在虚拟机启动时创建.Java堆的唯一目的就是存放对象实例,几乎所有的对象实例都在这里分配内存.</p>
+<p>&nbsp;&nbsp;但随着JIT编译器的发展与逃逸分析技术逐渐成熟,栈上分配、标量替换优化技术将会导致一些微妙的变化发生,所有对象都分配在堆上也渐渐变得不是那么”绝对”了.</p>
+<p>&nbsp;&nbsp;Java堆也是垃圾收集器管理的主要区域,也可以称为GC堆(Garbage Collected Heap).由于现在垃圾收集器基本都采用分代收集算法,所以Java堆中可以细分为新生代和老年代(再细化的有Eden空间、Form Survivor空间、To Survivor空间等).</p>
+<p>&nbsp;&nbsp;从内存分配的角度来看,线程共享的Java堆中可能划分出多个线程私有的分配缓冲区(Thread Local Allocation Buffer TLAB).</p>
+<p>&nbsp;&nbsp;Java虚拟机规范规定,Java堆可以处于物理上不连续的内存空间中,只要逻辑上是连续的即可.在实现时,既可以实现是固定大小的,也可以是可扩展的,如果在堆中没有内存完成实例分配,并且堆也无法再扩展时,将会抛出OutOfMemoryError异常.</p>
+<h4 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h4><p>&nbsp;&nbsp;方法区(Method Area)与Java堆一样是各个线程共享的内存区域,它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据.Java虚拟机规范中把方法区描述为堆的一个逻辑部分,但它有一个别名叫Non-Heap(非堆),用于与Java堆区分开来.</p>
+<p>&nbsp;&nbsp;在HotSpot虚拟机中,方法区被称作为”永久代(Permanent Generation)”.因为HotSpot将GC分代收集扩展至了方法区,或者说是使用永久代来实现方法区.这样HotSpot的垃圾收集器可以像管理Java堆一样管理这部分内存,能够省去编写方法区的内存管理代码工作.但这样做法会更容易遇到内存溢出问题.所以HotSpot官方决定放弃永久代并逐步改为采用Native Memory来实现方法区的规划.在JDK1.7的HotSpot中,已经把原本放在永久代的字符串常量池移出.</p>
+<p>&nbsp;&nbsp;Java虚拟机规范规定,当方法区无法满足内存分配需求时,将抛出OutOfMemoryError异常.</p>
+<h4 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h4><p>&nbsp;&nbsp;运行时常量池(Runtime Constant Pool)是方法区的一部分.Class文件中除了有类的版本、字段、方法、接口等描述信息外,还有一项信息是常量池(Constant Pool Table),它用于存放编译期生成的各种字面量和符号引用,这部分内容将在类加载后进入方法区的运行时常量池中存放.一般来说,除了保存Class文件中描述的符号引用外,还会把翻译出来的直接引用也存储在运行时常量池中.</p>
+<p>&nbsp;&nbsp;运行时常量池相对于Class文件中常量池的另外一个重要特征是具备动态性.Java语言并不要求常量一定只有编译期才能产生,运行期间也可能将新的常量放入池中,这种特性利用得比较多的便是String类的intern()方法.</p>
+<p>&nbsp;&nbsp;当运行时常量池无法申请到内存时会抛出OutOfMemoryError异常.</p>
+<h4 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h4><p>&nbsp;&nbsp;直接内存(Direct Memory)并不是虚拟机运行时数据区域的一部分,也不是Java虚拟机规范中定义的内存区域.但是部分内存也被频繁地使用,而且也可能导致OutOfMemoryError异常.</p>
+<p>&nbsp;&nbsp;在JDK1.4中新加入了NIO(New Input/Output)类,引入了一种基于通道(Channel)与缓冲区(Buffer)的I/O方式,它可以使用Native函数库直接分配堆外内存,然后通过一个存储在Java堆中的DirectByteBuffer对象作为这块内存的引用进行操作.这样避免了在Java堆中和Native堆中来回复制数据,提高了性能.</p>
+<p>&nbsp;&nbsp;由于本机直接内存不会受到Java堆大小的限制,但它还是会受到本机总内存大小以及处理器寻址空间的限制.当我们配置虚拟机参数时,会根据实际内存设置-Xmx等参数信息,但经常会忽略直接内存,导致各个内存区域总和大于物理内存限制,从而导致动态扩展时出现OutOfMemoryError异常.</p>
+<h3 id="OutOfMemoryError异常案例"><a href="#OutOfMemoryError异常案例" class="headerlink" title="OutOfMemoryError异常案例"></a>OutOfMemoryError异常案例</h3><hr>
+<h4 id="Java堆溢出"><a href="#Java堆溢出" class="headerlink" title="Java堆溢出"></a>Java堆溢出</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Java堆内存溢出,Java堆内存的OOM异常是实际应用中常见的内存溢出异常情况.</div><div class="line"> *</div><div class="line"> * 堆内存用于存储对象实例,只要不断地创建对象,并且保证GC Roots到对象之间有可达路径来避免</div><div class="line"> * 垃圾回收机制清除这些对象,这样就可以在对象数量到达最大堆的容量限制后产生内存溢出异常.</div><div class="line"> *</div><div class="line"> * 以下启动参数中,-Xms20 -Xmx20m 将堆的最小值与最大值设置为一样的,既可避免自动扩展.</div><div class="line"> * -XX:+HeapDumpOnOutOfMemoryError可以让虚拟机在出现内存溢出异常时Dump出当前的内存堆转储快照以便分析.</div><div class="line"> *</div><div class="line"> * VM Args: -Xms20m -Xmx20m -XX:+HeapDumpOnOutOfMemoryError</div><div class="line"> * &lt;p&gt;</div><div class="line"> * Created by sylvanasp on 2016/9/4.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HeapOOM</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">OOMObject</span> </span>&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        List&lt;OOMObject&gt; list = <span class="keyword">new</span> ArrayList&lt;OOMObject&gt;();</div><div class="line"></div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            list.add(<span class="keyword">new</span> OOMObject());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="虚拟机栈溢出"><a href="#虚拟机栈溢出" class="headerlink" title="虚拟机栈溢出"></a>虚拟机栈溢出</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 在单线程中,以下两种方法均无法让虚拟机产生OutOfMemoryError异常,尝试的结果均为StackOverflowError异常.</div><div class="line"> *</div><div class="line"> * 1.使用-Xss参数减少栈内存容量.结果为StackOverflowError异常,出现时输出的堆栈深度相应缩小.</div><div class="line"> *</div><div class="line"> * VM Args: -Xss128k</div><div class="line"> *</div><div class="line"> * Created by sylvanasp on 2016/9/4.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaVMStackSOF</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> stackLength = <span class="number">1</span>;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 定义大量的本地变量,增大此方法帧中本地变量表的长度.</div><div class="line">     * 结果:抛出StackOverflowError异常时输出的堆栈深度相应缩小.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stackLeak</span><span class="params">()</span> </span>&#123;</div><div class="line">        stackLength++;</div><div class="line">        stackLeak();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">        <span class="comment">/**</span></div><div class="line">         * 在单线程下,无论是栈帧太大还是虚拟机栈容量太小,当内存无法分配时,</div><div class="line">         * 虚拟机抛出的都是StackOverflowError异常.</div><div class="line">         */</div><div class="line">        JavaVMStackSOF javaVMStackSOF = <span class="keyword">new</span> JavaVMStackSOF();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            javaVMStackSOF.stackLeak();</div><div class="line">        &#125; <span class="keyword">catch</span> (Throwable e) &#123;</div><div class="line">            System.out.println(<span class="string">"stack length:"</span> + javaVMStackSOF.stackLength);</div><div class="line">            <span class="keyword">throw</span> e;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 通过不断建立线程的方式产生内存溢出异常.</div><div class="line"> * 但是这样产生的内存溢出异常与栈空间是否足够大并不存在任何联系.</div><div class="line"> * 在这种情况下,为每个线程的栈分配的内存越大,反而越容易产生内存溢出异常.</div><div class="line"> * 因为内存最后才由虚拟机栈和本地方法栈"瓜分".</div><div class="line"> * 所以每个线程分配到的栈容量越大,可以建立的线程数量自然就越少,建立线程时就越容易把剩下的内存耗尽。</div><div class="line"> *</div><div class="line"> * 如果是建立过多线程导致的内存溢出,在不能减少线程数或者更换64位虚拟机的情况下.</div><div class="line"> * 就只能通过减少最大堆和减少栈容量来换取更多的线程.</div><div class="line"> *</div><div class="line"> * VM Args: -Xss2M</div><div class="line"> * &lt;p&gt;</div><div class="line"> * Created by sylvanasp on 2016/9/4.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaVMStackOOM</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dontStop</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stackLeakByThread</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            Thread thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    dontStop();</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">            thread.start();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        JavaVMStackOOM javaVMStackOOM = <span class="keyword">new</span> JavaVMStackOOM();</div><div class="line">        javaVMStackOOM.stackLeakByThread();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="方法区溢出"><a href="#方法区溢出" class="headerlink" title="方法区溢出"></a>方法区溢出</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 方法区内存溢出</div><div class="line"> * 方法区是用于存放Class的相关信息的,所以要让方法区产生内存溢出的基本思路为:</div><div class="line"> * 在运行时产生大量的类去填满方法区,直到溢出.</div><div class="line"> * 所以可以使用CGLib直接操作字节码运行时生成大量的动态类.</div><div class="line"> *</div><div class="line"> * VM Args : -XX:PermSize=10M -XX:MaxPermSize=10M</div><div class="line"> *</div><div class="line"> * Created by sylvanasp on 2016/9/4.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaMethodAreaOOM</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">OOMObject</span> </span>&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(<span class="keyword">final</span> String[] args)</span> </span>&#123;</div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            Enhancer enhancer = <span class="keyword">new</span> Enhancer();</div><div class="line">            enhancer.setSuperclass(OOMObject.class);</div><div class="line">            enhancer.setUseCache(<span class="keyword">false</span>);</div><div class="line">            enhancer.setCallback(<span class="keyword">new</span> MethodInterceptor() &#123;</div><div class="line">                <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object o, Method method, Object[] objects,</span></span></div><div class="line">                                        MethodProxy methodProxy) <span class="keyword">throws</span> Throwable &#123;</div><div class="line">                    <span class="keyword">return</span> methodProxy.invokeSuper(o,objects);</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">            enhancer.create();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="运行时常量池溢出"><a href="#运行时常量池溢出" class="headerlink" title="运行时常量池溢出"></a>运行时常量池溢出</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 方法区和运行时常量池溢出</div><div class="line"> * 在JDK1.6及之前的版本中,由于常量池分配在永久代内.</div><div class="line"> * 所以可以通过 -XX:PermSize和-XX:MaxPermSize限制方法区大小.</div><div class="line"> * 从而间接限制其中常量池的容量.</div><div class="line"> *</div><div class="line"> * 而使用JDK1.7运行这段程序则不会得到相同的结果,while循环将一直进行下去.</div><div class="line"> *</div><div class="line"> * VM Args : -XX:PermSize=10M -XX:MaxPermSize=10M</div><div class="line"> *</div><div class="line"> * Created by sylvanasp on 2016/9/4.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RuntimeConstantPoolOOM</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        <span class="comment">// 使用List保持常量池的引用,避免Full GC回收常量池行为.</span></div><div class="line">        List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</div><div class="line">        <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            <span class="comment">/**</span></div><div class="line">             * String.intern()是一个Native方法.</div><div class="line">             * 它的作用是:</div><div class="line">             * 如果字符串常量池中已经包含了一个等于此String对象的字符串,则返回代表池中这个字符串的String对象.</div><div class="line">             * 否则,将此String对象包含的字符串添加到常量池中,并且返回此String对象的引用.</div><div class="line">             */</div><div class="line">            list.add(String.valueOf(i++).intern());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 这段代码在JDK1.6中运行,会得到两个false,而在JDK1.7中运行,会得到一个true和一个false.</div><div class="line">     * 产生差异的原因为:</div><div class="line">     * 在JDK1.6中,intern()方法会把首次遇到的字符串实例复制到永久代中,返回的也是永久代中这个字符串实例的引用.</div><div class="line">     * 而由StringBuilder创建的字符串实例在Java堆上,所以必然不是同一个引用.所以返回false.</div><div class="line">     *</div><div class="line">     * 在JDK1.7中(或部分其他虚拟机,如JRockit),intern()实现不会再复制实例.</div><div class="line">     * 只是在常量池中记录首次出现的实例引用,因此intern()返回的引用和由StringBuilder创建的字符串实例为同一个.</div><div class="line">     * 对str2比较返回false是因为"java"这个字符串在执行StringBuilder.toString()之前已经出现过,</div><div class="line">     * 字符串常量池中已经有它的引用了,不符合"首次出现"的原则.</div><div class="line">     *</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">stringPool</span><span class="params">()</span> </span>&#123;</div><div class="line">        String str1 = <span class="keyword">new</span> StringBuilder(<span class="string">"Hello"</span>).append(<span class="string">"World哈哈"</span>).toString();</div><div class="line">        System.out.println(str1.intern() == str1);</div><div class="line"></div><div class="line">        String str2 = <span class="keyword">new</span> StringBuilder(<span class="string">"ja"</span>).append(<span class="string">"va"</span>).toString();</div><div class="line">        System.out.println(str2.intern() == str2);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="直接内存溢出"><a href="#直接内存溢出" class="headerlink" title="直接内存溢出"></a>直接内存溢出</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 直接内存溢出</div><div class="line"> * DirectMemory容量可以通过 -XX:MaxDirectMemorySize指定.</div><div class="line"> * 如果不指定,则默认与Java堆最大值(-Xmx)一致.</div><div class="line"> *</div><div class="line"> * VM Args : -Xmx20M -XX:MaxDirectMemorySize=10M</div><div class="line"> *</div><div class="line"> * Created by sylvanasp on 2016/9/4.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DirectMemoryOOM</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> _1MB = <span class="number">1024</span> * <span class="number">1024</span>;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 越过DirectByteBuffer类,直接通过反射获取Unsafe实例进行内存分配.</div><div class="line">     * Unsafe.getUnsafe()方法限制了只有引导类加载器才会返回实例,</div><div class="line">     * 即只有rt.jar中的类才能使用Unsafe的功能.</div><div class="line">     *</div><div class="line">     * 使用DirectByteBuffer类分配内存虽然也会抛出内存溢出的异常,</div><div class="line">     * 但它抛出异常时并没有真正的向操作系统申请分配内存,而是通过计算得知内存无法分配,于是手动抛出异常.</div><div class="line">     *</div><div class="line">     * 而unsafe.allocateMemory()则可以真正申请分配内存.</div><div class="line">     *</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IllegalAccessException </span>&#123;</div><div class="line"></div><div class="line">        Field unsafeField = Unsafe.class.getDeclaredFields()[<span class="number">0</span>];</div><div class="line">        unsafeField.setAccessible(<span class="keyword">true</span>);</div><div class="line">        Unsafe unsafe = (Unsafe) unsafeField.get(<span class="keyword">null</span>);</div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            unsafe.allocateMemory(_1MB);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="End"><a href="#End" class="headerlink" title="End"></a>End</h3><hr>
+<blockquote>
+<p>资料参考于 &lt;&lt;深入理解 Java虚拟机 第二版&gt;&gt;.</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/09/04/2016-09-4-JavaMemoryRegion/" data-id="cj4z0jkbu0019uomjk40om48s" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/09/05/2016-09-5-HotSpotObject/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          探秘HotSpot虚拟机中的对象
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/09/03/2016-09-3-CompilerOpenJDK/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">在CentOS7下手动编译JDK</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

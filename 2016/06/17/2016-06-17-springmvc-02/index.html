@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spring MVC进阶应用 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Spring MVC 进阶应用参数绑定 客户端发送请求时传递的参数默认是键值对格式,Spring MVC通过参数绑定组件将请求的参数串进行类型转换。 Spring MVC使用Controller方法的形参接收请求传来的参数。 1. Spring MVC默认内置的形参类型 HttpServletRequest  HttpServletResponse  HttpSession  Model 一个接口">
+<meta name="keywords" content="后端开发,Java,SpringMVC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring MVC进阶应用">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/06/17/2016-06-17-springmvc-02/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="Spring MVC 进阶应用参数绑定 客户端发送请求时传递的参数默认是键值对格式,Spring MVC通过参数绑定组件将请求的参数串进行类型转换。 Spring MVC使用Controller方法的形参接收请求传来的参数。 1. Spring MVC默认内置的形参类型 HttpServletRequest  HttpServletResponse  HttpSession  Model 一个接口">
+<meta property="og:updated_time" content="2017-03-06T14:15:30.283Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring MVC进阶应用">
+<meta name="twitter:description" content="Spring MVC 进阶应用参数绑定 客户端发送请求时传递的参数默认是键值对格式,Spring MVC通过参数绑定组件将请求的参数串进行类型转换。 Spring MVC使用Controller方法的形参接收请求传来的参数。 1. Spring MVC默认内置的形参类型 HttpServletRequest  HttpServletResponse  HttpSession  Model 一个接口">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-06-17-springmvc-02" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/17/2016-06-17-springmvc-02/" class="article-date">
+  <time datetime="2016-06-16T16:00:00.000Z" itemprop="datePublished">2016-06-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spring MVC进阶应用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Spring-MVC-进阶应用"><a href="#Spring-MVC-进阶应用" class="headerlink" title="Spring MVC 进阶应用"></a>Spring MVC 进阶应用</h2><h3 id="参数绑定"><a href="#参数绑定" class="headerlink" title="参数绑定"></a>参数绑定</h3><p> 客户端发送请求时传递的参数默认是键值对格式,<code>Spring MVC</code>通过参数绑定组件将请求的参数串进行类型转换。<br> <code>Spring MVC</code>使用Controller方法的形参接收请求传来的参数。</p>
+<h4 id="1-Spring-MVC默认内置的形参类型"><a href="#1-Spring-MVC默认内置的形参类型" class="headerlink" title="1. Spring MVC默认内置的形参类型"></a>1. Spring MVC默认内置的形参类型</h4><ul>
+<li>HttpServletRequest </li>
+<li>HttpServletResponse </li>
+<li>HttpSession </li>
+<li>Model 一个接口,可以将数据填充到request域对象中。</li>
+<li>ModelMap Model接口的实现。</li>
+</ul>
+<p>这5个对象可以直接通过形参注入并使用。</p>
+<h4 id="2-简单数据类型绑定"><a href="#2-简单数据类型绑定" class="headerlink" title="2. 简单数据类型绑定"></a>2. 简单数据类型绑定</h4><p>前端页面表单中的name或者URL中的key与Controller方法中的形参名称一致,即可完成绑定。<br>如果名称不一致,可以使用<code>@RequestParam</code>注解指定名称完成绑定。<br>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">URL: http:<span class="comment">//xxxxx?SID=1</span></div><div class="line"></div><div class="line">Controller:</div><div class="line"><span class="comment">// 将SID的数据封装到形参id中。</span></div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">update</span> <span class="params">(@RequestParam(<span class="string">"SID"</span>)</span> Integer id,Model model)</span></div></pre></td></tr></table></figure>
+<p><strong>RequestParam注解</strong></p>
+<ul>
+<li>value:参数名,即传入参数的名称。</li>
+<li>required:默认为true,表示请求中要有相应的参数,否则报错:Status 400 - Required Integer parameter ‘XXXX’ is not present</li>
+<li>defaultValue:默认值,没有同名参数时,则使用默认值。</li>
+</ul>
+<h4 id="3-JavaBean对象类型绑定"><a href="#3-JavaBean对象类型绑定" class="headerlink" title="3. JavaBean对象类型绑定"></a>3. JavaBean对象类型绑定</h4><p>前端页面表单中的name或者URL中的key与JavaBean中的属性名进行匹配。<br>如果参数名称一致,则将参数绑定到JavaBean中的属性上。<br>如果JavaBean中包装了对象类型,传入参数的名称则需要按照 对象.属性 的格式编写,并且属性要与JavaBean中包装的对象中的属性名称一致。</p>
+<h4 id="4-集合类型绑定"><a href="#4-集合类型绑定" class="headerlink" title="4. 集合类型绑定"></a>4. 集合类型绑定</h4><p><strong>数组类型绑定</strong><br>使用checkbox复选框时,会将参数绑定到一个数组中。<br>例如:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">前端页面:</div><div class="line">&lt;input type=<span class="string">"checkbox"</span> name=<span class="string">"cId"</span> value=<span class="string">"1"</span>&gt;</div><div class="line">&lt;input type=<span class="string">"checkbox"</span> name=<span class="string">"cId"</span> value=<span class="string">"2"</span>&gt;</div><div class="line"></div><div class="line">Controller:</div><div class="line"><span class="comment">// 使用一个数组接收复选框的参数</span></div><div class="line"> <span class="function"><span class="keyword">public</span> String <span class="title">delete</span> <span class="params">(Integer[] cId,Model model)</span></span></div></pre></td></tr></table></figure>
+<p><strong>List集合类型绑定</strong><br>Controller不能直接在形参中定义List,需要在包装类中定义List。<br>页面中的编写格式: list名[index].属性名<br>例如:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">c:forEach</span> <span class="attr">items</span>=<span class="string">"$&#123;list&#125;"</span> <span class="attr">var</span>=<span class="string">"user"</span> <span class="attr">varStatus</span>=<span class="string">"status"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"list[$&#123;status.index&#125;].name"</span> <span class="attr">value</span>=<span class="string">"$&#123;user.name&#125;"</span> /&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">c:forEach</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>Map集合类型绑定</strong><br>Controller不能直接在形参中定义Map,需要在包装类中定义Map。<br>页面中的编写格式:map名[‘key’]<br>例如:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">c:forEach</span> <span class="attr">items</span>=<span class="string">"$&#123;list&#125;"</span> <span class="attr">var</span>=<span class="string">"user"</span> <span class="attr">varStatus</span>=<span class="string">"status"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"map['name']"</span> <span class="attr">value</span>=<span class="string">"$&#123;user.name&#125;"</span> /&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">c:forEach</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="Converter"><a href="#Converter" class="headerlink" title="Converter"></a>Converter</h3><p>当请求参数中含有日期类型时,需要自定义一个类型转换器转换成我们需要的日期格式。<br>创建一个类实现Converter接口就可以自定义一个类型转换器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Converter&lt;需要转换的数据的类型,转换的类型&gt;</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DateConverter</span> <span class="keyword">implements</span> <span class="title">Converter</span>&lt;<span class="title">String</span>, <span class="title">Date</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> Date <span class="title">convert</span><span class="params">(String source)</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span>&#123;</div><div class="line">			<span class="comment">// 转换日期格式</span></div><div class="line">			SimpleDateFormat format = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</div><div class="line">			<span class="keyword">return</span> format.parse(source);</div><div class="line">		&#125;<span class="keyword">catch</span>(Exception e)&#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		<span class="comment">// 出现异常,则返回null</span></div><div class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>之后需要在处理器适配器中注册Converter</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 注册注解方式的适配器与映射器 --&gt;</div><div class="line">&lt;mvc:annotation-driven conversion-service=<span class="string">"conversionService"</span> /&gt;</div><div class="line"></div><div class="line">&lt;bean id=<span class="string">"conversionService"</span></div><div class="line">	class=<span class="string">"org.springframework.format.support.FormattingConversionServiceFactoryBean"</span>&gt;</div><div class="line">	&lt;property name=<span class="string">"converters"</span>&gt;</div><div class="line">		&lt;list&gt;</div><div class="line">			&lt;!-- 日期类型转换器 --&gt;</div><div class="line">			&lt;bean class=<span class="string">"com.sun.ssm.converter.DateConverter"</span>&gt;&lt;/bean&gt;</div><div class="line">		&lt;/list&gt;</div><div class="line">	&lt;/property&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+<h3 id="Validation"><a href="#Validation" class="headerlink" title="Validation"></a>Validation</h3><p>Spring MVC本身没有实现表现层校验的部分，它本身支持JSR 303校验规范，而这个规范的官方参考实现是hibernate validator。</p>
+<p>所以Spring MVC想要实现校验,需要导入Hibernate-validator jar包。</p>
+<p>在配置文件中配置validator校验器</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 配置校验器 --&gt;</div><div class="line">&lt;bean id=<span class="string">"validator"</span> class=<span class="string">"org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"</span>&gt;</div><div class="line">	&lt;!-- 校验器提供者 --&gt;</div><div class="line">	&lt;property name=<span class="string">"providerClass"</span> value=<span class="string">"org.hibernate.validator.HibernateValidator"</span> /&gt;</div><div class="line">	&lt;!-- 指定校验使用的资源文件，在文件中配置校验错误信息，</div><div class="line">			如果不指定，默认使用classpath下的ValidationMessages<span class="selector-class">.properties</span> </div><div class="line">	--&gt;</div><div class="line">	&lt;property name=<span class="string">"validationMessageSource"</span> ref=<span class="string">"messageSource"</span> /&gt;</div><div class="line">&lt;/bean&gt;</div><div class="line">	</div><div class="line">&lt;!-- 校验错误信息的资源文件 --&gt;</div><div class="line">&lt;bean id=<span class="string">"messageSource"</span> class=<span class="string">"org.springframework.context.support.ReloadableResourceBundleMessageSource"</span>&gt;</div><div class="line">	&lt;!-- 指定文件路径 --&gt;</div><div class="line">	&lt;property name=<span class="string">"basenames"</span>&gt;</div><div class="line">		&lt;list&gt;</div><div class="line">			&lt;value&gt;classpath:validationMessages&lt;/value&gt;</div><div class="line">		&lt;/list&gt;</div><div class="line">	&lt;/property&gt;</div><div class="line">	&lt;!-- 指定文件的编码 --&gt;</div><div class="line">	&lt;property name=<span class="string">"fileEncodings"</span> value=<span class="string">"utf8"</span>/&gt;</div><div class="line">	&lt;!-- 资源文件内容缓存的时间，单位秒 --&gt;</div><div class="line">	&lt;property name=<span class="string">"cacheSeconds"</span> value=<span class="string">"120"</span> /&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+<p>在处理器适配器中注册Validator</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 注册注解方式的适配器与映射器 --&gt;</div><div class="line">&lt;mvc:annotation-driven conversion-service=<span class="string">"conversionService"</span> validator=<span class="string">"validator"</span> /&gt;</div></pre></td></tr></table></figure>
+<p>在JavaBean中可以使用注解制定校验规则。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ValidationMessages.properties:</div><div class="line">    user.username.size.error=用户名长度格式为<span class="number">1</span>-<span class="number">10</span>之间</div><div class="line"></div><div class="line">JavaBean:</div><div class="line"> <span class="meta">@Size</span>(min=<span class="number">1</span>,max=<span class="number">10</span>,message=<span class="string">"&#123;user.username.size.error&#125;"</span>)</div><div class="line"> <span class="keyword">private</span> String username;</div></pre></td></tr></table></figure>
+<p>Controller中在需要检验的形参前使用<code>@Validated</code>注解,并在形参中注入一个BindingResult对象接收校验错误信息。<br><code>@Validated</code>注解和BindingResult顺序是固定的。(<code>@Validated</code>在前)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/updateUser"</span>)</div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">updateUser</span><span class="params">(@Validated User user,BindingResult bindingResult,Model model)</span> </span>&#123;</div><div class="line">    <span class="comment">// 判断是否有校验错误信息,如果有则代表校验未通过</span></div><div class="line">	<span class="keyword">if</span>(bindingResult.hasErrors())&#123;</div><div class="line">	    <span class="comment">// 获得校验错误信息集合</span></div><div class="line">		List&lt;ObjectError&gt; allErrors = bindingResult.getAllErrors();</div><div class="line">		<span class="comment">// 将校验错误信息集合存入request域中</span></div><div class="line">		model.addAttribute(<span class="string">"errors"</span>, allErrors);</div><div class="line">			</div><div class="line">		<span class="comment">//检验未通过,重新跳转到修改页面</span></div><div class="line">		<span class="keyword">return</span> <span class="string">"updateUser"</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>分组校验</strong></p>
+<p>因为校验规则是在JavaBean中定义的,所以当同一个JavaBean需要被多个Controller使用时,可能根据需求需要不同的校验。</p>
+<p>在这种情况下,可以使用一个标识作用的接口进行分组。</p>
+<p>定义一个空接口作为分组的标识:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ValidationGroup</span> </span>&#123;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在JavaBean中使用分组:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Size</span>(min=<span class="number">1</span>,max=<span class="number">10</span>,message=<span class="string">"&#123;user.username.size.error&#125;"</span>,groups=&#123;ValidationGroup.class&#125;)</div><div class="line"><span class="keyword">private</span> String username;</div></pre></td></tr></table></figure>
+<p>在Controller中使用分组校验:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/updateUser"</span>)</div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">updateUser</span><span class="params">(@Validated(value=&#123;ValidationGroup.class&#125;)</span> User user,</span></div><div class="line">                            BindingResult bindingResult,Model model) &#123;</div><div class="line">    <span class="comment">// 判断是否有校验错误信息,如果有则代表校验未通过</span></div><div class="line">	<span class="keyword">if</span>(bindingResult.hasErrors())&#123;</div><div class="line">	    <span class="comment">// 获得校验错误信息集合</span></div><div class="line">		List&lt;ObjectError&gt; allErrors = bindingResult.getAllErrors();</div><div class="line">		<span class="comment">// 将校验错误信息集合存入request域中</span></div><div class="line">		model.addAttribute(<span class="string">"errors"</span>, allErrors);</div><div class="line">			</div><div class="line">		<span class="comment">//检验未通过,重新跳转到修改页面</span></div><div class="line">		<span class="keyword">return</span> <span class="string">"updateUser"</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>主要的验证注解如下:</p>
+<table>
+<thead>
+<tr>
+<th>注解</th>
+<th>适用的数据类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@AssertFalse</td>
+<td>Boolean, boolean</td>
+<td>验证注解的元素值是false</td>
+</tr>
+<tr>
+<td>@AssertTrue</td>
+<td>Boolean, boolean</td>
+<td>验证注解的元素值是true</td>
+</tr>
+<tr>
+<td>@DecimalMax（value=x）</td>
+<td>BigDecimal, BigInteger, String, byte,short, int, long and the respective wrappers of the primitive types. Additionally supported by HV: any sub-type of Number andCharSequence.</td>
+<td>验证注解的元素值小于等于@ DecimalMax指定的value值</td>
+</tr>
+<tr>
+<td>@DecimalMin（value=x）</td>
+<td>BigDecimal, BigInteger, String, byte,short, int, long and the respective wrappers of the primitive types. Additionally supported by HV: any sub-type of Number andCharSequence.</td>
+<td>验证注解的元素值小于等于@ DecimalMin指定的value值</td>
+</tr>
+<tr>
+<td>@Digits(integer=整数位数, fraction=小数位数)</td>
+<td>BigDecimal, BigInteger, String, byte,short, int, long and the respective wrappers of the primitive types. Additionally supported by HV: any sub-type of Number andCharSequence.</td>
+<td>验证注解的元素值的整数位数和小数位数上限</td>
+</tr>
+<tr>
+<td>@Future</td>
+<td>java.util.Date, java.util.Calendar; Additionally supported by HV, if theJoda Time date/time API is on the class path: any implementations ofReadablePartial andReadableInstant.</td>
+<td>验证注解的元素值（日期类型）比当前时间晚</td>
+</tr>
+<tr>
+<td>@Max（value=x）</td>
+<td>BigDecimal, BigInteger, byte, short,int, long and the respective wrappers of the primitive types. Additionally supported by HV: any sub-type ofCharSequence (the numeric value represented by the character sequence is evaluated), any sub-type of Number.</td>
+<td>验证注解的元素值小于等于@Max指定的value值</td>
+</tr>
+<tr>
+<td>@Min（value=x）</td>
+<td>BigDecimal, BigInteger, byte, short,int, long and the respective wrappers of the primitive types. Additionally supported by HV: any sub-type of CharSequence (the numeric value represented by the char sequence is evaluated), any sub-type of Number.</td>
+<td>验证注解的元素值大于等于@Min指定的value值</td>
+</tr>
+<tr>
+<td>@NotNull</td>
+<td>Any type</td>
+<td>验证注解的元素值不是null</td>
+</tr>
+<tr>
+<td>@Null</td>
+<td>Any type</td>
+<td>验证注解的元素值是null</td>
+</tr>
+<tr>
+<td>@Past</td>
+<td>java.util.Date, java.util.Calendar; Additionally supported by HV, if theJoda Time date/time API is on the class path: any implementations ofReadablePartial andReadableInstant.</td>
+<td>验证注解的元素值（日期类型）比当前时间早</td>
+</tr>
+<tr>
+<td>@Pattern(regex=正则表达式, flag=)</td>
+<td>String. Additionally supported by HV: any sub-type of CharSequence.</td>
+<td>验证注解的元素值与指定的正则表达式匹配</td>
+</tr>
+<tr>
+<td>@Size(min=最小值, max=最大值)</td>
+<td>String, Collection, Map and arrays. Additionally supported by HV: any sub-type of CharSequence.</td>
+<td>验证注解的元素值的在min和max（包含）指定区间之内，如字符长度、集合大小</td>
+</tr>
+<tr>
+<td>@Valid</td>
+<td>Any non-primitive type（引用类型）</td>
+<td>验证关联的对象，如账户对象里有一个订单对象，指定验证订单对象</td>
+</tr>
+<tr>
+<td>@NotEmpty</td>
+<td>CharSequence,Collection, Map and Arrays</td>
+<td>验证注解的元素值不为null且不为空（字符串长度不为0、集合大小不为0）</td>
+</tr>
+<tr>
+<td>@Range(min=最小值, max=最大值)</td>
+<td>CharSequence, Collection, Map and Arrays,BigDecimal, BigInteger, CharSequence, byte, short, int, long and the respective wrappers of the primitive types</td>
+<td>验证注解的元素值在最小值和最大值之间</td>
+</tr>
+<tr>
+<td>@NotBlank</td>
+<td>CharSequence</td>
+<td>验证注解的元素值不为空（不为null、去除首位空格后长度为0），不同于@NotEmpty，@NotBlank只应用于字符串且在比较时会去除字符串的空格</td>
+</tr>
+<tr>
+<td>@Length(min=下限, max=上限)</td>
+<td>CharSequence</td>
+<td>验证注解的元素值长度在min和max区间内</td>
+</tr>
+<tr>
+<td>@Email</td>
+<td>CharSequence</td>
+<td>验证注解的元素值是Email，也可以通过正则表达式和flag指定自定义的email格式</td>
+</tr>
+</tbody>
+</table>
+<h3 id="数据回显"><a href="#数据回显" class="headerlink" title="数据回显"></a>数据回显</h3><p>Spring MVC默认支持数据回显。</p>
+<p>Spring MVC会在Controller返回之前,自动将形参中的JavaBean放入Request域中,默认名称为类名首字母小写。<br>只要前端页面动态获取数据的key与JavaBean名称一致,即可完成数据回显。<br>如果名称不一致,也可以用<code>@ModelAttribute</code>注解指定形参放入Request域中的key名。</p>
+<h3 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h3><p>Spring MVC使用Multipart解析器完成文件上传,而Multipart解析器需要依赖以下2个jar包:</p>
+<ul>
+<li>commons-fileupload</li>
+<li>commons-io</li>
+</ul>
+<p><strong>配置Multipart解析器</strong></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;bean id=<span class="string">"multipartResolver"</span> class=<span class="string">"org.springframework.web.multipart.commons.CommonsMultipartResolver"</span>&gt;</div><div class="line">    &lt;!-- 限制上传文件的最大长度 --&gt;</div><div class="line">    &lt;property name=<span class="string">"maxUploadSize"</span> value=<span class="string">"10*1024*1024"</span>/&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+<p>需要在Controller形参中注入一个MultipartFile对象接收文件,该对象名字要与传入的文件名相同。<br><strong>文件上传示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 判断是否上传了文件</span></div><div class="line"><span class="keyword">if</span>(file!= <span class="keyword">null</span>)&#123;</div><div class="line">		<span class="comment">//原始文件名称</span></div><div class="line">		String fileName = file.getOriginalFilename();</div><div class="line">		<span class="comment">//判断文件名是否为空</span></div><div class="line">		<span class="keyword">if</span>(fileName != <span class="keyword">null</span> &amp;&amp; !<span class="string">""</span>.equals(fileName))</div><div class="line">		&#123;</div><div class="line">			<span class="comment">// 文件存放的路径</span></div><div class="line">			String path = <span class="string">"D:\\temps\\"</span>;</div><div class="line">		    <span class="comment">// 判断文件存放路径是否存在</span></div><div class="line">		    File dirFile = <span class="keyword">new</span> File(path);</div><div class="line">		    <span class="comment">// 文件夹不存在,自动创建一个文件夹</span></div><div class="line">		    <span class="keyword">if</span>(!dirFile.exists()) &#123;</div><div class="line">		        dirFile.mkdirs();</div><div class="line">		    &#125;</div><div class="line">		    <span class="comment">// 使用UUID拼接一个唯一文件名</span></div><div class="line">			String newFileName = UUID.randomUUID()+fileName.substring(fileName.lastIndexOf(<span class="string">"."</span>));</div><div class="line">			<span class="comment">//新的文件</span></div><div class="line">			File newFile = <span class="keyword">new</span> File(path+newFileName);</div><div class="line">			<span class="comment">//把上传的文件保存成一个新的文件</span></div><div class="line">			file.transferTo(newFile);</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h3 id="Interceptor"><a href="#Interceptor" class="headerlink" title="Interceptor"></a>Interceptor</h3><p>Spring MVC的拦截器是针对处理器进行拦截的,当HandlerMapping查找处理器时,会被拦截器拦截。</p>
+<p>可以通过实现HandlerIntercepter接口,自定义一个拦截器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyHandlerInterceptor</span> <span class="keyword">implements</span> <span class="title">HandlerInterceptor</span></span>&#123;</div><div class="line"></div><div class="line">	<span class="comment">// Handler执行前调用,返回值为true则放行,false则不放行。</span></div><div class="line">	<span class="comment">// 应用场景:登录验证,权限授权</span></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request,HttpServletResponse response, </span></span></div><div class="line">	                    Object handler) <span class="keyword">throws</span> Exception &#123;</div><div class="line">		</div><div class="line">		</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// Handler开始执行,并且在返回ModelAndView之前调用</span></div><div class="line">	<span class="comment">// 应用场景:操作ModelAndView对象</span></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest request,HttpServletResponse response, Object handler,</span></span></div><div class="line">			ModelAndView modelAndView) <span class="keyword">throws</span> Exception &#123;</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="comment">// Handler执行完后调用</span></div><div class="line">	<span class="comment">// 应用场景:异常处理、日志</span></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterCompletion</span><span class="params">(HttpServletRequest request,</span></span></div><div class="line">			HttpServletResponse response, Object handler, Exception ex)</div><div class="line">			<span class="keyword">throws</span> Exception &#123;</div><div class="line">		</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>配置拦截器</strong></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 配置全局拦截器 --&gt;</div><div class="line">&lt;mvc:interceptors&gt;</div><div class="line">	&lt;mvc:interceptor&gt;</div><div class="line">		&lt;!-- <span class="comment">/**表示所有URL和子URL路径 --&gt;</span></div><div class="line">		&lt;mvc:mapping path="/**" /&gt;</div><div class="line">		&lt;bean class="com.sun.interceptor.MyHandlerInterceptor" /&gt;</div><div class="line">	&lt;/mvc:interceptor&gt;</div><div class="line">&lt;/mvc:interceptors&gt;</div></pre></td></tr></table></figure>
+<p><strong>拦截器的执行顺序</strong></p>
+<ul>
+<li>preHandle()为正向顺序执行,postHandle()和afterCompletion()为逆向顺序执行。</li>
+<li>如果第一个拦截器返回值为false,那它之后所有的拦截器都不会执行。</li>
+<li>如果一个拦截器返回值为false,那么它的postHandle()和afterCompletion()都不会执行。</li>
+<li>只要有一个拦截器的返回值为false,则所有拦截器的postHandle()都不会执行。</li>
+</ul>
+<h3 id="RESTful"><a href="#RESTful" class="headerlink" title="RESTful"></a>RESTful</h3><blockquote>
+<p>一种软件架构风格，设计风格而不是标准，只是提供了一组设计原则和约束条件。它主要用于客户端和服务器交互类的软件。基于这个风格设计的软件可以更简洁，更有层次，更易于实现缓存等机制。</p>
+</blockquote>
+<p>实现REST风格需要在DispatcherServlet中将url映射模式改为 / </p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;servlet-mapping&gt;</div><div class="line">    &lt;servlet-name&gt;springmvc&lt;/servlet-name&gt;</div><div class="line">    &lt;url-pattern&gt;/&lt;/url-pattern&gt;</div><div class="line">&lt;/servlet-mapping&gt;</div></pre></td></tr></table></figure>
+<p>但是当映射模式为/时会把静态资源一起拦截,需要配置才能访问静态资源。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;mvc:resources location=<span class="string">"/js/"</span> mapping=<span class="string">"/js/**"</span>/&gt;</div><div class="line">&lt;mvc:resources location=<span class="string">"/css/"</span> mapping=<span class="string">"/css/**"</span>/&gt;</div><div class="line">&lt;mvc:resources location=<span class="string">"/jquery/"</span> mapping=<span class="string">"/jquery/**"</span>/&gt;</div></pre></td></tr></table></figure>
+<p>Springmvc会把mapping映射到ResourceHttpRequestHandler，这样静态资源在经过DispatcherServlet转发时就可以找到对应的Handler了。</p>
+<p><strong>在Controller中实现RESTful</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/update/&#123;id&#125;"</span>)</div><div class="line"><span class="function"><span class="keyword">public</span> String <span class="title">update</span><span class="params">(@PathVariable Integer id,Model model)</span></span></div></pre></td></tr></table></figure>
+<ul>
+<li><code>@PathVariable</code>:将URL中的模板变量映射到形参上,如果形参与模板变量名称不一致,可以使用value=” “设置为模板变量的名称完成映射。</li>
+<li>{id}:模板变量。例如URL为 xxxx/update/1,模板变量update/{id}就可以将1封装到{id}中。</li>
+</ul>
+<h3 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h3><p>Spring MVC默认使用MappingJacksonHttpMessageConverter对json数据进行转换，所以需要导入Jackson的jar包。</p>
+<p>Spring MVC可以使用2个注解完成JSON数据的交互操作。</p>
+<ul>
+<li><code>@RequestBody</code>:如果请求参数传入的是json数据,使用<code>RequestBody</code>可以将json转换为java对象。</li>
+<li><code>@ResponseBody</code>:将返回值的java对象转换为json输出。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/06/17/2016-06-17-springmvc-02/" data-id="cj4z0jkab0001uomjq0oi0hmz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/06/19/2016-06-19-lucene/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          使用Lucene实现全文检索
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/06/15/2016-06-15-springmvc-process/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Spring MVC原理及流程</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

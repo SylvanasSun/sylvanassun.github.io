@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spring Batch数据批处理 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述 &amp;nbsp;&amp;nbsp;Spring Batch是一个轻量级的处理大量数据操作的框架,主要用于读取大量数据,然后进行一定处理后输出成指定的格式. &amp;nbsp;&amp;nbsp;Spring Batch 提供了大量可重用的组件,包括了日志、追踪、事务、任务作业统计、任务重启、跳过、重复、资源管理。对于大数据量和高性能的批处理任务,Spring Batch 同样提供了高级功能和特性来支持,比如分区功能">
+<meta name="keywords" content="后端开发,Java,Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Batch数据批处理">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/08/04/2016-08-4-Spring-batch/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="概述 &amp;nbsp;&amp;nbsp;Spring Batch是一个轻量级的处理大量数据操作的框架,主要用于读取大量数据,然后进行一定处理后输出成指定的格式. &amp;nbsp;&amp;nbsp;Spring Batch 提供了大量可重用的组件,包括了日志、追踪、事务、任务作业统计、任务重启、跳过、重复、资源管理。对于大数据量和高性能的批处理任务,Spring Batch 同样提供了高级功能和特性来支持,比如分区功能">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6navcbgzhj20ki0860tg.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f6ncme1ztdj20kk0e0n09.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f6ncmeoja5j20c4054wey.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6ncmeln1gj20he07tjsq.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6nd7a60nrj20kv06adh4.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f6ndeuabtvj20gt06ijs8.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6ndevin2gj20p30ku44i.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6ndeuf8dkj20kc0c8acs.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6ndev1nz8j20dk04s0t9.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6ndeupgvxj20g407lgmy.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6nejvlqcuj20hs0b3jtx.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6nejv24v2j20u70e1n1d.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6neue2xagj20lw0i3n25.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f6s3o0w6n1j20u60dtdjx.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.888Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Batch数据批处理">
+<meta name="twitter:description" content="概述 &amp;nbsp;&amp;nbsp;Spring Batch是一个轻量级的处理大量数据操作的框架,主要用于读取大量数据,然后进行一定处理后输出成指定的格式. &amp;nbsp;&amp;nbsp;Spring Batch 提供了大量可重用的组件,包括了日志、追踪、事务、任务作业统计、任务重启、跳过、重复、资源管理。对于大数据量和高性能的批处理任务,Spring Batch 同样提供了高级功能和特性来支持,比如分区功能">
+<meta name="twitter:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6navcbgzhj20ki0860tg.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-08-4-Spring-batch" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/04/2016-08-4-Spring-batch/" class="article-date">
+  <time datetime="2016-08-04T10:00:00.000Z" itemprop="datePublished">2016-08-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spring Batch数据批处理
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
+<p>&nbsp;&nbsp;Spring Batch是一个轻量级的处理大量数据操作的框架,主要用于读取大量数据,然后进行一定处理后输出成指定的格式.</p>
+<p>&nbsp;&nbsp;Spring Batch 提供了大量可重用的组件,包括了日志、追踪、事务、任务作业统计、任务重启、跳过、重复、资源管理。对于大数据量和高性能的批处理任务,Spring Batch 同样提供了高级功能和特性来支持,比如分区功能、远程功能。总之,通过 Spring Batch 能够支持简单的、复杂的和大数据量的批处理作业.</p>
+<p>&nbsp;&nbsp;Spring Batch 是一个批处理应用框架,不是调度框架,但需要和调度框架合作来构建完成的批处理任务。它只关注批处理任务相关的问题,如事务、并发、监控、执行等,并不ﰁ供相应的调度功能。如果需要使用调用框架,在商业软件和开源软件中已经有很多优秀的企业级调度框架(如 Quartz、Tivoli、Control-M、Cron 等)可以使用.</p>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><hr>
+<ul>
+<li>周期性的提交处理.</li>
+<li>并行处理任务.</li>
+<li>消息驱动应用分级处理.</li>
+<li>手工或调度使任务失败之后重新启动.</li>
+<li>有依赖步骤的顺序执行(使用工作流驱动扩展).</li>
+<li>处理时跳过部分记录.</li>
+<li>成批事务：为小批量的或有的存储过程/脚本的场景使用.</li>
+</ul>
+<h3 id="组成结构"><a href="#组成结构" class="headerlink" title="组成结构"></a>组成结构</h3><hr>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6navcbgzhj20ki0860tg.jpg" alt=""></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Job</td>
+<td>实际要执行的任务,包含一个或多个Step</td>
+</tr>
+<tr>
+<td>JobRepository</td>
+<td>用于注册Job的容器</td>
+</tr>
+<tr>
+<td>JobLauncher</td>
+<td>用于启动Job的接口</td>
+</tr>
+<tr>
+<td>Step</td>
+<td>Step步骤包含ItemReader,ItemProcessor,ItemWriter</td>
+</tr>
+<tr>
+<td>ItemReader</td>
+<td>用于读取数据的接口</td>
+</tr>
+<tr>
+<td>ItemProcessor</td>
+<td>用于处理数据的接口</td>
+</tr>
+<tr>
+<td>ItemWriter</td>
+<td>用于输出数据的接口</td>
+</tr>
+</tbody>
+</table>
+<p><strong>&nbsp;&nbsp;以上组件只需要注册成Spring的Bean即可,并在配置类上使用<code>@EnableBatchProcessing</code>开启批处理的支持.</strong></p>
+<h3 id="Job-Listener"><a href="#Job-Listener" class="headerlink" title="Job Listener"></a>Job Listener</h3><hr>
+<p>&nbsp;&nbsp;如果想要监听Job的执行情况,则需要定义一个实现了<strong>JobExecutionListener</strong>的类,并在定义Job的Bean上绑定该监听器.</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f6ncme1ztdj20kk0e0n09.jpg" alt=""></p>
+<p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f6ncmeoja5j20c4054wey.jpg" alt=""></p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6ncmeln1gj20he07tjsq.jpg" alt=""></p>
+<h3 id="数据处理和校验"><a href="#数据处理和校验" class="headerlink" title="数据处理和校验"></a>数据处理和校验</h3><hr>
+<p>&nbsp;&nbsp;数据的处理和校验都要通过ItemProcessor接口实现来完成的.</p>
+<h4 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h4><hr>
+<p>&nbsp;&nbsp;实现ItemProcessor接口,并重写process方法,即可对数据进行处理.输入参数是从ItemReader读取到的数据,返回给ItemWriter.</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6nd7a60nrj20kv06adh4.jpg" alt=""></p>
+<h4 id="数据校验"><a href="#数据校验" class="headerlink" title="数据校验"></a>数据校验</h4><hr>
+<p>&nbsp;&nbsp;数据校验可以使用JSR-303的注解来校验ItemReader读取的数据是否符合要求.</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f6ndeuabtvj20gt06ijs8.jpg" alt="定义实体类的检验规则"></p>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6ndevin2gj20p30ku44i.jpg" alt="定义校验器"></p>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6ndeuf8dkj20kc0c8acs.jpg" alt="ItemProcessor"></p>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6ndev1nz8j20dk04s0t9.jpg" alt="注册校验器"></p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6ndeupgvxj20g407lgmy.jpg" alt="注册ItemProcessor"></p>
+<h3 id="参数后置绑定"><a href="#参数后置绑定" class="headerlink" title="参数后置绑定"></a>参数后置绑定</h3><hr>
+<p>&nbsp;&nbsp;实现参数后置绑定可以在JobParameters中绑定参数,在Bean定义的时候使用一个特殊的Bean生命周期注解<code>@StepScope</code>,然后通过<code>@Value</code>注入此参数.</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6nejvlqcuj20hs0b3jtx.jpg" alt="绑定参数"></p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6nejv24v2j20u70e1n1d.jpg" alt="定义ItemReader"></p>
+<h3 id="Spring-Boot支持"><a href="#Spring-Boot支持" class="headerlink" title="Spring Boot支持"></a>Spring Boot支持</h3><hr>
+<p>&nbsp;&nbsp;Spring Boot自动初始化了Spring Batch存储批处理的数据库,并当程序启动时,会自动执行Job.</p>
+<p>&nbsp;&nbsp;Spring Boot使用以<code>spring.batch</code>为前缀的属性进行相关配置.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">spring.batch.job.name=job1,job2 #启动时要执行的job,默认执行全部job.</div><div class="line">spring.batch.job.enabled=true #是否自动执行定义的job,默认为true</div><div class="line">spring.batch.initializer.enabled=true #是否初始化Spring Batch的数据库,默认为true.</div><div class="line">spring.batch.schema=</div><div class="line">spring.batch.table-prefix= #设置Spring Batch的数据库表的前缀.</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;Spring Batch默认自动加载hsqldb驱动,如要使用其他数据库驱动则需要手动去除.</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6neue2xagj20lw0i3n25.jpg" alt=""></p>
+<h4 id="Config-Example"><a href="#Config-Example" class="headerlink" title="Config Example"></a>Config Example</h4><p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f6s3o0w6n1j20u60dtdjx.jpg" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义ItemProcessor</div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> ItemProcessor&lt;Person, Person&gt; <span class="title">processor</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">// 使用自定义的ItemProcessor</span></div><div class="line">    CsvItemProcessor processor = <span class="keyword">new</span> CsvItemProcessor();</div><div class="line">    <span class="comment">// 指定校验器</span></div><div class="line">    processor.setValidator(csvBeanValidator());</div><div class="line">    <span class="keyword">return</span> processor;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义Validator</div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> Validator&lt;Person&gt; <span class="title">csvBeanValidator</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> CsvBeanValidator&lt;Person&gt;();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义ItemWriter</div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> ItemWriter&lt;Person&gt; <span class="title">writer</span><span class="params">(DataSource dataSource)</span> </span>&#123;</div><div class="line">    JdbcBatchItemWriter&lt;Person&gt; writer = <span class="keyword">new</span> JdbcBatchItemWriter&lt;&gt;();</div><div class="line">    writer.setItemSqlParameterSourceProvider</div><div class="line">            (<span class="keyword">new</span> BeanPropertyItemSqlParameterSourceProvider&lt;Person&gt;());</div><div class="line">    <span class="comment">// 设置要执行批处理的sql语句</span></div><div class="line">    String sql = <span class="string">"insert into person "</span> + <span class="string">"(id,name,age,nation,address)"</span></div><div class="line">            + <span class="string">"values(hibernate_sequence.nextval,:name,:age,:nation,:address)"</span>;</div><div class="line">    writer.setSql(sql);</div><div class="line">    writer.setDataSource(dataSource);</div><div class="line">    <span class="keyword">return</span> writer;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义JobRepository</div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> JobRepository <span class="title">jobRepository</span><span class="params">(DataSource dataSource,</span></span></div><div class="line">                                   PlatformTransactionManager transactionManager)</div><div class="line">        <span class="keyword">throws</span> Exception &#123;</div><div class="line">    JobRepositoryFactoryBean jobRepositoryFactoryBean = <span class="keyword">new</span> JobRepositoryFactoryBean();</div><div class="line">    jobRepositoryFactoryBean.setDataSource(dataSource);</div><div class="line">    jobRepositoryFactoryBean.setTransactionManager(transactionManager);</div><div class="line">    jobRepositoryFactoryBean.setDatabaseType(<span class="string">"mysql"</span>);</div><div class="line">    <span class="keyword">return</span> jobRepositoryFactoryBean.getObject();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义JobLauncher</div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> JobLauncher <span class="title">jobLauncher</span><span class="params">(DataSource dataSource,</span></span></div><div class="line">                               PlatformTransactionManager transactionManager)</div><div class="line">        <span class="keyword">throws</span> Exception &#123;</div><div class="line">    SimpleJobLauncher jobLauncher = <span class="keyword">new</span> SimpleJobLauncher();</div><div class="line">    jobLauncher.setJobRepository(jobRepository(dataSource, transactionManager));</div><div class="line">    <span class="keyword">return</span> jobLauncher;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义Job</div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> Job <span class="title">importJob</span><span class="params">(JobBuilderFactory jobs, Step s1)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> jobs.get(<span class="string">"importJob"</span>)</div><div class="line">            .incrementer(<span class="keyword">new</span> RunIdIncrementer())</div><div class="line">            .flow(s1) <span class="comment">// 为job指定step</span></div><div class="line">            .end()</div><div class="line">            .listener(csvJobListener()) <span class="comment">// 绑定监听器</span></div><div class="line">            .build();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义Step</div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> Step <span class="title">step1</span><span class="params">(StepBuilderFactory stepBuilderFactory, ItemReader&lt;Person&gt; reader,</span></span></div><div class="line">                  ItemWriter&lt;Person&gt; writer,</div><div class="line">                  ItemProcessor&lt;Person, Person&gt; processor) &#123;</div><div class="line">    <span class="keyword">return</span> stepBuilderFactory</div><div class="line">            .get(<span class="string">"step1"</span>)</div><div class="line">            .&lt;Person, Person&gt;chunk(<span class="number">65000</span>) <span class="comment">// 批处理每次提交65000条数据.</span></div><div class="line">            .reader(reader)</div><div class="line">            .processor(processor)</div><div class="line">            .writer(writer)</div><div class="line">            .build();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义自定义的Job监听器</div><div class="line"> */</div><div class="line"><span class="meta">@Bean</span></div><div class="line"><span class="function"><span class="keyword">public</span> CsvJobListener <span class="title">csvJobListener</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> CsvJobListener();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><blockquote>
+<p>资料参考于 JavaEE开发的颠覆者: Spring Boot实战</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/08/04/2016-08-4-Spring-batch/" data-id="cj4z0jkbo0011uomjkmpbb05x" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/08/05/2016-08-5-Spring-monitor/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Spring Boot 部署测试与应用监控
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/08/03/2016-08-3-Spring-message/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Spring Boot消息通信</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

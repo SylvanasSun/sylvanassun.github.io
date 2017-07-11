@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>《Algorithms,4th Edition》读书笔记-散列表 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述 散列表(Hash Table,也叫哈希表),它是根据键而直接访问在内存存储位置的数据结构.也可以说是用一个数组来实现的无序的符号表,将键作为数组的索引而数组中键i处存储的就是它对应的值. 散列表通过散列函数将键转化为数组的索引来访问数组中的键值对. 在散列表的算法中,最重要的两个操作如下.  使用散列函数将被查找的键转化为数组的一个索引.   处理散列表中的碰撞冲突问题.   性质  若关键">
+<meta name="keywords" content="2017,数据结构,符号表">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Algorithms,4th Edition》读书笔记-散列表">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/04/13/2017-4-13-hash_table/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="概述 散列表(Hash Table,也叫哈希表),它是根据键而直接访问在内存存储位置的数据结构.也可以说是用一个数组来实现的无序的符号表,将键作为数组的索引而数组中键i处存储的就是它对应的值. 散列表通过散列函数将键转化为数组的索引来访问数组中的键值对. 在散列表的算法中,最重要的两个操作如下.  使用散列函数将被查找的键转化为数组的一个索引.   处理散列表中的碰撞冲突问题.   性质  若关键">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/34hash/images/hashing-crux.png">
+<meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/c36f16f5357aeb5b0fa2fe3040e74282d62f8881">
+<meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61">
+<meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/f2b910a452063a4769272110d8d22cab053d433d">
+<meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/fa1d43b27a17bf57baf12626ad7cfbf8ee9bb96d">
+<meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/c36f16f5357aeb5b0fa2fe3040e74282d62f8881">
+<meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/989ebc7db55ece5d29e2a8baa005e876ef486e4e">
+<meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/989ebc7db55ece5d29e2a8baa005e876ef486e4e">
+<meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/bc04a0c2f72156976761fa24dd4ba098855b7dca">
+<meta property="og:image" content="https://wikimedia.org/api/rest_v1/media/math/render/svg/3aad2b022083cbc8aef0745526f3a448e7d96160">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/34hash/images/modular-hashing.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/34hash/images/separate-chaining.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/34hash/images/linear-probing.png">
+<meta property="og:updated_time" content="2017-04-14T09:17:51.529Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Algorithms,4th Edition》读书笔记-散列表">
+<meta name="twitter:description" content="概述 散列表(Hash Table,也叫哈希表),它是根据键而直接访问在内存存储位置的数据结构.也可以说是用一个数组来实现的无序的符号表,将键作为数组的索引而数组中键i处存储的就是它对应的值. 散列表通过散列函数将键转化为数组的索引来访问数组中的键值对. 在散列表的算法中,最重要的两个操作如下.  使用散列函数将被查找的键转化为数组的一个索引.   处理散列表中的碰撞冲突问题.   性质  若关键">
+<meta name="twitter:image" content="http://algs4.cs.princeton.edu/34hash/images/hashing-crux.png">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2017-4-13-hash_table" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/13/2017-4-13-hash_table/" class="article-date">
+  <time datetime="2017-04-13T10:00:00.000Z" itemprop="datePublished">2017-04-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      《Algorithms,4th Edition》读书笔记-散列表
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
+<p><code>散列表</code>(<code>Hash Table</code>,也叫<code>哈希表</code>),它是根据键而直接访问在内存存储位置的数据结构.也可以说是用一个数组来实现的<strong>无序的符号表</strong>,将键作为数组的索引而数组中键<code>i</code>处存储的就是它对应的值.</p>
+<p><code>散列表</code>通过<code>散列函数</code>将键转化为数组的索引来访问数组中的键值对.</p>
+<p>在<code>散列表</code>的算法中,最重要的两个操作如下.</p>
+<ol>
+<li>使用<code>散列函数</code>将被查找的键转化为数组的一个索引.</li>
+</ol>
+<ol>
+<li>处理散列表中的<code>碰撞冲突</code>问题.</li>
+</ol>
+<p><img src="http://algs4.cs.princeton.edu/34hash/images/hashing-crux.png" alt=""></p>
+<h3 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h3><hr>
+<ul>
+<li>若关键字为<code>k</code>,则其值存放于<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c36f16f5357aeb5b0fa2fe3040e74282d62f8881">的存储位置上.由此,不需要比较便可直接取得所查记录.称这个对应关系<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61">为<code>散列函数</code>,按照这个思想建立的符合表为<code>散列表</code>.</li>
+</ul>
+<ul>
+<li>对不同的键可能会得到同一个<code>散列地址</code>,即<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f2b910a452063a4769272110d8d22cab053d433d">,而<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fa1d43b27a17bf57baf12626ad7cfbf8ee9bb96d">,这种现象被称为<code>碰撞冲突</code>.具有相同函数值的键对该<code>散列函数</code>来说称做同义词.综上所述,根据散列函数<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c36f16f5357aeb5b0fa2fe3040e74282d62f8881">和处理<code>碰撞冲突</code>的方法将一组键映射到一个有限的连续的地址集(区间)上,这种表称为<code>散列表</code>,这一映射过程称为<code>散列</code>,所得的存储位置称为<code>散列地址</code>.</li>
+</ul>
+<ul>
+<li>若对于键集合中的任一个键,经<code>散列函数</code>映射到地址集合中任何一个地址的概率是相等的,则这个<code>散列函数</code>被称为<code>均匀散列函数</code>,它可以减少<code>碰撞冲突</code>.</li>
+</ul>
+<h3 id="散列函数"><a href="#散列函数" class="headerlink" title="散列函数"></a>散列函数</h3><hr>
+<p><code>散列函数</code>用于将键转化为数组的索引.如果我们有一个能够保存M个键值对的数组,那么我们就需要一个能够将任意键转化为该数组范围内的索引([0,M-1]范围内的整数)的<code>散列函数</code></p>
+<p><code>散列函数</code>与键的类型有关,对于每种类型的键都需要一个与之对应的<code>散列函数</code>.</p>
+<h4 id="实现散列函数的几种方法"><a href="#实现散列函数的几种方法" class="headerlink" title="实现散列函数的几种方法"></a>实现散列函数的几种方法</h4><ul>
+<li>直接定址法 : 取<code>key</code>或者<code>key</code>的某个线性函数值为<code>散列地址</code>.即<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/989ebc7db55ece5d29e2a8baa005e876ef486e4e">或<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/989ebc7db55ece5d29e2a8baa005e876ef486e4e">其中a,b为常数(这种<code>散列函数</code>叫做自身函数).</li>
+</ul>
+<ul>
+<li>数字分析法 : 假设<code>key</code>是以<code>r</code>为基的数,并且<code>散列表</code>中可能出现的<code>key</code>都是事先知道的,则可取<code>key</code>的若干数位组成<code>散列地址</code>.</li>
+</ul>
+<ul>
+<li>平方取中法 : 取<code>key</code>平方后的中间几位为<code>散列地址</code>.通常在选定<code>散列函数</code>时不一定能知道<code>key</code>的全部情况,取其中的哪几位也不一定合适,而一个数平方后的中间几位数和数的每一位都相关,由此使随机分布的<code>key</code>得到的<code>散列地址</code>也是随机的.取的位数由表长决定.</li>
+</ul>
+<ul>
+<li>折叠法 : 将<code>key</code>分割成位数相同的几部分(最后一部分的位数可以不同),然后取这几部分的叠加和(舍去进位)作为<code>散列地址</code>.</li>
+</ul>
+<ul>
+<li>除留余数法 : 取<code>key</code>被某个不大于<code>散列表</code>长度<code>m</code>的数<code>p</code>除后所得的余数为<code>散列地址</code>.即<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bc04a0c2f72156976761fa24dd4ba098855b7dca">,<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3aad2b022083cbc8aef0745526f3a448e7d96160">.不仅可以对<code>key</code>直接取模，也可在<code>折叠法</code>、<code>平方取中法</code>等运算之后取模。对<code>p</code>的选择很重要，一般取<code>素数</code>或<code>m</code>，若<code>p</code>选择不好，容易产生<code>碰撞冲突</code>.</li>
+</ul>
+<h4 id="正整数"><a href="#正整数" class="headerlink" title="正整数"></a>正整数</h4><p>将正整数<code>散列</code>一般使用的是<code>除留余数法</code>.我们选择大小为<strong>素数</strong><code>M</code>的数组,对于任意正整数<code>k</code>,计算<code>k</code>除以<code>M</code>的余数(即<code>k%M</code>).它能够有效地将<code>key</code>散布在0到M-1的范围内.</p>
+<p>如果<code>M</code>不是<strong>素数</strong>,可能无法利用<code>key</code>中包含的所有信息,这<strong>可能导致无法均匀地散列散列值</strong>.</p>
+<p><img src="http://algs4.cs.princeton.edu/34hash/images/modular-hashing.png" alt=""></p>
+<h4 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h4><p>对浮点数进行散列一般是将<code>key</code>表示为二进制数然后再使用<code>除留余数法</code>.</p>
+<h4 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h4><p><code>除留余数法</code>也可以处理较长的<code>key</code>,例如字符串,我们只需将它们当成大整数即可.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> hash = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; s.length(); i++) &#123;</div><div class="line">   	hash = (R * hash + s.charAt(i)) % M;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Java的<code>charAt()</code>函数能够返回一个char值,即一个非负16位整数.如果<code>R</code>比任何字符的值都大,这种计算相当于将字符串当作一个N位的<code>R</code>进制值,将它除以<code>M</code>并取余.只要<code>R</code>足够小,不造成溢出,那么结果就能够落在0至M-1之间.可以使用一个较小的素数,例如31.</p>
+<h4 id="组合键"><a href="#组合键" class="headerlink" title="组合键"></a>组合键</h4><p>如果<code>key</code>的类型含有多个整型变量,我们可以和字符串类型一样将它们混合起来.</p>
+<p>例如,<code>key</code>的类型为Date,其中含有几个整型的域 : day(两个数字表示的日),month(两个数字表示的月),year(四个数字表示的年).我们可以这样计算它的散列值: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> hash = (((day * R + month) % M) * R + year) % M;</div></pre></td></tr></table></figure>
+<h4 id="Java中的约定"><a href="#Java中的约定" class="headerlink" title="Java中的约定"></a>Java中的约定</h4><p>在Java中如果要为自定义的数据类型定义散列函数,需要同时重写<code>hashCode()</code>和<code>equals()</code>两个函数,并要遵守以下规则.</p>
+<ul>
+<li><code>hashCode()</code>与<code>equals()</code>的结果必须保持一致性.即<code>a.equals(b)</code>返回true,则<code>a.hashCode()</code>的返回值也必然和<code>b.hashCode()</code>的返回值相同.</li>
+</ul>
+<ul>
+<li>但如果两个对象的<code>hashCode()</code>函数的返回值相同,这两个对象也有可能不同,还需要用<code>equals()</code>函数进行判断.</li>
+</ul>
+<p>一个使用<code>除留余数法</code>的简单<code>散列函数</code>如下,它会将符号位屏蔽(将一个32位整数变为一个31位非负整数).</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Key key)</span> </span>&#123;</div><div class="line">   <span class="keyword">return</span> (key.hashCode() &amp; <span class="number">0x7fffffff</span>) % M;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="软缓存"><a href="#软缓存" class="headerlink" title="软缓存"></a>软缓存</h4><p>由于<code>散列函数</code>的计算有可能会很耗时,我们可以进行缓存优化,将每个<code>key</code>的散列值缓存起来(可以在每个<code>key</code>中使用一个hash变量来保存它的<code>hashCode()</code>的返回值).</p>
+<p>当第一次调用<code>hashCode()</code>时,需要计算对象的散列值,但之后对<code>hashCode()</code>方法的调用会直接返回hash变量的值.</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>总之,要想实现一个优秀的<code>散列函数</code>需要满足以下的条件.</p>
+<ol>
+<li>一致性,等价的<code>key</code>必然产生相等的散列值.</li>
+</ol>
+<ol>
+<li>.高效性,计算简便.</li>
+</ol>
+<ol>
+<li>均匀性,均匀地散列所有的<code>key</code>.</li>
+</ol>
+<h3 id="基于拉链法的散列表"><a href="#基于拉链法的散列表" class="headerlink" title="基于拉链法的散列表"></a>基于拉链法的散列表</h3><hr>
+<p>拉链法是解决<code>碰撞冲突</code>的一种策略,它的核心思想是 : 将大小为<code>M</code>的<strong>数组中的每个元素指向一条链表</strong>,链表中的每个节点都存储了散列值为该元素的索引的键值对.</p>
+<p>拉链法的实现一般分为以下两种: </p>
+<ol>
+<li>使用一个原始的链表数据类型来表示数组中的每个元素.</li>
+</ol>
+<ol>
+<li>使用一个符号表实现来表示数组中的每个元素(这个方法实现简单但效率偏低).</li>
+</ol>
+<p><img src="http://algs4.cs.princeton.edu/34hash/images/separate-chaining.png" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SeparateChainingHashST</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> INIT_CAPACITY = <span class="number">4</span>;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> n; <span class="comment">// the number of key-value pairs in the symbol table</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> m; <span class="comment">// the number of size of separate chaining table</span></div><div class="line">    <span class="keyword">private</span> Node&lt;K, V&gt;[] table; <span class="comment">// array of linked-list symbol tables</span></div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">private</span> K key;</div><div class="line">        <span class="keyword">private</span> V value;</div><div class="line">        <span class="keyword">private</span> Node&lt;K,V&gt; next;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(K key, V value, Node next)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.key = key;</div><div class="line">            <span class="keyword">this</span>.value = value;</div><div class="line">            <span class="keyword">this</span>.next = next;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> ((key.hashCode()) &amp; <span class="number">0x7fffffff</span>) % m;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="查找、插入、删除"><a href="#查找、插入、删除" class="headerlink" title="查找、插入、删除"></a>查找、插入、删除</h4><p>基于拉链法的<code>散列表</code>的查找、插入、删除算法基本分为两步:</p>
+<ol>
+<li>首先根据散列值找到对应的链表.</li>
+</ol>
+<ol>
+<li>然后沿着这条链表进行相应的操作.</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called get() with key is null."</span>);</div><div class="line">    <span class="keyword">int</span> i = hash(key);</div><div class="line">    Node x = table[i];</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (key.equals(x.key))</div><div class="line">            <span class="keyword">return</span> (V) x.value;</div><div class="line">        x = x.next;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div><div class="line">	</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called put() with key is null."</span>);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</div><div class="line">        remove(key);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// double table size if average length of list &gt;= 10</span></div><div class="line">    <span class="keyword">if</span> (n &gt;= <span class="number">10</span> * m)</div><div class="line">        resize(<span class="number">2</span> * m);</div><div class="line">    <span class="keyword">int</span> i = hash(key);</div><div class="line">    Node x = table[i];</div><div class="line">    Node p = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (key.equals(x.key)) &#123;</div><div class="line">            x.value = value;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        p = x;</div><div class="line">        x = x.next;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (p == <span class="keyword">null</span>) &#123;</div><div class="line">        table[i] = <span class="keyword">new</span> Node(key, value, <span class="keyword">null</span>);</div><div class="line">        n++;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        p.next = <span class="keyword">new</span> Node(key, value, <span class="keyword">null</span>);</div><div class="line">        n++;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">	</div><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">remove</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called remove() with key is null."</span>);</div><div class="line">    <span class="keyword">if</span> (isEmpty())</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"called remove() with empty symbol table."</span>);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (!contains(key))</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">int</span> i = hash(key);</div><div class="line">    Node x = table[i];</div><div class="line">    Node p = <span class="keyword">null</span>;</div><div class="line">    V oldValue = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (key.equals(x.key)) &#123;</div><div class="line">            oldValue = (V) x.value;</div><div class="line">            <span class="keyword">if</span> (p == <span class="keyword">null</span>) &#123;</div><div class="line">                table[i] = x.next;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                p.next = x.next;</div><div class="line">            &#125;</div><div class="line">            n--;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        p = x;</div><div class="line">        x = x.next;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// halve table size if average length of list &lt;= 2</span></div><div class="line">    <span class="keyword">if</span> (m &gt; INIT_CAPACITY &amp;&amp; n &lt;= <span class="number">2</span> * m)</div><div class="line">        resize(m / <span class="number">2</span>);</div><div class="line">    <span class="keyword">return</span> oldValue;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="基于线性探测法的散列表"><a href="#基于线性探测法的散列表" class="headerlink" title="基于线性探测法的散列表"></a>基于线性探测法的散列表</h3><hr>
+<p>解决<code>碰撞冲突</code>的另一种策略是使用线性探测法.它的核心思想是: 使用大小为<code>M</code>的数组保存<code>N</code>个键值对,其中<code>M&gt;N</code>.这种方法<strong>需要依靠数组中的空位来解决<code>碰撞冲突</code></strong>,基于这种策略的所有方法被统称为<code>开放地址散列表</code>.</p>
+<p><code>开放地址散列表</code>中最简单的方法就是线性探测法: 当发生<code>碰撞冲突</code>时,我们直接检查<code>散列表</code>中的下一个位置(将索引值加1).它可能会产生三种结果: </p>
+<ol>
+<li>命中,该位置的<code>key</code>和被查找的<code>key</code>相同.</li>
+</ol>
+<ol>
+<li>未命中,<code>key</code>为空(该位置没有<code>key</code>).</li>
+</ol>
+<ol>
+<li>继续查找,该位置的<code>key</code>和被查找的<code>key</code>不同.</li>
+</ol>
+<p>我们使用<code>散列函数</code>找到<code>key</code>在数组中的索引,检查其中的<code>key</code>和被查找的<code>key</code>是否相同.如果不同则继续查找(将索引值加1,到达数组结尾时折回数组的开头),直到找到该<code>key</code>或者遇到一个空元素.</p>
+<p><code>开放地址散列表</code>的核心思想是: 与其将内存用作链表,不如将它们作为在<code>散列表</code>的空元素(这些空元素可以作为查找结束的标识).</p>
+<p><img src="http://algs4.cs.princeton.edu/34hash/images/linear-probing.png" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinearProbingHashST</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> INIT_CAPACITY = <span class="number">4</span>;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> n; <span class="comment">// the number of key-value pairs in the symbol table</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> m; <span class="comment">// the number of size of linear probing table</span></div><div class="line">    <span class="keyword">private</span> K[] keys; <span class="comment">// the keys</span></div><div class="line">    <span class="keyword">private</span> V[] vals; <span class="comment">// the values</span></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Initializes an empty symbol table.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LinearProbingHashST</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>(INIT_CAPACITY);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Initializes an empty symbol table with the specified initial capacity.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> capacity the initial capacity</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LinearProbingHashST</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</div><div class="line">        m = capacity;</div><div class="line">        n = <span class="number">0</span>;</div><div class="line">        keys = (K[]) <span class="keyword">new</span> Object[m];</div><div class="line">        vals = (V[]) <span class="keyword">new</span> Object[m];</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called get() with key is null."</span>);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = hash(key); keys[i] != <span class="keyword">null</span>; i = (i + <span class="number">1</span>) % m) &#123;</div><div class="line">            <span class="keyword">if</span> (keys[i].equals(key))</div><div class="line">                <span class="keyword">return</span> vals[i];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called put() with key is null."</span>);</div><div class="line">        <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</div><div class="line">            delete(key);</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// double table size if 50% full</span></div><div class="line">        <span class="keyword">if</span> (n &gt;= m / <span class="number">2</span>) resize(<span class="number">2</span> * m);</div><div class="line"></div><div class="line">        <span class="keyword">int</span> i;</div><div class="line">        <span class="keyword">for</span> (i = hash(key); keys[i] != <span class="keyword">null</span>; i = (i + <span class="number">1</span>) % m) &#123;</div><div class="line">            <span class="keyword">if</span> (keys[i].equals(key)) &#123;</div><div class="line">                vals[i] = value;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        keys[i] = key;</div><div class="line">        vals[i] = value;</div><div class="line">        n++;</div><div class="line">    &#125;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><p>基于线性探测法的<code>散列表</code>的删除操作较为复杂,我们不能直接将<code>key</code>所在的位置设为<code>null</code>,这样会使在此位置之后的元素无法被查找到.</p>
+<p>因此,我们需要<strong>将被删除键的右侧的所有键重新插入到<code>散列表</code>中</strong>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">delete</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called delete() with key is null."</span>);</div><div class="line">    <span class="keyword">if</span> (isEmpty())</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"called delete() with empty symbol table."</span>);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (!contains(key))</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    <span class="comment">// find position i of key</span></div><div class="line">    <span class="keyword">int</span> i = hash(key);</div><div class="line">    <span class="keyword">while</span> (!key.equals(keys[i])) &#123;</div><div class="line">        i = (i + <span class="number">1</span>) % m;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    V oldValue = vals[i];</div><div class="line">    <span class="comment">// delete key and associated value</span></div><div class="line">    keys[i] = <span class="keyword">null</span>;</div><div class="line">    vals[i] = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="comment">// rehash all keys in same cluster</span></div><div class="line">    i = (i + <span class="number">1</span>) % m;</div><div class="line">    <span class="keyword">while</span> (keys[i] != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// delete keys[i] an vals[i] and reinsert</span></div><div class="line">        K keyToRehash = keys[i];</div><div class="line">        V valToRehash = vals[i];</div><div class="line">        keys[i] = <span class="keyword">null</span>;</div><div class="line">        vals[i] = <span class="keyword">null</span>;</div><div class="line">        n--;</div><div class="line">        put(keyToRehash, valToRehash);</div><div class="line">        i = (i + <span class="number">1</span>) % m;</div><div class="line">    &#125;</div><div class="line">    n--;</div><div class="line"></div><div class="line">    <span class="comment">// halves size of array if it's 12.5% full or less</span></div><div class="line">    <span class="keyword">if</span> (n &gt; <span class="number">0</span> &amp;&amp; n &lt;= m / <span class="number">8</span>) resize(m / <span class="number">2</span>);</div><div class="line">    <span class="function"><span class="keyword">assert</span> <span class="title">check</span><span class="params">()</span></span>;</div><div class="line">    <span class="keyword">return</span> oldValue;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="键簇"><a href="#键簇" class="headerlink" title="键簇"></a>键簇</h4><p>线性探测法的平均成本取决于元素在插入数组后聚集成的一组连续的条目,也叫作<code>键簇</code>.</p>
+<p>显然,短小的<code>键簇</code>才能保证较高的效率.随着插入的<code>key</code>越来越多,这个要求会很难满足,较长的<code>键簇</code>会越来越多.<code>长键簇</code>的可能性要比<code>短键簇</code>更大,因为新键的散列值无论落在<code>键簇</code>的任何位置都会使它的长度加1.</p>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><hr>
+<p><code>散列表</code>使用了适度的空间和时间并在这两个极端之间找到了一种平衡,所以它可以在一般应用中实现拥有(均摊后)常数级别的查找和插入操作的<code>符号表</code>.</p>
+<p>但<code>散列表</code>是很难实现有序操作的,这是因为散列最主要的目的在于均匀地将键散布开来,因此在计算散列后键的顺序信息就已经丢失了.</p>
+<p>同时,<code>散列表</code>的性能也依赖于<code>α=N/M</code>的比值,其中<code>α</code>称为<code>散列表</code>的使用率.对于<code>拉链法</code>来说,<code>α</code>是每条链表的长度,因此一般大于1.对于<code>线性探测法</code>来说,<code>α</code>是表中已被占用的空间的比例,它是不可能大于1的.</p>
+<p><code>散列表</code>的性能虽然高效,但它也有以下的局限性: </p>
+<ul>
+<li>每种类型的键都需要一个优秀的<code>散列函数</code>.</li>
+</ul>
+<ul>
+<li>性能保证来自于<code>散列函数</code>的质量.</li>
+</ul>
+<ul>
+<li><code>散列函数</code>的计算可能复杂而且昂贵.</li>
+</ul>
+<ul>
+<li>难以支持有序性相关的操作.</li>
+</ul>
+<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><hr>
+<ul>
+<li>Author : <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun</a></li>
+</ul>
+<ul>
+<li>Email : sylvanassun_xtz@163.com</li>
+</ul>
+<ul>
+<li>文中的完整实现代码见我的<a href="https://github.com/SylvanasSun/algs4-study" target="_blank" rel="external">GitHub</a> &amp; <a href="https://gist.github.com/SylvanasSun/6872abd0fad061de28466cb775a84cea" target="_blank" rel="external">Gist</a></li>
+</ul>
+<ul>
+<li>文中参考资料引用自<a href="http://algs4.cs.princeton.edu/34hash/" target="_blank" rel="external">&lt;<algorithms,4th edition="">&gt;</algorithms,4th></a> &amp; <a href="https://en.wikipedia.org/wiki/Hash_table" target="_blank" rel="external">Wikepedia</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2017/04/13/2017-4-13-hash_table/" data-id="cj4z0jkcl0023uomj6r6f98ya" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/2017/">2017</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/符号表/">符号表</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/05/29/2017-5-29-cas_concurrent_stack/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          谈谈如何实现一个非阻塞的线程安全的集合
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/04/08/2017-4-08-avl_tree/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">平衡查找树之AVL树</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

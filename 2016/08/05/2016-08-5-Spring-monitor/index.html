@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spring Boot 部署测试与应用监控 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Spring Boot部署 Jar包形式 &amp;nbsp;&amp;nbsp;如果在创建Spring Boot项目的时候选择的是jar包形式,则只需要使用maven将项目打成jar包即可. 1mvn pakage &amp;nbsp;&amp;nbsp;Spring Boot项目在打成jar后可以直接运行. War包形式 &amp;nbsp;&amp;nbsp;如果在创建Spring Boot项目的时候选择的是war包形式,则打包的方式与j">
+<meta name="keywords" content="后端开发,Java,Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Boot 部署测试与应用监控">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/08/05/2016-08-5-Spring-monitor/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="Spring Boot部署 Jar包形式 &amp;nbsp;&amp;nbsp;如果在创建Spring Boot项目的时候选择的是jar包形式,则只需要使用maven将项目打成jar包即可. 1mvn pakage &amp;nbsp;&amp;nbsp;Spring Boot项目在打成jar后可以直接运行. War包形式 &amp;nbsp;&amp;nbsp;如果在创建Spring Boot项目的时候选择的是war包形式,则打包的方式与j">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6nkz6y4ntj20bm038mxv.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6nkz77e95j20fy03w758.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6nkz7gwh7j20o104z75l.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.888Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Boot 部署测试与应用监控">
+<meta name="twitter:description" content="Spring Boot部署 Jar包形式 &amp;nbsp;&amp;nbsp;如果在创建Spring Boot项目的时候选择的是jar包形式,则只需要使用maven将项目打成jar包即可. 1mvn pakage &amp;nbsp;&amp;nbsp;Spring Boot项目在打成jar后可以直接运行. War包形式 &amp;nbsp;&amp;nbsp;如果在创建Spring Boot项目的时候选择的是war包形式,则打包的方式与j">
+<meta name="twitter:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6nkz6y4ntj20bm038mxv.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-08-5-Spring-monitor" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/05/2016-08-5-Spring-monitor/" class="article-date">
+  <time datetime="2016-08-05T10:00:00.000Z" itemprop="datePublished">2016-08-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spring Boot 部署测试与应用监控
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Spring-Boot部署"><a href="#Spring-Boot部署" class="headerlink" title="Spring Boot部署"></a>Spring Boot部署</h3><hr>
+<h4 id="Jar包形式"><a href="#Jar包形式" class="headerlink" title="Jar包形式"></a>Jar包形式</h4><hr>
+<p>&nbsp;&nbsp;如果在创建Spring Boot项目的时候选择的是jar包形式,则只需要使用maven将项目打成jar包即可.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn pakage</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;Spring Boot项目在打成jar后可以直接运行.</p>
+<h4 id="War包形式"><a href="#War包形式" class="headerlink" title="War包形式"></a>War包形式</h4><hr>
+<p>&nbsp;&nbsp;如果在创建Spring Boot项目的时候选择的是war包形式,则打包的方式与jar一样.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn pakage</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;之后将生成的war文件放在任意Servlet容器上运行即可.</p>
+<p>&nbsp;&nbsp;如果在创建Spring Boot项目的时候选择的是jar,在部署时又想以war包形式部署,则需要以下配置.</p>
+<ol>
+<li><p>修改pom.xml文件的打包方式</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6nkz6y4ntj20bm038mxv.jpg" alt=""></p>
+</li>
+<li><p>添加以下依赖覆盖默认内嵌的Tomcat.</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6nkz77e95j20fy03w758.jpg" alt=""></p>
+</li>
+<li><p>创建ServletInitializer.</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6nkz7gwh7j20o104z75l.jpg" alt=""></p>
+</li>
+</ol>
+<h4 id="注册为Linux服务"><a href="#注册为Linux服务" class="headerlink" title="注册为Linux服务"></a>注册为Linux服务</h4><hr>
+<p>&nbsp;&nbsp;将软件注册为服务,可以通过命令开启、关闭、开机自启动等功能.</p>
+<p>&nbsp;&nbsp;如想注册为Linux服务,则先需要修改spring-boot-maven-plugin的配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">   &lt;build&gt;</div><div class="line">	&lt;plugins&gt;</div><div class="line">		&lt;plugin&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</div><div class="line">			&lt;configuration&gt;</div><div class="line">				&lt;executable&gt;true&lt;/executable&gt;</div><div class="line">			&lt;/configuration&gt;</div><div class="line">		&lt;/plugin&gt;</div><div class="line">	&lt;/plugins&gt;</div><div class="line">&lt;/build&gt;</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;主流的Linux大都使用init.d或systemd来注册服务.</p>
+<ul>
+<li><p>init.d方式</p>
+<ol>
+<li><p>sudo ln -s /var/apps/spring-boot-demo.jar /etc/init.d/sdemo,其中sdemo就是服务名.</p>
+</li>
+<li><p>常用操作命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">service sdemo start 启动服务.</div><div class="line">service sdemo stop 停止服务.</div><div class="line">service sdemo status 服务状态.</div><div class="line">chkconfig sdemo on 开机启动.</div></pre></td></tr></table></figure>
+</li>
+<li><p>项目日志存放于/var/log/sdemo.log中.</p>
+</li>
+</ol>
+</li>
+<li><p>systemd方式</p>
+<ol>
+<li><p>在/etc/systemd/system/目录下新建文件sdemo.service.并写入以下内容:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[Unit]</div><div class="line">Description=spring-boot-demo</div><div class="line">After=syslog.target</div><div class="line"></div><div class="line">[Service]</div><div class="line">ExecStart= /usr/bin/java -jar /var/apps/spring-boot-demo.jar</div><div class="line"></div><div class="line">[Install]</div><div class="line">WantedBy=multi-user.target</div><div class="line"></div><div class="line">#其中Description和ExecStart是可更改的.ExecStart是指定java运行需要运行的jar包.</div></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+</ul>
+<ol>
+<li>常用操作命令<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">systemctl start sdemo 启动服务.</div><div class="line">systemctl stop sdemo 停止服务.</div><div class="line">systemctl status sdemo 服务状态.</div><div class="line">systemctl enable sdemo 开机启动.</div><div class="line">journalctl -u sdemo 查看项目日志.</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="热部署"><a href="#热部署" class="headerlink" title="热部署"></a>热部署</h3><hr>
+<p>&nbsp;&nbsp;热部署即就是在应用正在运行的时候升级软件，却不需要重新启动应用.</p>
+<p>&nbsp;&nbsp;在Spring Boot项目中添加<strong>spring-boot-devtools</strong>依赖即可实现页面和类的热部署.</p>
+<h4 id="模板引擎热部署"><a href="#模板引擎热部署" class="headerlink" title="模板引擎热部署"></a>模板引擎热部署</h4><hr>
+<p>&nbsp;&nbsp;Spring Boot默认模板引擎开启缓存,如果我们修改了页面后再刷新页面将得不到修改后的内容,我们可以在application.properties中关闭模板引擎的缓存.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#Thymeleaf</div><div class="line">spring.thymeleaf.cache=false</div><div class="line">#FreeMarker</div><div class="line">spring.freemarker.cache=false</div><div class="line">#Groovy</div><div class="line">spring.groovy.template.cache=false</div><div class="line">#Velocity</div><div class="line">spring.velocity.cache=false</div></pre></td></tr></table></figure>
+<h3 id="基于Docker部署"><a href="#基于Docker部署" class="headerlink" title="基于Docker部署"></a>基于Docker部署</h3><hr>
+<p>&nbsp;&nbsp;目前主流的PaaS平台都支持发布Docker镜像.而Docker镜像是使用Dockerfile文件来编译镜像的.</p>
+<h4 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h4><hr>
+<ol>
+<li><p>FROM指令</p>
+<p>FROM指令指明了当前镜像继承的基镜像.编译当前镜像时会自动下载基镜像.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM java:8</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>MAINTAINER指令</p>
+<p>MAINTAINER指令指明了当前镜像的作者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MAINTAINER sun</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>RUN指令</p>
+<p>RUN指令可以在当前镜像上执行Linux命令并形成一个新的层.RUN指令是编译时(build)的动作.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">RUN /bin/bash -c &quot;echo helloworld&quot;</div></pre></td></tr></table></figure>
+</li>
+<li><p>CMD指令</p>
+<p>CMD指令指明镜像启动时的默认行为.一个Dockerfile里只能有一个CMD指令.CMD指令设定的命令可以在运行镜像时使用参数覆盖.它是运行时(run)的动作.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CMD echo &quot;hello&quot;</div><div class="line">可被 docker run -d image_name echo &quot;world&quot; 覆盖.</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>EXPOSE指令</p>
+<p>EXPOSE指令指明了镜像运行时的容器必须监听指定的端口.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">EXPOSE 8080</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>EVN指令</p>
+<p>EVN指令用于设置环境变量.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ENV myName=sun</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>ADD指令</p>
+<p>ADD指令用于从当前工作目录复制文件到镜像目录.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ADD hello.sh /dir/</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>ENTRYPOINT指令</p>
+<p>ENTRYPOINT指令可以让容器像一个可执行程序一样运行,这样镜像运行时可以像软件一样接收参数执行,ENTRYPOINT是运行时(run)的动作.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ENTRYPOINT [&quot;/bin/echo&quot;]</div><div class="line">我们可以镜像传递参数:</div><div class="line">docker run -d image_name &quot;hello world&quot;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h4><hr>
+<ol>
+<li>首先将打好包的demo上传到Linux服务器.</li>
+<li><p>在项目同级目录下新建一个Dockerfile文件,如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">FROM java:8</div><div class="line"></div><div class="line">MAINTAINER=sun</div><div class="line"></div><div class="line">ADD spring-boot-demo.jar app.jar</div><div class="line"></div><div class="line">EXPOSE 8080</div><div class="line"></div><div class="line">ENTRYPOINT [&quot;java&quot;,&quot;-jar&quot;,&quot;/app.jar&quot;]</div></pre></td></tr></table></figure>
+</li>
+<li><p>编译镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">在/var/apps/sdemo目录下执行以下命令</div><div class="line">docker build -t sun/sdemo .</div><div class="line">使用sun/sdemo作为镜像名称,sun为前缀.  </div><div class="line">.是用来指明Dockerfile路径的,这里因为在当前目录下所以使用“.”.</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li>运行镜像<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -d -p 8080:8080 --name sdemo sun/sdemo</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="Spring-Boot集成测试"><a href="#Spring-Boot集成测试" class="headerlink" title="Spring Boot集成测试"></a>Spring Boot集成测试</h3><hr>
+<p>&nbsp;&nbsp;Spring Boot的测试与Spring MVC类似,它提供了一个<code>@SpringApplicationConfiguration</code>替代<code>@ContextConfiguration</code>来指定配置类.</p>
+<h4 id="Example-1"><a href="#Example-1" class="headerlink" title="Example"></a>Example</h4><hr>
+<ol>
+<li><p>Entity</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Entity</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Id</span></div><div class="line">    <span class="meta">@GeneratedValue</span></div><div class="line">    <span class="keyword">private</span> Long id;</div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>Dao</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PersonRepositroy</span> <span class="keyword">extends</span> <span class="title">JpaRepository</span>&lt;<span class="title">Person</span>,<span class="title">Long</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>Controller</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/person"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonController</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    PersonRepositroy personRepositroy;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(method = RequestMethod.GET,produces = &#123;MediaType.APPLICATION_JSON_VALUE&#125;)</div><div class="line">    <span class="function"><span class="keyword">public</span> List&lt;Person&gt; <span class="title">findAll</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> personRepositroy.findAll();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li><p>Test</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</div><div class="line"><span class="comment">//@ContextConfiguration(classes = &#123;SpringBootTestApplication.class&#125;)</span></div><div class="line"><span class="meta">@SpringApplicationConfiguration</span>(classes = SpringBootTestApplication.class)</div><div class="line"><span class="meta">@WebAppConfiguration</span></div><div class="line"><span class="meta">@Transactional</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonApplicationTest</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    PersonRepositroy personRepositroy;</div><div class="line"></div><div class="line">    MockMvc mockMvc;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    WebApplicationContext webApplicationContext;</div><div class="line"></div><div class="line">    String expectedJson;</div><div class="line"></div><div class="line">     <span class="comment">/**</span></div><div class="line">       * 初始化</div><div class="line">       */</div><div class="line">     <span class="meta">@Before</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">()</span> <span class="keyword">throws</span> JsonProcessingException </span>&#123;</div><div class="line">         Person p1 = <span class="keyword">new</span> Person(<span class="string">"sun"</span>);</div><div class="line">         Person p2 = <span class="keyword">new</span> Person(<span class="string">"sylvanas"</span>);</div><div class="line">         personRepositroy.save(p1);</div><div class="line">         personRepositroy.save(p2);</div><div class="line">         <span class="comment">// 获得期待返回的JSON字符串.</span></div><div class="line">         expectedJson = Obj2Json(personRepositroy.findAll());</div><div class="line">         <span class="comment">// 初始化MockMvc.</span></div><div class="line">         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     <span class="function"><span class="keyword">protected</span> String <span class="title">Obj2Json</span><span class="params">(Object obj)</span> <span class="keyword">throws</span> JsonProcessingException </span>&#123;</div><div class="line">         ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper();</div><div class="line">         <span class="keyword">return</span> objectMapper.writeValueAsString(obj);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     <span class="meta">@Test</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testPersonController</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">         String url = <span class="string">"/person"</span>;</div><div class="line">         <span class="comment">// 对/person发送请求,获得请求的执行结果.</span></div><div class="line">         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(url)</div><div class="line">                 .accept(MediaType.APPLICATION_JSON_VALUE))</div><div class="line">                 .andReturn();</div><div class="line">         <span class="comment">// 获得执行结果的状态</span></div><div class="line">         <span class="keyword">int</span> status = result.getResponse().getStatus();</div><div class="line">         <span class="comment">// 获得执行结果的内容</span></div><div class="line">         String content = result.getResponse().getContentAsString();</div><div class="line">         <span class="comment">// 断言</span></div><div class="line">         Assert.assertEquals(<span class="string">"错误:正确的返回值为200"</span>, <span class="number">200</span>, status);</div><div class="line">         Assert.assertEquals(<span class="string">"错误:返回值和预期返回值不一致"</span>, expectedJson, content);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="Spring-Boot应用监控"><a href="#Spring-Boot应用监控" class="headerlink" title="Spring Boot应用监控"></a>Spring Boot应用监控</h3><hr>
+<p>&nbsp;&nbsp;Spring Boot提供了运行时的应用监控和管理的功能.我们可以通过HTTP、JMX、SSH来进行应用的监控.</p>
+<h4 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h4><hr>
+<p>&nbsp;&nbsp;使用HTTP实现对应用的监控需要添加以下依赖:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;<strong>端点:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>actuator</td>
+<td>所有EndPoint的列表,需要加入spring HATEOAS支持</td>
+</tr>
+<tr>
+<td>autoconfig</td>
+<td>当前应用的所有自动配置</td>
+</tr>
+<tr>
+<td>beans</td>
+<td>当前应用的所有Bean信息</td>
+</tr>
+<tr>
+<td>configprops</td>
+<td>当前应用中所有的配置信息</td>
+</tr>
+<tr>
+<td>dump</td>
+<td>显示当前应用线程状态信息</td>
+</tr>
+<tr>
+<td>env</td>
+<td>显示当前应用的环境信息</td>
+</tr>
+<tr>
+<td>health</td>
+<td>显示当前应用的健康情况</td>
+</tr>
+<tr>
+<td>info</td>
+<td>显示当前应用信息</td>
+</tr>
+<tr>
+<td>metrics</td>
+<td>显示当前应用的各项指标信息</td>
+</tr>
+<tr>
+<td>mappings</td>
+<td>显示所有的@RequestMapping映射的路径</td>
+</tr>
+<tr>
+<td>shutdown</td>
+<td>关闭当前应用(默认此项是关闭的)</td>
+</tr>
+<tr>
+<td>trace</td>
+<td>默认最新的http请求</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;&nbsp;使用http访问应用监控只需要在url中加上/端点名即可.</p>
+<ul>
+<li>例如: <a href="http://localhost:8080/actuator" target="_blank" rel="external">http://localhost:8080/actuator</a></li>
+</ul>
+<p>&nbsp;&nbsp;端点的开启关闭可以在application.properties中配置.</p>
+<p>&nbsp;&nbsp;如果想自定义端点,则需要一个继承AbstractEndpoint的实现类,并注册成Bean即可.</p>
+<p>&nbsp;&nbsp;如果想自定义HealthIndicator,则需要一个实现HealthIndicator接口的类,并注册成Bean即可.</p>
+<h3 id="JMX"><a href="#JMX" class="headerlink" title="JMX"></a>JMX</h3><hr>
+<p>&nbsp;&nbsp;可以使用Java内置的jconsole来实现JMX监控.</p>
+<h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><hr>
+<p>&nbsp;&nbsp;Spring Boot借助CraSH (<a href="http://www.crashub.org" target="_blank" rel="external">http://www.crashub.org</a>), 实现通过SSH或者TELNET监控和管理应用.我们只需要引入依赖spring-boot-starter-remote-shell即可.</p>
+<p>&nbsp;&nbsp;Spring Boot在spring-boot-starter-remote-shell的commands包下定制了命令,它使用的是Groovy语言来编写的.Groovy语言是由Spring主导的运行于JVM的动态语言.</p>
+<h4 id="自定义登录用户"><a href="#自定义登录用户" class="headerlink" title="自定义登录用户"></a>自定义登录用户</h4><hr>
+<p>&nbsp;&nbsp;Spring Boot支持在application.properties中自定义用户的账号密码.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">shell.auth.simple.user.name=sun</div><div class="line">shell.auth.simple.user.password=sun</div></pre></td></tr></table></figure></p>
+<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><blockquote>
+<p>资料参考于 JavaEE开发的颠覆者: Spring Boot实战</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/08/05/2016-08-5-Spring-monitor/" data-id="cj4z0jkbq0013uomj9e8ifn2q" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/09/03/2016-09-3-CompilerOpenJDK/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          在CentOS7下手动编译JDK
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/08/04/2016-08-4-Spring-batch/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Spring Batch数据批处理</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

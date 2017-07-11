@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>IoC与AOP的那点事儿 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="IoC 控制反转(Inversion of Control)是OOP中的一种设计原则,也是Spring框架的核心.大多数应用程序的业务逻辑代码都需要两个或多个类进行合作完成的,通过IoC则可以减少它们之间的耦合度. 实现方法 IoC的主要实现方法有两种,依赖注入与依赖查找.  依赖注入 :  应用程序被动的接收对象,IoC容器通过类型或名称等信息来判断将不同的对象注入到不同的属性中. 依赖注入主要">
+<meta name="keywords" content="编程思想,2017">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IoC与AOP的那点事儿">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/06/07/2017-06-07-IoC&AOP/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="IoC 控制反转(Inversion of Control)是OOP中的一种设计原则,也是Spring框架的核心.大多数应用程序的业务逻辑代码都需要两个或多个类进行合作完成的,通过IoC则可以减少它们之间的耦合度. 实现方法 IoC的主要实现方法有两种,依赖注入与依赖查找.  依赖注入 :  应用程序被动的接收对象,IoC容器通过类型或名称等信息来判断将不同的对象注入到不同的属性中. 依赖注入主要">
+<meta property="og:updated_time" content="2017-06-07T10:50:33.434Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IoC与AOP的那点事儿">
+<meta name="twitter:description" content="IoC 控制反转(Inversion of Control)是OOP中的一种设计原则,也是Spring框架的核心.大多数应用程序的业务逻辑代码都需要两个或多个类进行合作完成的,通过IoC则可以减少它们之间的耦合度. 实现方法 IoC的主要实现方法有两种,依赖注入与依赖查找.  依赖注入 :  应用程序被动的接收对象,IoC容器通过类型或名称等信息来判断将不同的对象注入到不同的属性中. 依赖注入主要">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2017-06-07-IoC&amp;AOP" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/06/07/2017-06-07-IoC&AOP/" class="article-date">
+  <time datetime="2017-06-07T08:00:00.000Z" itemprop="datePublished">2017-06-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      IoC与AOP的那点事儿
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="IoC"><a href="#IoC" class="headerlink" title="IoC"></a>IoC</h3><hr>
+<p>控制反转(Inversion of Control)是<code>OOP</code>中的一种设计原则,也是<code>Spring</code>框架的核心.大多数应用程序的业务逻辑代码都需要两个或多个类进行合作完成的,<strong>通过<code>IoC</code>则可以减少它们之间的耦合度</strong>.</p>
+<h4 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h4><hr>
+<p><code>IoC</code>的主要实现方法有两种,<code>依赖注入</code>与<code>依赖查找</code>.</p>
+<p> <strong>依赖注入 :</strong>  应用程序被动的接收对象,<code>IoC</code>容器通过类型或名称等信息来判断将不同的对象注入到不同的属性中.</p>
+<p>依赖注入主要有以下的方式: </p>
+<ul>
+<li>基于<code>set</code>方法 : 实现特定属性的public set()方法,来让<code>IoC</code>容器调用注入所依赖类型的对象.</li>
+</ul>
+<ul>
+<li>基于接口 : 实现特定接口以供<code>IoC</code>容器注入所依赖类型的对象.</li>
+</ul>
+<ul>
+<li><p>基于构造函数 : 实现特定参数的构造函数,在创建对象时来让<code>IoC</code>容器注入所依赖类型的对象.</p>
+</li>
+<li><p>基于注解 : 通过<code>Java</code>的注解机制来让<code>IoC</code>容器注入所依赖类型的对象,例如<code>Spring</code>框架中的<code>@Autowired</code>.</p>
+</li>
+</ul>
+<p><strong>依赖查找 :</strong> 它相对于<code>依赖注入</code>而言是一种更为主动的方法,它会在需要的时候通过调用框架提供的方法来获取对象,获取时需要提供相关的配置文件路径、key等信息来确定获取对象的状态.</p>
+<h4 id="IoC的思想"><a href="#IoC的思想" class="headerlink" title="IoC的思想"></a>IoC的思想</h4><hr>
+<p>在传统实现中,我们都是通过应用程序自己来管理依赖的创建,例如下代码.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="comment">// 由Person自己管理Food类的创建</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</div><div class="line">		Food food = <span class="keyword">new</span> Chicken();</div><div class="line">		System.out.println(<span class="string">"I am eating "</span> + food.getName() + <span class="string">"..."</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而<code>IoC</code>则是通过一个<strong>第三方容器来管理并维护这些被依赖对象,应用程序只需要接收并使用<code>IoC容器</code>注入的对象而不需要关注其他事情</strong>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> Food food;</div><div class="line"></div><div class="line">	<span class="comment">// 通过set注入</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFood</span><span class="params">(Food food)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.food = food;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// Person不需要关注Food,只管使用即可</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</div><div class="line">		System.out.println(<span class="string">"I am eating "</span> + <span class="keyword">this</span>.food.getName() + <span class="string">"..."</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过以上的例子我们能够发现,控制反转其实就是对象控制权的转移,<strong>应用程序将对象的控制权转移给了第三方容器并通过它来管理这些被依赖对象,完成了应用程序与被依赖对象的解耦.</strong></p>
+<h3 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h3><hr>
+<p><code>AOP(Aspect-Oriented Programming)</code>即面向方面编程.<strong>它是一种在运行时,动态地将代码切入到类的指定方法、指定位置上的编程思想.</strong>用于<strong>切入到指定类指定方法的代码片段叫做<code>切面</code></strong>,而<strong>切入到哪些类中的哪些方法叫做<code>切入点</code>.</strong></p>
+<p><code>AOP</code>是<code>OOP</code>的有益补充,<code>OOP</code>从横向上区分出了一个个类,<code>AOP</code>则从纵向上向指定类的指定方法中动态地切入代码.它使<code>OOP</code>变得更加立体.</p>
+<p><code>Java</code>中的动态代理或<code>CGLib</code>就是<code>AOP</code>的体现.</p>
+<h4 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h4><hr>
+<p>在<code>OOP</code>中,我们使用封装的特性来将不同职责的代码抽象到不同的类中.但是在分散代码的同时,也增加了代码的重复性.</p>
+<p>例如,我们需要在两个或多个类中的方法都记录日志或执行时间,可能这些代码是完全一致的,但因为类与类无法联系造成代码重复.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">something</span> <span class="params">()</span> </span>&#123;</div><div class="line">		<span class="comment">// 业务逻辑...</span></div><div class="line">		recordLog();	</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">recordLog</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="comment">// 记录日志...</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">something</span> <span class="params">()</span> </span>&#123;</div><div class="line">		<span class="comment">// 业务逻辑...</span></div><div class="line">		recordLog();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">recordLog</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="comment">// 记录日志...</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来,我们采取两种不同方案来改进这段代码.</p>
+<h4 id="将重复代码抽离到一个类中"><a href="#将重复代码抽离到一个类中" class="headerlink" title="将重复代码抽离到一个类中"></a>将重复代码抽离到一个类中</h4><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">something</span> <span class="params">()</span> </span>&#123;</div><div class="line">		<span class="comment">// 业务逻辑...</span></div><div class="line">		Report.recordLog();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">something</span> <span class="params">()</span> </span>&#123;</div><div class="line">		<span class="comment">// 业务逻辑...</span></div><div class="line">		Report.recordLog();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Report</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">recordLog</span> <span class="params">(String ...messages)</span> </span>&#123;</div><div class="line">		<span class="comment">// 记录日志...</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样看似解决了问题,但类之间已经耦合了.并且当这些外围业务代码(日志,权限校验等)越来越多时,它们的侵入(与核心业务代码混在一起)会使代码的整洁度变得混乱不堪.</p>
+<h4 id="使用AOP分离外围业务代码"><a href="#使用AOP分离外围业务代码" class="headerlink" title="使用AOP分离外围业务代码"></a>使用AOP分离外围业务代码</h4><hr>
+<p>我们使用<code>AspectJ</code>,它是一个<code>AOP</code>框架,扩展了Java语言,并定义了<code>AOP</code>语法(通过它实现的编译器).</p>
+<p>使用<code>AspectJ</code>需要先安装并将lib中aspectjrt.jar添加进入classpath,<a href="http://www.eclipse.org/aspectj/downloads.php" target="_blank" rel="external">下载地址</a>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Something</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"Say something..."</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Something something = <span class="keyword">new</span> Something();</div><div class="line">        something.say();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> aspect SomethingAspect &#123;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 切入点,切入到Something.say()</div><div class="line">     */</div><div class="line">    <span class="function">pointcut <span class="title">recordLog</span><span class="params">()</span>:<span class="title">call</span><span class="params">(* com.sun.sylvanas.application.hello_aop.Something.say(..)</span>)</span>;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 在方法执行后执行</div><div class="line">     */</div><div class="line">    after():recordLog() &#123;</div><div class="line">        System.out.println(<span class="string">"[AFTER] Record log..."</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>AOP</code>解决了代码的重复并将这些外围业务代码抽离到一个切面中,我们可以动态地将切面切入到切入点.</p>
+<blockquote>
+<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanassun_xtz@163.com)</a>,转载请务必指明原文链接.</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2017/06/07/2017-06-07-IoC&AOP/" data-id="cj4z0jkby001duomjudwacfk4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/2017/">2017</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          深入浅出排序算法(1)-堆排序
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/05/29/2017-5-29-cas_concurrent_stack/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">谈谈如何实现一个非阻塞的线程安全的集合</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

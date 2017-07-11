@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spring Security安全控制 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述 &amp;nbsp;&amp;nbsp;Spring Security是Spring项目的安全框架,基于IoC和AOP来实现安全的功能. &amp;nbsp;&amp;nbsp;Spring Security有两个重要概念:  认证(Authentication),认证即确认用户可以访问当前系统. 授权(Authorization),授权即确定用户在当前系统下所拥有的权限.  配置 &amp;nbsp;&amp;nbsp;Spring S">
+<meta name="keywords" content="后端开发,Java,Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Security安全控制">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/08/02/2016-08-2-Spring-security/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="概述 &amp;nbsp;&amp;nbsp;Spring Security是Spring项目的安全框架,基于IoC和AOP来实现安全的功能. &amp;nbsp;&amp;nbsp;Spring Security有两个重要概念:  认证(Authentication),认证即确认用户可以访问当前系统. 授权(Authorization),授权即确定用户在当前系统下所拥有的权限.  配置 &amp;nbsp;&amp;nbsp;Spring S">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f6lgu4c6xxj20h404x0tn.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6lft8zsnrj20mu01i3yx.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6lft99qxaj20mj05fjsf.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6lft9j25zj20mo09b40j.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f6lg2d5ezej20gn0cadhp.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6lg2cv17nj20ls0g80wk.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6lg2dfhjxj20qe0d7tcp.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f6lg2dua5xj20md06s75u.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6lgfcr8g3j20hy01jt8z.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.887Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Security安全控制">
+<meta name="twitter:description" content="概述 &amp;nbsp;&amp;nbsp;Spring Security是Spring项目的安全框架,基于IoC和AOP来实现安全的功能. &amp;nbsp;&amp;nbsp;Spring Security有两个重要概念:  认证(Authentication),认证即确认用户可以访问当前系统. 授权(Authorization),授权即确定用户在当前系统下所拥有的权限.  配置 &amp;nbsp;&amp;nbsp;Spring S">
+<meta name="twitter:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f6lgu4c6xxj20h404x0tn.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-08-2-Spring-security" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/02/2016-08-2-Spring-security/" class="article-date">
+  <time datetime="2016-08-02T10:00:00.000Z" itemprop="datePublished">2016-08-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spring Security安全控制
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
+<p>&nbsp;&nbsp;Spring Security是Spring项目的安全框架,基于IoC和AOP来实现安全的功能.</p>
+<p>&nbsp;&nbsp;Spring Security有两个重要概念:</p>
+<ul>
+<li>认证(Authentication),认证即确认用户可以访问当前系统.</li>
+<li>授权(Authorization),授权即确定用户在当前系统下所拥有的权限.</li>
+</ul>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><hr>
+<p>&nbsp;&nbsp;Spring Security使用过滤器来实现所有安全的功能,我们只需要注册一个特殊的<strong>DelegationFilterProxy</strong>过滤器到<strong>WebApplicationInitializer</strong>即可(WebApplicationInitializer是Spring提供用来配置Servlet3.0+配置的接口,从而替代web.xml,实现此接口的类会自动被SpringServletContainerInitializer加载,启动Servlet容器).</p>
+<p>&nbsp;&nbsp;也可以让自定义的Initializer类继承<strong>AbstractSecurityWebApplicationInitializer</strong>抽象类,这个抽象类实现了WebApplicationInitializer接口,并通过onStartup方法调用.它已经注册了<strong>DelegationFilterProxy</strong>过滤器.</p>
+<h4 id="Spring-Security配置类"><a href="#Spring-Security配置类" class="headerlink" title="Spring Security配置类"></a>Spring Security配置类</h4><hr>
+<p>&nbsp;&nbsp;只需要在配置类上使用<code>@EnableWebSecurity</code>注解,然后继承<strong>WebSecurityConfigurerAdapter</strong>.可以通过重写configure方法来配置相关的内容.</p>
+<p>&nbsp;&nbsp;在Spring Security中,通过重写以下方法放行静态资源:</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f6lgu4c6xxj20h404x0tn.jpg" alt=""></p>
+<h4 id="Authentication"><a href="#Authentication" class="headerlink" title="Authentication"></a>Authentication</h4><hr>
+<p>&nbsp;&nbsp;在Spring Security中,通过重写以下方法来完成认证的配置:</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6lft8zsnrj20mu01i3yx.jpg" alt=""></p>
+<p>&nbsp;&nbsp;认证用户需要用户数据的来源,AuthenticationManagerBuilder提供了内存中和JDBC的两种用户数据来源.</p>
+<ul>
+<li><p>内存中</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6lft99qxaj20mj05fjsf.jpg" alt=""></p>
+</li>
+<li><p>JDBC</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6lft9j25zj20mo09b40j.jpg" alt=""></p>
+</li>
+</ul>
+<p>&nbsp;&nbsp;如果需要自定义用户数据来源,则可以通过实现<strong>UserDetailsService</strong>接口.</p>
+<p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f6lg2d5ezej20gn0cadhp.jpg" alt="Role实体类"></p>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6lg2cv17nj20ls0g80wk.jpg" alt="User实体类"></p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6lg2dfhjxj20qe0d7tcp.jpg" alt="自定义用户认证"></p>
+<p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f6lg2dua5xj20md06s75u.jpg" alt="注册自定义的用户认证"></p>
+<h4 id="Authorization"><a href="#Authorization" class="headerlink" title="Authorization"></a>Authorization</h4><hr>
+<p>&nbsp;&nbsp;在Spring Security中,通过重写以下方法来完成授权的配置:</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6lgfcr8g3j20hy01jt8z.jpg" alt=""></p>
+<p>&nbsp;&nbsp;Spring Security使用2种匹配器用来匹配请求路径:</p>
+<ul>
+<li>antMatchers:使用Ant风格的路径匹配.</li>
+<li>regexMatchers:使用正则表达式匹配路径.</li>
+</ul>
+<p>&nbsp;&nbsp;Spring Security提供以下方法用于安全处理:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>anyRequest()</td>
+<td>匹配所有请求路径.</td>
+</tr>
+<tr>
+<td>access(String)</td>
+<td>Spring EL表达式结果为true时可以访问.</td>
+</tr>
+<tr>
+<td>anonymous()</td>
+<td>匿名可访问.</td>
+</tr>
+<tr>
+<td>denyAll()</td>
+<td>用户不能访问.</td>
+</tr>
+<tr>
+<td>fullyAuthenticated()</td>
+<td>用户完全认证时可访问.</td>
+</tr>
+<tr>
+<td>hasAnyAuthority(String…)</td>
+<td>如果用户有参数,则其中任一权限可访问.</td>
+</tr>
+<tr>
+<td>hasAnyRole(String…)</td>
+<td>如果用户有参数,则其中任一角色可访问.</td>
+</tr>
+<tr>
+<td>hasAuthority(String)</td>
+<td>如果用户有参数,则其权限可访问.</td>
+</tr>
+<tr>
+<td>hasIpAddress(String)</td>
+<td>如果用户来自参数中的IP则可访问.</td>
+</tr>
+<tr>
+<td>hasRole(String)</td>
+<td>如果用户有参数中的角色可访问.</td>
+</tr>
+<tr>
+<td>permitAll()</td>
+<td>用户可任意访问.</td>
+</tr>
+<tr>
+<td>rememberMe()</td>
+<td>允许通过remember-me登陆的用户访问.</td>
+</tr>
+<tr>
+<td>authenticated()</td>
+<td>用户登录后可访问</td>
+</tr>
+</tbody>
+</table>
+<h3 id="自定义登录实现"><a href="#自定义登录实现" class="headerlink" title="自定义登录实现"></a>自定义登录实现</h3><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line">   <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">       http.authorizeRequests()</div><div class="line">               .anyRequest().authenticated() <span class="comment">// 所有请求需要认证登陆后才能访问.</span></div><div class="line">               .and()</div><div class="line">               .formLogin() <span class="comment">// 通过formLogin定制登录操作.</span></div><div class="line">                   .loginPage(<span class="string">"/login"</span>) <span class="comment">// 定制登录页面的访问地址.</span></div><div class="line">                   .defaultSuccessUrl(<span class="string">"/index"</span>) <span class="comment">// 登录成功后转向的页面.</span></div><div class="line">                   .failureUrl(<span class="string">"/login?error"</span>) <span class="comment">// 登录失败后转向的页面.</span></div><div class="line">                   .permitAll() </div><div class="line">               .and()</div><div class="line">               .rememberMe() <span class="comment">// 开启cookie存储用户信息.</span></div><div class="line">                   .tokenValiditySeconds(<span class="number">1209600</span>) <span class="comment">// 指定cookie的有效时间,单位为秒.</span></div><div class="line">                   .key(<span class="string">"userKey"</span>) <span class="comment">// 指定cookie中的私钥.</span></div><div class="line">               .and()</div><div class="line">               .logout() <span class="comment">// 通过logout()定制注销操作.</span></div><div class="line">                   .logoutUrl(<span class="string">"/logout"</span>) <span class="comment">// 指定注销的URL路径.</span></div><div class="line">                   .logoutSuccessUrl(<span class="string">"/index"</span>) <span class="comment">// 指定注销成功后转向的页面.</span></div><div class="line">               .permitAll();    </div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h3 id="Spring-Boot支持"><a href="#Spring-Boot支持" class="headerlink" title="Spring Boot支持"></a>Spring Boot支持</h3><hr>
+<p>&nbsp;&nbsp;Spring Boot主要通过SecurityAutoConfiguration和SecurityProperties来完成自动配置.</p>
+<p>&nbsp;&nbsp;SecurityAutoConfiguration导入了SpringBootWebSecurityConfiguration中的配置,我们可以获得如下的自动配置:</p>
+<ol>
+<li>自动配置了一个内存中的用户,账号为user,密码在程序启动时print在控制台中.</li>
+<li>放行了<code>/css/**</code>,<code>/js/**</code>,<code>/images/**</code>,<code>/**/favicon.ico</code>等静态文件存放的路径.</li>
+<li>自动配置的securityFilterChainRegistration的Bean.</li>
+<li>使用以<code>security</code>为前缀的属性配置Security相关的配置.<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">security.user.name=#内存中的默认用户账号,默认为user.</div><div class="line">security.user.password=#默认用户的密码.</div><div class="line">security.user.role=#默认用户的角色.</div><div class="line">security.require-ssl=false #是否需要ssl支持,默认为false.</div><div class="line">security.enable-csrf=false #是否开启“跨站请求伪造”支持,默认false.</div><div class="line">security.ignored= #用逗号隔开需要放行的路径.</div><div class="line">....</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><strong>当我们需要自定义扩展配置的时候,只需要配置类继承WebSecurityConfigurerAdapter即可,不需要使用<code>@EnableWebSecurity</code>注解开启支持.</strong>    </p>
+<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><blockquote>
+<p>资料参考于 JavaEE开发的颠覆者: Spring Boot实战</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/08/02/2016-08-2-Spring-security/" data-id="cj4z0jkbm000zuomjxugg6411" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/08/03/2016-08-3-Spring-message/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Spring Boot消息通信
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/08/01/2016-08-1-Spring-data-transaction/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Spring Data 事务&amp;缓存</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

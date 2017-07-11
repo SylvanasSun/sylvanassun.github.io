@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>深入浅出排序算法(2)-归并排序 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述 归并排序是基于分治算法实现的一种排序算法,它将数组分割为两个子数组,然后对子数组进行排序,最终将子数组归并为有序的数组. 归并排序的时间复杂度为O(n log n),空间复杂度为O(1),并且它是稳定的排序算法(所谓稳定即是不影响值相等元素的相对次序). 算法过程   首先,归并排序需要将一个大小为n个元素的数组分解为各包含n/2个元素的子数组(这个分解的过程会不断进行,直到子数组元素个数为">
+<meta name="keywords" content="2017,算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入浅出排序算法(2)-归并排序">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="概述 归并排序是基于分治算法实现的一种排序算法,它将数组分割为两个子数组,然后对子数组进行排序,最终将子数组归并为有序的数组. 归并排序的时间复杂度为O(n log n),空间复杂度为O(1),并且它是稳定的排序算法(所谓稳定即是不影响值相等元素的相对次序). 算法过程   首先,归并排序需要将一个大小为n个元素的数组分解为各包含n/2个元素的子数组(这个分解的过程会不断进行,直到子数组元素个数为">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/c/cc/Merge-sort-example-300px.gif">
+<meta property="og:updated_time" content="2017-06-12T07:20:59.225Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入浅出排序算法(2)-归并排序">
+<meta name="twitter:description" content="概述 归并排序是基于分治算法实现的一种排序算法,它将数组分割为两个子数组,然后对子数组进行排序,最终将子数组归并为有序的数组. 归并排序的时间复杂度为O(n log n),空间复杂度为O(1),并且它是稳定的排序算法(所谓稳定即是不影响值相等元素的相对次序). 算法过程   首先,归并排序需要将一个大小为n个元素的数组分解为各包含n/2个元素的子数组(这个分解的过程会不断进行,直到子数组元素个数为">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/c/cc/Merge-sort-example-300px.gif">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2017-06-12-sort_algorithmes_mergeSort" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/" class="article-date">
+  <time datetime="2017-06-12T07:00:00.000Z" itemprop="datePublished">2017-06-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      深入浅出排序算法(2)-归并排序
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
+<p><code>归并排序</code>是基于分治算法实现的一种排序算法,它将数组分割为两个子数组,然后对子数组进行排序,最终将子数组<code>归并</code>为有序的数组.</p>
+<p><code>归并排序</code>的时间复杂度为<code>O(n log n)</code>,空间复杂度为<code>O(1)</code>,并且它是稳定的排序算法(所谓稳定即是不影响值相等元素的相对次序).</p>
+<h3 id="算法过程"><a href="#算法过程" class="headerlink" title="算法过程"></a>算法过程</h3><hr>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Merge-sort-example-300px.gif" alt=""></p>
+<ul>
+<li>首先,<code>归并排序</code>需要将一个大小为<code>n</code>个元素的数组分解为各包含<code>n/2</code>个元素的子数组(这个分解的过程会不断进行,直到子数组元素个数为<code>1</code>).</li>
+</ul>
+<ul>
+<li>当子数组的元素个数为<code>1</code>时,代表这个子数组已经有序,开始两两归并(将两个个数为<code>1</code>的子数组归并为一个个数为<code>2</code>的子数组,不断归并,直到所有子数组个数为<code>2</code>,然后继续将两个个数为<code>2</code>的子数组归并为一个个数为<code>4</code>的子数组….以此类推).</li>
+</ul>
+<ul>
+<li>不断重复步骤2,直到整个数组有序.</li>
+</ul>
+<h3 id="归并"><a href="#归并" class="headerlink" title="归并"></a>归并</h3><hr>
+<p>通过以上的了解,我们发现<code>归并排序</code>中最重要的步骤就是<code>归并</code>.</p>
+<p>采用类似<code>洗牌</code>的方式来理解这个过程.想象辅助数组为一个空牌堆,两个子数组为两堆牌<code>a</code>和<code>b</code>.我们从<code>a</code>堆与<code>b</code>堆中<strong>各取出一张牌进行比较,然后将较小的牌放入空牌堆中</strong>,不断重复比较直到任一牌堆为空.最后,再将未空的牌堆全部放入空牌堆中.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 将两个子序列进行归并</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">merge</span><span class="params">(Comparable[] a, <span class="keyword">int</span> lo, <span class="keyword">int</span> mid, <span class="keyword">int</span> hi)</span> </span>&#123;</div><div class="line">    Comparable[] aux = <span class="keyword">new</span> Comparable[a.length]; <span class="comment">// 辅助数组</span></div><div class="line">    <span class="keyword">int</span> i = lo, j = mid + <span class="number">1</span>;</div><div class="line">    <span class="keyword">int</span> count = lo;</div><div class="line">    <span class="comment">// 对[lo...mid] 与 [mid+1...hi] 两个子序列的首元素进行比较,将较小的元素放入辅助数组</span></div><div class="line">    <span class="keyword">while</span> (i &lt;= mid &amp;&amp; j &lt;= hi) &#123;</div><div class="line">        <span class="keyword">if</span> (less(a[i], a[j]))</div><div class="line">            aux[count++] = a[i++];</div><div class="line">        <span class="keyword">else</span></div><div class="line">            aux[count++] = a[j++];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//将[lo...mid] 与 [mid+1...hi] 两个子序列中剩余的元素放入辅助数组</span></div><div class="line">    <span class="keyword">while</span> (i &lt;= mid) &#123;</div><div class="line">        aux[count++] = a[i++];</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">while</span> (j &lt;= hi) &#123;</div><div class="line">        aux[count++] = a[j++];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 将辅助数组中的元素复制到源数组中</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> k = lo; k &lt;= hi; k++) &#123;</div><div class="line">        a[k] = aux[k];</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="递归实现"><a href="#递归实现" class="headerlink" title="递归实现"></a>递归实现</h3><hr>
+<p>只要理解了<code>归并</code>的过程,剩下就很容易实现了.<code>归并排序</code>的递归实现如下.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span><span class="params">(Comparable[] a)</span> </span>&#123;</div><div class="line">      sort(a, <span class="number">0</span>, a.length - <span class="number">1</span>);</div><div class="line">  &#125;</div><div class="line">	</div><div class="line">  <span class="comment">// 递归实现归并排序</span></div><div class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span><span class="params">(Comparable[] a, <span class="keyword">int</span> lo, <span class="keyword">int</span> hi)</span> </span>&#123;</div><div class="line">      <span class="keyword">if</span> (lo &gt;= hi)</div><div class="line">          <span class="keyword">return</span>;</div><div class="line"></div><div class="line">      <span class="keyword">int</span> mid = (lo + hi) &gt;&gt;&gt; <span class="number">1</span>; <span class="comment">// (lo + hi) / 2</span></div><div class="line"><span class="comment">// 分解数组</span></div><div class="line">      sort(a, lo, mid);</div><div class="line">      sort(a, mid + <span class="number">1</span>, hi);</div><div class="line"><span class="comment">// 归并</span></div><div class="line">      merge(a, lo, mid, hi);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<h3 id="非递归实现"><a href="#非递归实现" class="headerlink" title="非递归实现"></a>非递归实现</h3><hr>
+<p>我们已经知道了<code>归并排序</code>中最小子数组的元素个数为<code>1</code>,非递归实现只需要从<code>1</code>开始自底向上地归并即可(递归实现的真实计算过程也是如此,这是由于递归调用是后进先出的).</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">   <span class="comment">// 非递归实现归并排序</span></div><div class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sortUnRecursive</span><span class="params">(Comparable[] a)</span> </span>&#123;</div><div class="line">       <span class="keyword">int</span> len = <span class="number">1</span>; <span class="comment">// 自底向上实现归并排序,子序列的最小粒度为1</span></div><div class="line">       <span class="keyword">while</span> (len &lt; a.length) &#123;</div><div class="line">           <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; a.length; i += len &lt;&lt; <span class="number">1</span>) &#123;</div><div class="line">               merge(a, i, len);</div><div class="line">           &#125;</div><div class="line">           len = len &lt;&lt; <span class="number">1</span>; <span class="comment">// 子序列规模每次迭代时乘2</span></div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line"><span class="comment">// 与递归实现的归并函数不同,需要注意边界检查</span></div><div class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">merge</span><span class="params">(Comparable[] a, <span class="keyword">int</span> lo, <span class="keyword">int</span> hi)</span> </span>&#123;</div><div class="line">       <span class="keyword">int</span> length = a.length;</div><div class="line">       Comparable[] aux = <span class="keyword">new</span> Comparable[length];</div><div class="line">       <span class="keyword">int</span> count = lo;</div><div class="line">       <span class="comment">// 子数组1</span></div><div class="line">       <span class="keyword">int</span> i = lo;</div><div class="line">       <span class="keyword">int</span> i_bound = lo + hi;</div><div class="line">       <span class="comment">// 子数组2</span></div><div class="line">       <span class="keyword">int</span> j = i_bound;</div><div class="line">       <span class="keyword">int</span> j_bound = j + hi;</div><div class="line"></div><div class="line">       <span class="comment">// 注意j的边界检查</span></div><div class="line">       <span class="keyword">while</span> (i &lt; i_bound &amp;&amp; j &lt; j_bound &amp;&amp; j &lt; length) &#123;</div><div class="line">           <span class="keyword">if</span> (less(a[i], a[j]))</div><div class="line">               aux[count++] = a[i++];</div><div class="line">           <span class="keyword">else</span></div><div class="line">               aux[count++] = a[j++];</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="comment">// i和j都有可能越界</span></div><div class="line">       <span class="keyword">while</span> (i &lt; i_bound &amp;&amp; i &lt; length) &#123;</div><div class="line">           aux[count++] = a[i++];</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">while</span> (j &lt; j_bound &amp;&amp; j &lt; length) &#123;</div><div class="line">           aux[count++] = a[j++];</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="keyword">int</span> k = lo;</div><div class="line">       <span class="keyword">while</span> (k &lt; j &amp;&amp; k &lt; length) &#123;</div><div class="line">           a[k] = aux[k];</div><div class="line">           k++;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanassun_xtz@163.com)</a>,转载请务必指明原文链接.</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/" data-id="cj4z0jkc6001muomjbf2n0ze6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/2017/">2017</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          深入浅出排序算法(3)-快速排序
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">深入浅出排序算法(1)-堆排序</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

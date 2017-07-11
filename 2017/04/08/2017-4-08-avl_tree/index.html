@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>平衡查找树之AVL树 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述 AVL树得名于它的发明者G.M. Adelson-Velsky和E.M. Landis,它是最先发明的自平衡二叉查找树. 在AVL树中任何节点的两个子树的高度最大差别为一.并且,查找、插入、删除等操作在平均和最坏情况下都是O(log n). AVL树的基本操作都与二叉查找树的算法一致,只有在插入、删除等这种会改变树的平衡性的操作需要使用一些旋转操作来修正树的平衡性. 平衡因子 节点的平衡因子">
+<meta name="keywords" content="2017,数据结构,符号表">
+<meta property="og:type" content="article">
+<meta property="og:title" content="平衡查找树之AVL树">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/04/08/2017-4-08-avl_tree/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="概述 AVL树得名于它的发明者G.M. Adelson-Velsky和E.M. Landis,它是最先发明的自平衡二叉查找树. 在AVL树中任何节点的两个子树的高度最大差别为一.并且,查找、插入、删除等操作在平均和最坏情况下都是O(log n). AVL树的基本操作都与二叉查找树的算法一致,只有在插入、删除等这种会改变树的平衡性的操作需要使用一些旋转操作来修正树的平衡性. 平衡因子 节点的平衡因子">
+<meta property="og:updated_time" content="2017-04-08T11:00:59.427Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="平衡查找树之AVL树">
+<meta name="twitter:description" content="概述 AVL树得名于它的发明者G.M. Adelson-Velsky和E.M. Landis,它是最先发明的自平衡二叉查找树. 在AVL树中任何节点的两个子树的高度最大差别为一.并且,查找、插入、删除等操作在平均和最坏情况下都是O(log n). AVL树的基本操作都与二叉查找树的算法一致,只有在插入、删除等这种会改变树的平衡性的操作需要使用一些旋转操作来修正树的平衡性. 平衡因子 节点的平衡因子">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2017-4-08-avl_tree" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/08/2017-4-08-avl_tree/" class="article-date">
+  <time datetime="2017-04-08T10:00:00.000Z" itemprop="datePublished">2017-04-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      平衡查找树之AVL树
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><hr>
+<p><code>AVL树</code>得名于它的发明者G.M. Adelson-Velsky和E.M. Landis,它是最先发明的<code>自平衡二叉查找树</code>.</p>
+<p>在<code>AVL树</code>中<strong>任何节点的两个子树的高度最大差别为一</strong>.并且,查找、插入、删除等操作在平均和最坏情况下都是<code>O(log n)</code>.</p>
+<p><code>AVL树</code>的基本操作都与<code>二叉查找树</code>的算法一致,只有在插入、删除等这种会<strong>改变树的平衡性的操作需要使用一些<code>旋转操作</code>来修正树的平衡性</strong>.</p>
+<h2 id="平衡因子"><a href="#平衡因子" class="headerlink" title="平衡因子"></a>平衡因子</h2><hr>
+<p>节点的<code>平衡因子</code>一般是它的<code>左子树</code>的高度减去它的<code>右子树</code>的高度(相反也可以).带有<code>平衡因子</code>为1、0或-1的节点被认为是平衡的.带有<code>平衡因子</code>为-2或2的节点被认为是不平衡的.</p>
+<p>计算树的高度与平衡因子的代码如下.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// calculate node x depth</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">calcDepth</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> depth = <span class="number">0</span>;</div><div class="line">    <span class="keyword">if</span> (x.left != <span class="keyword">null</span>)</div><div class="line">        depth = x.left.depth;</div><div class="line">    <span class="keyword">if</span> (x.right != <span class="keyword">null</span> &amp;&amp; x.right.depth &gt; depth)</div><div class="line">        depth = x.right.depth;</div><div class="line">    <span class="comment">// parent + left or right depth</span></div><div class="line">    depth++;</div><div class="line">    <span class="keyword">return</span> depth;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// calculate node x balance(left.depth - right.depth)</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">calcBalance</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> leftDepth = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> rightDepth = <span class="number">0</span>;</div><div class="line">    <span class="keyword">if</span> (x.left != <span class="keyword">null</span>)</div><div class="line">        leftDepth = x.left.depth;</div><div class="line">    <span class="keyword">if</span> (x.right != <span class="keyword">null</span>)</div><div class="line">        rightDepth = x.right.depth;</div><div class="line">    <span class="keyword">return</span> leftDepth - rightDepth;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="旋转"><a href="#旋转" class="headerlink" title="旋转"></a>旋转</h2><hr>
+<p><code>旋转操作</code>是用于修复树的平衡性的,它保证了树的有序性与平衡性(旋转操作的具体讲解可以参考<a href="http://sylvanassun.github.io/2017/03/30/red_black_binary_search_tree/">《Algorithms,4th Edition》读书笔记-红黑二叉查找树</a>).</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">rotateLeft</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    Node t = x.right;</div><div class="line">    x.right = t.left;</div><div class="line">    t.left = x;</div><div class="line">    <span class="keyword">if</span> (x.parent != <span class="keyword">null</span>) &#123;</div><div class="line">        t.parent = x.parent;</div><div class="line">        <span class="keyword">if</span> (x.parent.left == x)</div><div class="line">            x.parent.left = t;</div><div class="line">        <span class="keyword">else</span></div><div class="line">            x.parent.right = t;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        t.parent = <span class="keyword">null</span>;</div><div class="line">        root = t;</div><div class="line">    &#125;</div><div class="line">    x.parent = t;</div><div class="line">    <span class="comment">// calculate depth and balance</span></div><div class="line">    x.depth = calcDepth(x);</div><div class="line">    x.balance = calcBalance(x);</div><div class="line">    t.depth = calcDepth(t);</div><div class="line">    t.balance = calcBalance(t);</div><div class="line">    <span class="comment">// calculate size</span></div><div class="line">    t.size = x.size;</div><div class="line">    x.size = <span class="number">1</span> + size(x.left) + size(x.right);</div><div class="line">    <span class="keyword">return</span> t;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">rotateRight</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    Node t = x.left;</div><div class="line">    x.left = t.right;</div><div class="line">    t.right = x;</div><div class="line">    <span class="keyword">if</span> (x.parent != <span class="keyword">null</span>) &#123;</div><div class="line">        t.parent = x.parent;</div><div class="line">        <span class="keyword">if</span> (x.parent.left == x)</div><div class="line">            x.parent.left = t;</div><div class="line">        <span class="keyword">else</span></div><div class="line">            x.parent.right = t;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        t.parent = <span class="keyword">null</span>;</div><div class="line">        root = t;</div><div class="line">    &#125;</div><div class="line">    x.parent = t;</div><div class="line">    <span class="comment">// calculate depth and balance</span></div><div class="line">    x.depth = calcDepth(x);</div><div class="line">    x.balance = calcBalance(x);</div><div class="line">    t.depth = calcDepth(t);</div><div class="line">    t.balance = calcBalance(t);</div><div class="line">    <span class="comment">// calculate size</span></div><div class="line">    t.size = x.size;</div><div class="line">    x.size = <span class="number">1</span> + size(x.left) + size(x.right);</div><div class="line">    <span class="keyword">return</span> t;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="平衡修正"><a href="#平衡修正" class="headerlink" title="平衡修正"></a>平衡修正</h2><hr>
+<p>当一个节点被认为是不平衡的时候,我们需要使用一些<code>旋转操作</code>来修正树的平衡,一般有以下情况需要进行<code>旋转</code>.</p>
+<ul>
+<li>例如当前节点为<code>x</code>,对<code>x</code>进行平衡修正需要进行以下判断.</li>
+</ul>
+<ul>
+<li>当<code>x</code>的<code>平衡因子</code>大于等于2时(左子树高度偏高),对其进行<code>右旋转</code>.</li>
+</ul>
+<ul>
+<li>当<code>x</code>的<code>左子树</code>的<code>平衡因子</code>等于-1时(左子树的右子节点高度偏高),对<code>x</code>的<code>左子树</code>进行<code>左旋转</code>.</li>
+</ul>
+<ul>
+<li>当<code>x</code>的<code>平衡因子</code>小于等于-2时(右子树高度偏高),对其进行<code>左旋转</code>.</li>
+</ul>
+<ul>
+<li>当<code>x</code>的<code>右子树</code>的<code>平衡因子</code>等于1时(右子树的左子节点高度偏高),对<code>x</code>的<code>右子树</code>进行<code>右旋转</code>.</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">balance</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        x.depth = calcDepth(x);</div><div class="line">        x.balance = calcBalance(x);</div><div class="line">        <span class="comment">// if x left subtree high,rotateRight</span></div><div class="line">        <span class="keyword">if</span> (x.balance &gt;= <span class="number">2</span>) &#123;</div><div class="line">            <span class="comment">// if x.left.right high,rotateLeft</span></div><div class="line">            <span class="keyword">if</span> (x.left != <span class="keyword">null</span> &amp;&amp; x.left.balance == -<span class="number">1</span>) &#123;</div><div class="line">                x.left = rotateLeft(x.left);</div><div class="line">            &#125;</div><div class="line">            x = rotateRight(x);</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// if x right subtree high,rotateLeft</span></div><div class="line">        <span class="keyword">if</span> (x.balance &lt;= -<span class="number">2</span>) &#123;</div><div class="line">            <span class="comment">// if x.right.left high,rotateRight</span></div><div class="line">            <span class="keyword">if</span> (x.right != <span class="keyword">null</span> &amp;&amp; x.right.balance == <span class="number">1</span>) &#123;</div><div class="line">                x.right = rotateRight(x.right);</div><div class="line">            &#125;</div><div class="line">            x = rotateLeft(x);</div><div class="line">        &#125;</div><div class="line">        x.size = <span class="number">1</span> + size(x.left) + size(x.right);</div><div class="line">        x = x.parent;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h2><hr>
+<p><code>AVL树</code>的插入和删除与<code>二分查找树</code>的算法一致,只不过在完成插入后需要自底向上的修复平衡性.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called put() with key is null."</span>);</div><div class="line">    <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</div><div class="line">        remove(key);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    put(root, key, value);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(Node x, K key, V value)</span> </span>&#123;</div><div class="line">    Node parent = x;</div><div class="line">    <span class="keyword">int</span> cmp = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        parent = x;</div><div class="line">        cmp = key.compareTo(x.key);</div><div class="line">        <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) &#123;</div><div class="line">            x = x.left;</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>) &#123;</div><div class="line">            x = x.right;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            x.value = value;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// if not find key,create new node</span></div><div class="line">    x = <span class="keyword">new</span> Node(key, value, <span class="number">1</span>, parent);</div><div class="line">    <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>)</div><div class="line">            parent.left = x;</div><div class="line">        <span class="keyword">else</span></div><div class="line">            parent.right = x;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        root = x;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// fixup balance</span></div><div class="line">    balance(x);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="end"><a href="#end" class="headerlink" title="end"></a>end</h2><hr>
+<ul>
+<li>Author : <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun</a></li>
+</ul>
+<ul>
+<li>Email : sylvanassun_xtz@163.com</li>
+</ul>
+<ul>
+<li>文中的完整实现代码见我的<a href="https://github.com/SylvanasSun/algs4-study" target="_blank" rel="external">GitHub</a> &amp; <a href="https://gist.github.com/SylvanasSun/780045c5b8705ef225eb83c58a013949" target="_blank" rel="external">Gist</a></li>
+</ul>
+<ul>
+<li>本文参考资料引用自<a href="https://en.wikipedia.org/wiki/AVL_tree" target="_blank" rel="external">Wikipedia</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2017/04/08/2017-4-08-avl_tree/" data-id="cj4z0jkcm0026uomj1t85hngh" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/2017/">2017</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/符号表/">符号表</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/04/13/2017-4-13-hash_table/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          《Algorithms,4th Edition》读书笔记-散列表
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/03/30/2017-3-30-red_black_binary_search_tree/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">《Algorithms,4th Edition》读书笔记-红黑二叉查找树</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

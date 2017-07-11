@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浅谈Spring Boot自动配置的运作原理 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Spring Boot&amp;nbsp;&amp;nbsp;Spring Boot是由Pivotal团队提供的全新框架，其设计目的是用来简化新Spring应用的初始搭建以及开发过程。它使用“习惯优于配置”的理念可以让你的项目快速运行部署。使用Spring Boot可以不用或者只需要很少的Spring配置。 &amp;nbsp;&amp;nbsp;而Spring Boot核心的功能就是自动配置。它会根据在类路径中的jar、类自动">
+<meta name="keywords" content="后端开发,Java,Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈Spring Boot自动配置的运作原理">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/07/29/2016-07-29-Spring-boot-autoconfigure/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="Spring Boot&amp;nbsp;&amp;nbsp;Spring Boot是由Pivotal团队提供的全新框架，其设计目的是用来简化新Spring应用的初始搭建以及开发过程。它使用“习惯优于配置”的理念可以让你的项目快速运行部署。使用Spring Boot可以不用或者只需要很少的Spring配置。 &amp;nbsp;&amp;nbsp;而Spring Boot核心的功能就是自动配置。它会根据在类路径中的jar、类自动">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6b6vnzlfgj20co0kimyz.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f6b772ib2sj20he0ft77h.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6b772m676j20gq07qdhi.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f6b7h23prdj213c0kh7g2.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6b7lru822j20ei05ggmu.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6b7lryzw2j20ut0ntaok.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f6b8n61hytj20fb04dgmt.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f6b9s692hxj20p30geq7e.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f6b9q6z1y8j20wc0idwkd.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.886Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅谈Spring Boot自动配置的运作原理">
+<meta name="twitter:description" content="Spring Boot&amp;nbsp;&amp;nbsp;Spring Boot是由Pivotal团队提供的全新框架，其设计目的是用来简化新Spring应用的初始搭建以及开发过程。它使用“习惯优于配置”的理念可以让你的项目快速运行部署。使用Spring Boot可以不用或者只需要很少的Spring配置。 &amp;nbsp;&amp;nbsp;而Spring Boot核心的功能就是自动配置。它会根据在类路径中的jar、类自动">
+<meta name="twitter:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f6b6vnzlfgj20co0kimyz.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-07-29-Spring-boot-autoconfigure" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/29/2016-07-29-Spring-boot-autoconfigure/" class="article-date">
+  <time datetime="2016-07-29T10:00:00.000Z" itemprop="datePublished">2016-07-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      浅谈Spring Boot自动配置的运作原理
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Spring-Boot"><a href="#Spring-Boot" class="headerlink" title="Spring Boot"></a>Spring Boot</h3><p>&nbsp;&nbsp;Spring Boot是由Pivotal团队提供的全新框架，其设计目的是用来简化新Spring应用的初始搭建以及开发过程。它使用“习惯优于配置”的理念可以让你的项目快速运行部署。使用Spring Boot可以不用或者只需要很少的Spring配置。</p>
+<p>&nbsp;&nbsp;而Spring Boot核心的功能就是自动配置。它会根据在类路径中的jar、类自动配置Bean,当我们需要配置的Bean没有被Spring Boot提供支持时,也可以自定义自动配置。</p>
+<h3 id="自动配置的运作原理"><a href="#自动配置的运作原理" class="headerlink" title="自动配置的运作原理"></a>自动配置的运作原理</h3><p><strong>&nbsp;&nbsp;Spring Boot自动配置其实是基于Spring 4.x提供的条件配置(Conditional)实现的。</strong></p>
+<p>&nbsp;&nbsp;有关自动配置的源码在spring-boot-autoconfigure-1.x.x.jar内,如下图:</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6b6vnzlfgj20co0kimyz.jpg" alt=""></p>
+<h4 id="如何查看当前项目已启动和未启动的自动配置"><a href="#如何查看当前项目已启动和未启动的自动配置" class="headerlink" title="如何查看当前项目已启动和未启动的自动配置"></a>如何查看当前项目已启动和未启动的自动配置</h4><ol>
+<li>在application.propertie中设置debug=true属性.</li>
+<li>在运行jar时添加–debug指令.</li>
+</ol>
+<p>&nbsp;&nbsp;当使用以上两种任意一种方法后,启动项目会在控制台输出已启动和未启动的自动配置日志.</p>
+<h4 id="SpringBootApplication"><a href="#SpringBootApplication" class="headerlink" title="@SpringBootApplication"></a>@SpringBootApplication</h4><p>&nbsp;&nbsp;生成Spring Boot项目时,会自动生成一个入口类.入口类使用了@SpringBootApplication注解,它是Spring Boot的核心注解,它是一个组合注解,核心功能由@EnableAutoConfiguration注解提供.</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f6b772ib2sj20he0ft77h.jpg" alt="@SpringBootApplication"></p>
+<h4 id="EnableAutoConfiguration"><a href="#EnableAutoConfiguration" class="headerlink" title="@EnableAutoConfiguration"></a>@EnableAutoConfiguration</h4><p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6b772m676j20gq07qdhi.jpg" alt="@EnableAutoConfiguration"></p>
+<ol>
+<li>@Import注解提供导入配置的功能,它导入了EnableAutoConfigurationImportSelector.</li>
+<li>EnableAutoConfigurationImportSelector使用函数SpringFactoriesLoader.loadFactoryNames扫描META-INF/spring.factories文件中声明的jar包.</li>
+</ol>
+<p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f6b7h23prdj213c0kh7g2.jpg" alt=""></p>
+<ol>
+<li>spring.factories文件在spring-boot-autoconfigure-1.x.x.jar中.</li>
+</ol>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6b7lru822j20ei05ggmu.jpg" alt=""></p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6b7lryzw2j20ut0ntaok.jpg" alt=""></p>
+<ol>
+<li>spring.factories中声明的类基本上都使用了@Conditional注解.</li>
+</ol>
+<h4 id="Conditional"><a href="#Conditional" class="headerlink" title="Conditional"></a>Conditional</h4><p>&nbsp;&nbsp;Spring Boot在org.springframework.boot.autoconfigure.condition包下定义了以下注解.</p>
+<table>
+<thead>
+<tr>
+<th>注解名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@ConditionalOnJava</td>
+<td>基于JVM版本作为判断条件.</td>
+</tr>
+<tr>
+<td>@ConditionalOnBean</td>
+<td>当容器中有指定的Bean的条件下.</td>
+</tr>
+<tr>
+<td>@ConditionalOnClass</td>
+<td>当类路径下游指定的类的条件下.</td>
+</tr>
+<tr>
+<td>@ConditionalOnExpression</td>
+<td>基于SpEL表达式作为判断条件.</td>
+</tr>
+<tr>
+<td>@ConditionalOnJndi</td>
+<td>在JNDI存在的条件下查找指定的位置.</td>
+</tr>
+<tr>
+<td>@ConditionalOnMissingBean</td>
+<td>当容器中没有指定Bean的情况下.</td>
+</tr>
+<tr>
+<td>@ConditionalOnMissingClass</td>
+<td>当类路径下没有指定的类的情况下.</td>
+</tr>
+<tr>
+<td>@ConditionalOnNotWebApplication</td>
+<td>当前项目不是web项目的条件下.</td>
+</tr>
+<tr>
+<td>@ConditionalOnProperty</td>
+<td>指定的属性是否有指定的值.</td>
+</tr>
+<tr>
+<td>@ConditionalOnResource</td>
+<td>类路径是否有指定的值.</td>
+</tr>
+<tr>
+<td>@ConditionalOnSingleCandidate</td>
+<td>当指定Bean在容器中只有一个,或者虽然有多个但是指定首选的Bean.</td>
+</tr>
+<tr>
+<td>@ConditionalOnWebApplication</td>
+<td>当前项目是web项目的条件下.</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;&nbsp;以上这些注解都组合了@Conditional元注解.</p>
+<h3 id="分析-ConditionalOnNotWebApplication"><a href="#分析-ConditionalOnNotWebApplication" class="headerlink" title="分析@ConditionalOnNotWebApplication"></a>分析@ConditionalOnNotWebApplication</h3><p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6b8n61hytj20fb04dgmt.jpg" alt=""></p>
+<p>&nbsp;&nbsp;@ConditionalOnNotWebApplication使用的条件类是OnWebApplicationCondition.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.springframework.boot.autoconfigure.condition;</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.condition.ConditionOutcome;</div><div class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;</div><div class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.condition.SpringBootCondition;</div><div class="line"><span class="keyword">import</span> org.springframework.context.annotation.ConditionContext;</div><div class="line"><span class="keyword">import</span> org.springframework.core.annotation.Order;</div><div class="line"><span class="keyword">import</span> org.springframework.core.type.AnnotatedTypeMetadata;</div><div class="line"><span class="keyword">import</span> org.springframework.util.ClassUtils;</div><div class="line"><span class="keyword">import</span> org.springframework.util.ObjectUtils;</div><div class="line"><span class="keyword">import</span> org.springframework.web.context.WebApplicationContext;</div><div class="line"><span class="keyword">import</span> org.springframework.web.context.support.StandardServletEnvironment;</div><div class="line"></div><div class="line"><span class="meta">@Order</span>(-<span class="number">2147483628</span>)</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">OnWebApplicationCondition</span> <span class="keyword">extends</span> <span class="title">SpringBootCondition</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String WEB_CONTEXT_CLASS = <span class="string">"org.springframework.web.context.support.GenericWebApplicationContext"</span>;</div><div class="line"></div><div class="line">    OnWebApplicationCondition() &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> ConditionOutcome <span class="title">getMatchOutcome</span><span class="params">(ConditionContext context, AnnotatedTypeMetadata metadata)</span> </span>&#123;</div><div class="line">        <span class="keyword">boolean</span> webApplicationRequired = metadata.isAnnotated(ConditionalOnWebApplication.class.getName());</div><div class="line">        ConditionOutcome webApplication = <span class="keyword">this</span>.isWebApplication(context, metadata);</div><div class="line">        <span class="keyword">return</span> webApplicationRequired &amp;&amp; !webApplication.isMatch()?ConditionOutcome.noMatch(webApplication.getMessage()):(!webApplicationRequired &amp;&amp; webApplication.isMatch()?ConditionOutcome.noMatch(webApplication.getMessage()):ConditionOutcome.match(webApplication.getMessage()));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> ConditionOutcome <span class="title">isWebApplication</span><span class="params">(ConditionContext context, AnnotatedTypeMetadata metadata)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span>(!ClassUtils.isPresent(<span class="string">"org.springframework.web.context.support.GenericWebApplicationContext"</span>, context.getClassLoader())) &#123;</div><div class="line">            <span class="keyword">return</span> ConditionOutcome.noMatch(<span class="string">"web application classes not found"</span>);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="keyword">if</span>(context.getBeanFactory() != <span class="keyword">null</span>) &#123;</div><div class="line">                String[] scopes = context.getBeanFactory().getRegisteredScopeNames();</div><div class="line">                <span class="keyword">if</span>(ObjectUtils.containsElement(scopes, <span class="string">"session"</span>)) &#123;</div><div class="line">                    <span class="keyword">return</span> ConditionOutcome.match(<span class="string">"found web application \'session\' scope"</span>);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">return</span> context.getEnvironment() <span class="keyword">instanceof</span> StandardServletEnvironment?ConditionOutcome.match(<span class="string">"found web application StandardServletEnvironment"</span>):(context.getResourceLoader() <span class="keyword">instanceof</span> WebApplicationContext?ConditionOutcome.match(<span class="string">"found web application WebApplicationContext"</span>):ConditionOutcome.noMatch(<span class="string">"not a web application"</span>));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;OnWebApplicationCondition在isWebApplication函数中进行条件判断.</p>
+<ol>
+<li>判断GenericWebApplicationContext是否在类路径中.</li>
+<li>判断容器中是否存在名为session的scope.</li>
+<li>判断当前容器的Environment是否为StandardServletEnvironment.</li>
+<li>判断当前的ResourceLoader是否为WebApplicationContext.</li>
+<li>最后通过ConditionOutcome.isMatch函数返回布尔值确定条件.</li>
+</ol>
+<h3 id="分析自动配置的实现"><a href="#分析自动配置的实现" class="headerlink" title="分析自动配置的实现"></a>分析自动配置的实现</h3><p>&nbsp;&nbsp;以http编码为例,如果在常规项目中则需要在web.xml中配置一个filter.而Spring Boot内置了http编码的自动配置,无需配置filter.</p>
+<h4 id="properties配置类"><a href="#properties配置类" class="headerlink" title="properties配置类"></a>properties配置类</h4><p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f6b9s692hxj20p30geq7e.jpg" alt=""></p>
+<h4 id="自动配置Bean"><a href="#自动配置Bean" class="headerlink" title="自动配置Bean"></a>自动配置Bean</h4><p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f6b9q6z1y8j20wc0idwkd.jpg" alt=""></p>
+<p>&nbsp;&nbsp;@ConditionalOnProperty:当设置spring.http.encoding=enabled的情况下,如果没有设置则默认为true,即符合条件.</p>
+<p>&nbsp;&nbsp;characterEncodingFilter()返回OrderedCharacterEncodingFilter这个对象,并根据注入的HttpEncodingProperties配置类设置参数.</p>
+<p>&nbsp;&nbsp; @ConditionalOnMissingBean({CharacterEncodingFilter.class}):在容器中没有这个Bean的时候则新建这个Bean.</p>
+<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><blockquote>
+<p>资料参考于 JavaEE开发的颠覆者: Spring Boot实战</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/07/29/2016-07-29-Spring-boot-autoconfigure/" data-id="cj4z0jkbf000ruomjku6qk2sw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/31/2016-07-31-Spring-data/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Spring数据访问方案-Spring Data
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/07/19/2016-07-19-Hadoop06-Storm/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hadoop学习笔记(6)-Storm</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

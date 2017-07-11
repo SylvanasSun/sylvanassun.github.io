@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spring Boot消息通信 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="SSL安全套接层 概述 &amp;nbsp;&amp;nbsp;SSL(Secure Sockets Layer)是专门用于网络通信安全及数据完整性的安全协议,它会在网络传输层对网络连接进行加密. &amp;nbsp;&amp;nbsp;SSL协议是位于TCP/IP协议与其他各种应用层协议之间的. &amp;nbsp;&amp;nbsp;SSL的体系结构中包含两个协议子层:  SSL记录协议(SSL Record Protocol),它建立在可">
+<meta name="keywords" content="后端开发,Java,Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Boot消息通信">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/08/03/2016-08-3-Spring-message/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="SSL安全套接层 概述 &amp;nbsp;&amp;nbsp;SSL(Secure Sockets Layer)是专门用于网络通信安全及数据完整性的安全协议,它会在网络传输层对网络连接进行加密. &amp;nbsp;&amp;nbsp;SSL协议是位于TCP/IP协议与其他各种应用层协议之间的. &amp;nbsp;&amp;nbsp;SSL的体系结构中包含两个协议子层:  SSL记录协议(SSL Record Protocol),它建立在可">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f6mihqw3jpj20sg0dttc2.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f6mihr9qtsj20om0ddadp.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.888Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Boot消息通信">
+<meta name="twitter:description" content="SSL安全套接层 概述 &amp;nbsp;&amp;nbsp;SSL(Secure Sockets Layer)是专门用于网络通信安全及数据完整性的安全协议,它会在网络传输层对网络连接进行加密. &amp;nbsp;&amp;nbsp;SSL协议是位于TCP/IP协议与其他各种应用层协议之间的. &amp;nbsp;&amp;nbsp;SSL的体系结构中包含两个协议子层:  SSL记录协议(SSL Record Protocol),它建立在可">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f6mihqw3jpj20sg0dttc2.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-08-3-Spring-message" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/03/2016-08-3-Spring-message/" class="article-date">
+  <time datetime="2016-08-03T10:00:00.000Z" itemprop="datePublished">2016-08-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spring Boot消息通信
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="SSL安全套接层"><a href="#SSL安全套接层" class="headerlink" title="SSL安全套接层"></a>SSL安全套接层</h3><hr>
+<h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><hr>
+<p>&nbsp;&nbsp;SSL(Secure Sockets Layer)是专门用于网络通信安全及数据完整性的安全协议,它会在网络传输层对网络连接进行加密.</p>
+<p>&nbsp;&nbsp;SSL协议是位于TCP/IP协议与其他各种应用层协议之间的.</p>
+<p>&nbsp;&nbsp;SSL的体系结构中包含两个协议子层:</p>
+<ol>
+<li><p>SSL记录协议(SSL Record Protocol),它建立在可靠的传输协议(TCP)之上,为高层协议提供数据封装、压缩、加密等基本功能的支持.SSL纪录协议针对HTTP协议进行了特别的设计，使得超文本的传输协议HTTP能够在SSL运行.</p>
+</li>
+<li><p>SSL握手协议(SSL Handshake Protocol),它建立在SSL记录协议之上.SSL握手协议层包括SSL握手协议（SSL HandShake Protocol）、SSL密码参数修改协议（SSL Change Cipher Spec Protocol）、应用数据协议（Application Data Protocol）和SSL告警协议（SSL Alert Protocol）.它主要用于在实际数据传输开始前,通信双方进行身份认证、协商加密算法、交换加密密钥等.</p>
+<p>&nbsp;&nbsp;在B/S应用中,是通过<strong>HTTPS</strong>实现SSL的,<strong>HTTPS</strong>即是在HTTP下加入SSL层,它的安全基础是SSL.</p>
+</li>
+</ol>
+<h4 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h4><hr>
+<ol>
+<li>客户端向服务器发送一个开始信息“Hello”以便开始一个新的会话连接.</li>
+<li>服务器根据客户的信息确定是否需要生成新的主密钥，如需要则服务器在响应客户的“Hello”信息时将包含生成主密钥所需的信息.</li>
+<li>客户根据收到的服务器响应信息，产生一个主密钥，并用服务器的公开密钥加密后传给服务器.</li>
+<li>服务器回复该主密钥，并返回给客户一个用主密钥认证的信息，以此让客户认证服务器.</li>
+</ol>
+<h4 id="Spring-Boot中配置SSL"><a href="#Spring-Boot中配置SSL" class="headerlink" title="Spring Boot中配置SSL"></a>Spring Boot中配置SSL</h4><hr>
+<p>&nbsp;&nbsp;在配置SSL之前需要生成一个证书,它可以是自签名的,也可以是从SSL证书授权中心获得的.</p>
+<h5 id="生成SSL证书"><a href="#生成SSL证书" class="headerlink" title="生成SSL证书"></a>生成SSL证书</h5><p>&nbsp;&nbsp;可以在控制台中输入以下指令,生成自签名的SSL证书:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">keytool -genkey -alias tomcat</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;之后会在当前目录生成一个.keystore文件,它就是SSL证书文件.</p>
+<h5 id="配置到项目中"><a href="#配置到项目中" class="headerlink" title="配置到项目中"></a>配置到项目中</h5><ol>
+<li>将.keystore文件复制到src/main/resources/static下.</li>
+<li>在application.properties中如下配置:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">server.port = 8090</div><div class="line">server.ssl.key-store = .keystore</div><div class="line">server.ssl.key-store-password = 123456</div><div class="line">server.ssl.keyStoreType = JKS</div><div class="line">server.ssl.keyAlias : tomcat</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="http自动转向https"><a href="#http自动转向https" class="headerlink" title="http自动转向https"></a>http自动转向https</h4><hr>
+<p>&nbsp;&nbsp;如果想要实现输入http自动转向到https,则需要配置<strong>TomcatEmbeddedServletContainerFactory</strong>,并添加Tomcat的connector来实现.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> cn.sun.sylvanas.spring_boot_security;</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.apache.catalina.Context;</div><div class="line"><span class="keyword">import</span> org.apache.catalina.connector.Connector;</div><div class="line"><span class="keyword">import</span> org.apache.tomcat.util.descriptor.web.SecurityCollection;</div><div class="line"><span class="keyword">import</span> org.apache.tomcat.util.descriptor.web.SecurityConstraint;</div><div class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</div><div class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</div><div class="line"><span class="keyword">import</span> org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;</div><div class="line"><span class="keyword">import</span> org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;</div><div class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</div><div class="line"></div><div class="line"><span class="meta">@SpringBootApplication</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringBootSecurityApplication</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		SpringApplication.run(SpringBootSecurityApplication.class, args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> EmbeddedServletContainerFactory <span class="title">servletContainerFactory</span><span class="params">()</span> </span>&#123;</div><div class="line">		TomcatEmbeddedServletContainerFactory tomcat = <span class="keyword">new</span> TomcatEmbeddedServletContainerFactory()&#123;</div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">postProcessContext</span><span class="params">(Context context)</span> </span>&#123;</div><div class="line">				SecurityConstraint securityConstraint = <span class="keyword">new</span> SecurityConstraint();</div><div class="line">				securityConstraint.setUserConstraint(<span class="string">"CONFIDENTIAL"</span>);</div><div class="line">				SecurityCollection securityCollection = <span class="keyword">new</span> SecurityCollection();</div><div class="line">				securityCollection.addPattern(<span class="string">"/"</span>);</div><div class="line">				securityConstraint.addCollection(securityCollection);</div><div class="line">				context.addConstraint(securityConstraint);</div><div class="line">			&#125;</div><div class="line">		&#125;;</div><div class="line">		tomcat.addAdditionalTomcatConnectors(httpConnector());</div><div class="line">		<span class="keyword">return</span> tomcat;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> Connector <span class="title">httpConnector</span><span class="params">()</span> </span>&#123;</div><div class="line">		Connector connector = <span class="keyword">new</span> Connector(<span class="string">"org.apache.coyote.http11.Http11NioProtocol"</span>);</div><div class="line">		connector.setScheme(<span class="string">"http"</span>);</div><div class="line">		connector.setPort(<span class="number">8080</span>);</div><div class="line">		connector.setSecure(<span class="keyword">false</span>);</div><div class="line">		connector.setRedirectPort(<span class="number">8090</span>);</div><div class="line">		<span class="keyword">return</span> connector;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;此时访问<a href="http://localhost:8080会自动转向到https://localhost:8090" target="_blank" rel="external">http://localhost:8080会自动转向到https://localhost:8090</a>.</p>
+<h3 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h3><hr>
+<h4 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h4><hr>
+<p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f6mihqw3jpj20sg0dttc2.jpg" alt=""><br>&nbsp;&nbsp;WebSocket protocol 是HTML5一种新的协议.它实现了浏览器与服务器全双工异步通信(full-duplex).即浏览器可以向服务端发送消息,服务端也可以向浏览器发送消息.WebSocket需要浏览器的支持,如IE 10+、Chrome 13+、Firefox 6+.</p>
+<p>&nbsp;&nbsp;WebSocket是通过一个socket来实现双工异步通信功能的.直接使用WebSocket协议开发程序会很繁琐,所以一般使用它的子协议<strong>STOMP</strong>,<strong>STOMP</strong>是一个更高级别的协议,它使用基于帧(frame)的格式来定义消息,具有一个类似<code>@RequestMapping</code>的<code>@MessageMapping</code>.</p>
+<h4 id="Spring-Boot支持"><a href="#Spring-Boot支持" class="headerlink" title="Spring Boot支持"></a>Spring Boot支持</h4><hr>
+<p>&nbsp;&nbsp;Spring Boot对内嵌的Tomcat(7、8)、Jetty9、Undertow提供了WebSocket支持.依赖为spring-boot-starter-websocket.</p>
+<p>&nbsp;&nbsp;配置WebSocket需要在配置类上使用<code>@EnableWebSocketMessageBroker</code>注解开启支持,并且继承<strong>AbstractWebSocketMessageBrokerConfigurer</strong>类,重写其方法进行配置.</p>
+<h4 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h4><hr>
+<h5 id="广播"><a href="#广播" class="headerlink" title="广播"></a>广播</h5><p>&nbsp;&nbsp;广播即服务端有消息时,会将消息发送给所有连接了当前endpoint的浏览器.</p>
+<ol>
+<li><p>配置</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f6mihr9qtsj20om0ddadp.jpg" alt=""></p>
+</li>
+<li><p>Controller</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">  * <span class="doctag">@MessageMapping</span>注解映射/hello这个地址,类似于<span class="doctag">@RequestMapping</span></div><div class="line">  * 当服务端有消息时,会对订阅了<span class="doctag">@SendTo</span>中的路径的浏览器发送消息.</div><div class="line">  */</div><div class="line"> <span class="meta">@MessageMapping</span>(<span class="string">"/hello"</span>)</div><div class="line"> <span class="meta">@SendTo</span>(<span class="string">"/topic/getHello"</span>)</div><div class="line"> <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">(String name)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">     Thread.sleep(<span class="number">3000</span>);</div><div class="line">     <span class="keyword">return</span> <span class="string">"Hello "</span> + name + <span class="string">"!"</span>;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li>js<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line">  &lt;html xmlns:th=<span class="string">"http://www.thymeleaf.org"</span>&gt;</div><div class="line"></div><div class="line">&lt;head&gt;</div><div class="line">    &lt;meta content="text/html;charset=UTF-8"/&gt;</div><div class="line">    &lt;meta http-equiv="X-UA-Compatible" content="IE=edge"/&gt;</div><div class="line">    &lt;meta name="viewport" content="width=device-width,initial-scale=1"/&gt;</div><div class="line">    &lt;title&gt;Spring Boot+WebSocket+广播式&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body onload="disconnect()"&gt;</div><div class="line">&lt;noscript&gt;&lt;h2 style="color: #ff0000"&gt;貌似你的浏览器不支持websocket&lt;/h2&gt;&lt;/noscript&gt;</div><div class="line">&lt;div&gt;</div><div class="line">    &lt;div&gt;</div><div class="line">        &lt;button id="connect" onclick="connect();"&gt;连接&lt;/button&gt;</div><div class="line">        &lt;button id="disconnect" onclick="disconnect();"&gt;断开连接&lt;/button&gt;</div><div class="line">    &lt;/div&gt;</div><div class="line">    &lt;div id="conversationDiv"&gt;</div><div class="line">        &lt;label&gt;输入你的名字&lt;/label&gt;&lt;input type="text" id="name"/&gt;</div><div class="line">        &lt;button id="sendName" onclick="sendName();"&gt;发送&lt;/button&gt;</div><div class="line">        &lt;p id="response"&gt;&lt;/p&gt;</div><div class="line">    &lt;/div&gt;</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;!-- 导入jQuery --&gt;</div><div class="line">&lt;script th:src="@&#123;jquery-3.1.0.min.js&#125;"/&gt;</div><div class="line">&lt;script th:src="@&#123;sockjs-1.0.0.min.js&#125;"/&gt;</div><div class="line">&lt;script th:src="@&#123;stomp.min.js&#125;"/&gt;</div><div class="line">&lt;script type="text/javascript"&gt;</div><div class="line">    var stompClient = null;</div><div class="line"></div><div class="line">    function setConnected(connected) &#123;</div><div class="line">        document.getElementById('connect').disabled = connected;</div><div class="line">        document.getElementById('disconnect').disabled = !connected;</div><div class="line">        document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';</div><div class="line">        $('#response').html();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    function connect() &#123;</div><div class="line">        var socket = new SockJS('/endpointSun');</div><div class="line">        stompClient = Stomp.over(socket);</div><div class="line">        stompClient.connect(&#123;&#125;, function (frame) &#123;</div><div class="line">            setConnected(true);</div><div class="line">            console.log('Connected: ' + frame);</div><div class="line">            // 订阅/topic/getHello</div><div class="line">            stompClient.subscribe('/topic/getHello',function(response)&#123;</div><div class="line">                showResponse(JSON.parse(response.body).responseMessage);</div><div class="line">            &#125;);</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    function disconnect() &#123;</div><div class="line">        if(stompClient != null)&#123;</div><div class="line">            stompClient.disconnect();</div><div class="line">        &#125;</div><div class="line">        setConnected(false);</div><div class="line">        console.log("Disconnected");</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    function sendName() &#123;</div><div class="line">        var name = $('#name').val();</div><div class="line">        // 发送到/hello</div><div class="line">        stompClient.send("/hello",&#123;&#125;,JSON.stringify(&#123;'name':name&#125;));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    function showResponse(message)&#123;</div><div class="line">        var response = $("#response");</div><div class="line">        response.html(message);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&lt;/script&gt;</div><div class="line">&lt;/body&gt;</div><div class="line"></div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h5 id="P2P"><a href="#P2P" class="headerlink" title="P2P"></a>P2P</h5><p>&nbsp;&nbsp;P2P即点对点,它不同于广播式,P2P需要指定消息由谁接收,且只能由一个人接收.</p>
+<ol>
+<li><p>配置与广播式相同.</p>
+</li>
+<li><p>Controller</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">  * 通过SimpMessagingTemplate向浏览器发送消息.</div><div class="line">  */</div><div class="line"> <span class="meta">@Autowired</span></div><div class="line"> <span class="keyword">private</span> SimpMessagingTemplate messagingTemplate;</div><div class="line"></div><div class="line"> <span class="comment">/**</span></div><div class="line">  * Spring MVC可以直接在参数中注入principal对象,它包含当前用户的信息.</div><div class="line">  */</div><div class="line"> <span class="meta">@MessageMapping</span>(<span class="string">"/chat"</span>)</div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleChat</span><span class="params">(Principal principal, String msg)</span> </span>&#123;</div><div class="line">     <span class="comment">/**</span></div><div class="line">      * 通过SimpMessagingTemplate.convertAndSendToUser向用户发送消息,</div><div class="line">      * 第一个参数是接收者的用户,第二参数是浏览器订阅的地址,第三个参数是要发送的消息.</div><div class="line">      */</div><div class="line">     <span class="keyword">if</span> (principal.getName().equals(<span class="string">"sun"</span>)) &#123;</div><div class="line">         messagingTemplate.convertAndSendToUser(<span class="string">"sylvanas"</span>,</div><div class="line">                 <span class="string">"/queue/notifications"</span>, principal.getName() + <span class="string">"-send:"</span> + msg);</div><div class="line">     &#125; <span class="keyword">else</span> &#123;</div><div class="line">         messagingTemplate.convertAndSendToUser(<span class="string">"sun"</span>,</div><div class="line">                 <span class="string">"/queue/notifications"</span>, principal.getName() + <span class="string">"-send:"</span> + msg);</div><div class="line">     &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">  &lt;!DOCTYPE html&gt;</div><div class="line">&lt;!--suppress ALL --&gt;</div><div class="line">&lt;html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"</div><div class="line">      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"&gt;</div><div class="line"></div><div class="line">&lt;head&gt;</div><div class="line">    &lt;meta content="text/html;charset=UTF-8"/&gt;</div><div class="line">    &lt;meta http-equiv="X-UA-Compatible" content="IE=edge"/&gt;</div><div class="line">    &lt;meta name="viewport" content="width=device-width,initial-scale=1"/&gt;</div><div class="line">    &lt;script th:src="@&#123;jquery-3.1.0.min.js&#125;"/&gt;</div><div class="line">    &lt;script th:src="@&#123;stomp.min.js&#125;"/&gt;</div><div class="line">    &lt;script th:src="@&#123;sockjs-1.0.0.min.js&#125;"/&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">&lt;p&gt;</div><div class="line">    聊天室</div><div class="line">&lt;/p&gt;</div><div class="line"></div><div class="line">&lt;form id="chatForm"&gt;</div><div class="line">    &lt;textarea rows="4" cols="60" name="text"&gt;&lt;/textarea&gt;</div><div class="line">    &lt;input type="submit"/&gt;</div><div class="line">&lt;/form&gt;</div><div class="line"></div><div class="line">&lt;script th:inline="javascript"&gt;</div><div class="line">    $('#chatForm').submit(function(e)&#123;</div><div class="line">        e.preventDefault();</div><div class="line">        var text = $('#chatForm').find('textarea[name="text"]').val();</div><div class="line">        sendSpittle(text);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    var socket = new SockJS("/endpointChat");</div><div class="line">    var stomp = Stomp.over(socket);</div><div class="line">    stomp.connect('guest','guest',function(frame)&#123;</div><div class="line">        // 与messagingTemplate.convertAndSendToUser中定义的订阅地址保持一致</div><div class="line">        // 但前面要多出一个/user,这个/user是必须的,只有使用了/user才会发送消息到指定的用户.</div><div class="line">        stomp.subscribe("/user/queue/notifications",handleNotification);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    function handleNotification(message)&#123;</div><div class="line">        $("#output").append("&lt;b&gt;Received: " + message.body + "&lt;/b&gt;&lt;br/&gt;");</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    function sendSpittle(text)&#123;</div><div class="line">        stomp.send("/chat",&#123;&#125;,text);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    $('#stop').click(function()&#123;socket.close()&#125;);</div><div class="line"></div><div class="line">&lt;/script&gt;</div><div class="line"></div><div class="line">&lt;div id="output"&gt;&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;/body&gt;</div><div class="line"></div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="异步消息队列"><a href="#异步消息队列" class="headerlink" title="异步消息队列"></a>异步消息队列</h3><hr>
+<p>&nbsp;&nbsp;异步消息队列主要用于各系统之间的通信与解耦,异步消息即为发送者无需关心消息接收者的处理和返回.</p>
+<p>&nbsp;&nbsp;异步消息的主要概念为消息代理(message broker)和目的地(destination).消息是由消息代理负责接管并传递到指定目的地的.</p>
+<p>&nbsp;&nbsp;目的地主要有2种:</p>
+<ol>
+<li>queue:用于P2P(point-to-point)的消息通信.</li>
+<li>topic:用于发布/订阅(publish/subscribe)的消息通信.</li>
+</ol>
+<h4 id="Spring-Boot支持-1"><a href="#Spring-Boot支持-1" class="headerlink" title="Spring Boot支持"></a>Spring Boot支持</h4><hr>
+<p>&nbsp;&nbsp;Spring对JMS和AMQP的支持来自于spring-jms、spring-rabbit.它们分别需要ConnectionFactory的实现来连接消息代理.并且提供了JmsTemplate和RabbitTemplate.</p>
+<ul>
+<li>JMS(Java Message Service)Java消息服务,它是基于JVM消息代理的规范.</li>
+<li>AMQP(Advanced Message Queuing Protocol)高级消息队列协议,它不仅支持JVM,还支持跨语言和平台.AMQP的主要实现有RabbitMQ.</li>
+</ul>
+<p>&nbsp;&nbsp;Spring Boot对JMS支持的实有ActiveMQ,HornetQ,Artemis.以ActiveMQ为例:</p>
+<ul>
+<li>Spring Boot自动配置了ActiveMQConnectionFactory与JmsTemplate.</li>
+<li>通过<code>spring.activemq</code>为前缀的属性来配置ActiveMQ相关的属性.</li>
+<li>Spring Boot还自动开启了<code>@EnableJms</code>,即使用注解式消息监听的支持.</li>
+</ul>
+<p>&nbsp;&nbsp;Spring Boot对AMQP的实现RabbitMQ自动配置了如下内容:</p>
+<ul>
+<li>自动配置了ConnectionFactory和RabbitTemplate.</li>
+<li>通过<code>spring.rabbitmq</code>为前缀的属性来配置RabbitMQ相关的属性.</li>
+<li>自动开启了<code>@EnableRabbit</code>,即使用注解式消息监听的支持.</li>
+</ul>
+<h4 id="JMS-Example"><a href="#JMS-Example" class="headerlink" title="JMS Example"></a>JMS Example</h4><hr>
+<p>&nbsp;&nbsp;添加依赖</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">      &lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.springframework&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;spring-jms&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.apache.activemq&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;activemq-client&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line"></div><div class="line">&lt;!-- 嵌入ActiveMQ --&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.apache.activemq&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;activemq-broker&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line"></div><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</div><div class="line">	&lt;scope&gt;test&lt;/scope&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;在application.properties中配置activemq的地址.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">spring.activemq.broker-url=tcp://192.168.145.152:61616</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;定义JMS发送的消息需要实现MessageCreator接口.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Msg</span> <span class="keyword">implements</span> <span class="title">MessageCreator</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 重写createMessage方法.</div><div class="line">     */</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Message <span class="title">createMessage</span><span class="params">(Session session)</span> <span class="keyword">throws</span> JMSException </span>&#123;</div><div class="line">        <span class="keyword">return</span> session.createTextMessage(<span class="string">"Hello World"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>&nbsp;&nbsp;发送消息,定义目的地.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Spring Boot提供了一个CommandLineRunner接口,用于程序启动后执行的代码</div><div class="line"> */</div><div class="line"><span class="meta">@SuppressWarnings</span>(<span class="string">"SpringJavaAutowiringInspection"</span>)</div><div class="line"><span class="meta">@SpringBootApplication</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringBootActivemqApplication</span> <span class="keyword">implements</span> <span class="title">CommandLineRunner</span> </span>&#123;</div><div class="line">	</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		SpringApplication.run(SpringBootActivemqApplication.class, args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	<span class="keyword">private</span> JmsTemplate jmsTemplate;</div><div class="line"></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(String... strings)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		<span class="comment">// 向目的地my-destination发送消息</span></div><div class="line">		jmsTemplate.send(<span class="string">"my-destination"</span>,<span class="keyword">new</span> Msg());</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>&nbsp;&nbsp;接收消息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Receiver</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * <span class="doctag">@JmsListener</span>是Spring 4.1提供的一个新特性,用来简化JMS开发.</div><div class="line">     * destination指定要监听的目的地.</div><div class="line">     */</div><div class="line">    <span class="meta">@JmsListener</span>(destination = <span class="string">"my-destination"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">receiveMessage</span><span class="params">(String message)</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"接收到: &lt;"</span> + message + <span class="string">"&gt;"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="AMQP-Example"><a href="#AMQP-Example" class="headerlink" title="AMQP Example"></a>AMQP Example</h4><hr>
+<p>&nbsp;&nbsp;Spring Boot默认Rabbit主机位localhost,端口号为5672.</p>
+<p>&nbsp;&nbsp;添加以下依赖:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">      &lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;spring-boot-starter-amqp&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</div><div class="line">	&lt;scope&gt;test&lt;/scope&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure></p>
+<p>&nbsp;&nbsp;在application.properties中配置RabbitMQ的地址.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">spring.rabbitmq.host=192.168.145.152</div><div class="line">spring.rabbitmq.port=5672</div></pre></td></tr></table></figure></p>
+<p>&nbsp;&nbsp;发送消息,定义目的地.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@SuppressWarnings</span>(<span class="string">"SpringJavaAutowiringInspection"</span>)</div><div class="line"><span class="meta">@SpringBootApplication</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringBootRabbitmqApplication</span> <span class="keyword">implements</span> <span class="title">CommandLineRunner</span> </span>&#123;</div><div class="line">	</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		SpringApplication.run(SpringBootRabbitmqApplication.class, args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@Autowired</span></div><div class="line">	<span class="keyword">private</span> RabbitTemplate rabbitTemplate;</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 定义目的地</div><div class="line">     */</div><div class="line">	<span class="meta">@Bean</span></div><div class="line">	<span class="function"><span class="keyword">public</span> Queue <span class="title">myQueue</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> Queue(<span class="string">"my-queue"</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 使用rabbitTemplate的convertAndSend方法向队列my-queue发送消息.</div><div class="line">     */</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(String... strings)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		rabbitTemplate.convertAndSend(<span class="string">"my-queue"</span>,<span class="string">"Hello RabbitMQ!"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;接收消息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Receiver</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@RabbitListener</span>(queues = <span class="string">"my-queue"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">receiveMessage</span><span class="params">(String message)</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"Received &lt;"</span> + message + <span class="string">"&gt;"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><blockquote>
+<p>资料参考于 JavaEE开发的颠覆者: Spring Boot实战</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/08/03/2016-08-3-Spring-message/" data-id="cj4z0jkbr0015uomjekdg3lpy" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/08/04/2016-08-4-Spring-batch/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Spring Batch数据批处理
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/08/02/2016-08-2-Spring-security/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Spring Security安全控制</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

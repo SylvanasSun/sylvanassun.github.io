@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>《Algorithms,4th Edition》读书笔记-红黑二叉查找树 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="红黑二叉查找树是2-3查找树的简单表示方式,它的代码量并不大,并且保证了平衡性.阅读本文前需先了解 《Algorithms,4th Edition》读书笔记-2-3查找树  概述 红黑树是一种自平衡的二叉查找树,它的基本思想是用标准的二叉查找树(完全由2-节点构成)和一些额外的信息(替换3-节点)来表示2-3树. 可以说红黑树是2-3树的一种等同. 红黑树中的链接可以分为两种类型:   红链接">
+<meta name="keywords" content="2017,数据结构,符号表">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Algorithms,4th Edition》读书笔记-红黑二叉查找树">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/03/30/2017-3-30-red_black_binary_search_tree/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="红黑二叉查找树是2-3查找树的简单表示方式,它的代码量并不大,并且保证了平衡性.阅读本文前需先了解 《Algorithms,4th Edition》读书笔记-2-3查找树  概述 红黑树是一种自平衡的二叉查找树,它的基本思想是用标准的二叉查找树(完全由2-节点构成)和一些额外的信息(替换3-节点)来表示2-3树. 可以说红黑树是2-3树的一种等同. 红黑树中的链接可以分为两种类型:   红链接">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/33balanced/images/redblack-encoding.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/33balanced/images/redblack-1-1.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/33balanced/images/redblack-color.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/33balanced/images/redblack-left-rotate.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/33balanced/images/redblack-right-rotate.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/33balanced/images/color-flip.png">
+<meta property="og:updated_time" content="2017-04-08T10:13:17.663Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Algorithms,4th Edition》读书笔记-红黑二叉查找树">
+<meta name="twitter:description" content="红黑二叉查找树是2-3查找树的简单表示方式,它的代码量并不大,并且保证了平衡性.阅读本文前需先了解 《Algorithms,4th Edition》读书笔记-2-3查找树  概述 红黑树是一种自平衡的二叉查找树,它的基本思想是用标准的二叉查找树(完全由2-节点构成)和一些额外的信息(替换3-节点)来表示2-3树. 可以说红黑树是2-3树的一种等同. 红黑树中的链接可以分为两种类型:   红链接">
+<meta name="twitter:image" content="http://algs4.cs.princeton.edu/33balanced/images/redblack-encoding.png">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2017-3-30-red_black_binary_search_tree" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/03/30/2017-3-30-red_black_binary_search_tree/" class="article-date">
+  <time datetime="2017-03-30T10:00:00.000Z" itemprop="datePublished">2017-03-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      《Algorithms,4th Edition》读书笔记-红黑二叉查找树
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p><code>红黑二叉查找树</code>是<code>2-3查找树</code>的简单表示方式,它的代码量并不大,并且保证了平衡性.<br>阅读本文前需先了解 <a href="http://sylvanassun.github.io/2017/03/28/2_3tree/">《Algorithms,4th Edition》读书笔记-2-3查找树</a></p>
+</blockquote>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><hr>
+<p><code>红黑树</code>是一种自平衡的<code>二叉查找树</code>,它的基本思想是<strong>用标准的<code>二叉查找树</code>(完全由<code>2-节点</code>构成)和一些额外的信息(替换<code>3-节点</code>)来表示<code>2-3树</code>.</strong> 可以说<code>红黑树</code>是<code>2-3树</code>的一种等同.</p>
+<p><code>红黑树</code>中的链接可以分为两种类型: </p>
+<ul>
+<li><strong>红链接</strong> : 它将两个<code>2-节点</code>连接起来构成一个<code>3-节点</code>(也可以说是将<code>3-节点</code>表示为由一条<strong>红色左链接</strong>(两个<code>2-节点</code>其中之一是另一个的左子节点)相连的两个<code>2-节点</code>).</li>
+</ul>
+<ul>
+<li><strong>黑链接</strong> : 表示<code>2-3树</code>中的普通链接.</li>
+</ul>
+<p><img src="http://algs4.cs.princeton.edu/33balanced/images/redblack-encoding.png" alt=""></p>
+<p>这种表示方式带来的优点如下: </p>
+<ol>
+<li>无需修改就可以直接使用标准的<code>二叉查找树</code>中的查找方法(其他与链接颜色不关联的方法也可以直接使用).</li>
+</ol>
+<ol>
+<li>对于任意的<code>2-3树</code>,只要对节点进行转换,我们都可以立即派生出一棵对应的<code>二叉查找树</code>.</li>
+</ol>
+<h2 id="红黑树的性质"><a href="#红黑树的性质" class="headerlink" title="红黑树的性质"></a>红黑树的性质</h2><hr>
+<p><code>红黑树</code>是含有红黑链接并满足下列条件的<code>二叉查找树</code>(满足这些条件的<code>红黑树</code>才是与相应的<code>2-3树</code>一一对应的).</p>
+<ul>
+<li>红链接均为左链接(这条仅限于偏向左红链接实现的<code>红黑树</code>).</li>
+</ul>
+<ul>
+<li>每个节点不是红色就是黑色的.</li>
+</ul>
+<ul>
+<li>没有任何一个节点同时和两条红链接相连(不可以有两条连续的红链接).</li>
+</ul>
+<ul>
+<li>该树是完美黑色平衡的,即<strong>任意空链接到根节点的路径上的黑链接数量相同.</strong></li>
+</ul>
+<ul>
+<li><code>根节点</code>是黑色的.</li>
+</ul>
+<ul>
+<li>所有<code>叶子节点</code>(即null节点)的颜色是黑色的.</li>
+</ul>
+<h2 id="与2-3树的对应关系"><a href="#与2-3树的对应关系" class="headerlink" title="与2-3树的对应关系"></a>与2-3树的对应关系</h2><hr>
+<p>假如我们将一棵<code>红黑树</code>中的红链接画平,我们会发现所有的空链接到根节点的距离都将是相同的.如果再把由红链接相连的节点合并,得到的就是一棵<code>2-3树</code>.</p>
+<p>相对的,如果将一棵<code>2-3树</code>中的<code>3-节点</code>画作由红色左链接相连的两个<code>2-节点</code>,那么不会存在能够和两条红链接相连的节点,且树必然是完美黑色平衡的,因为黑链接就是<code>2-3树</code>中的普通链接,根据定义这些链接必然是完美平衡的.</p>
+<p>通过这些结论,我们<strong>可以发现<code>红黑树</code>即是<code>二叉查找树</code>,也是<code>2-3树</code>.</strong></p>
+<p><img src="http://algs4.cs.princeton.edu/33balanced/images/redblack-1-1.png" alt=""></p>
+<h2 id="节点的实现"><a href="#节点的实现" class="headerlink" title="节点的实现"></a>节点的实现</h2><hr>
+<p>我们使用<code>boolean</code>类型的变量<code>color</code>来表示链接的颜色.如果指向它的链接为红色,则<code>color</code>变量为<code>true</code>,黑色则为<code>false</code>(空链接也为黑色).</p>
+<p>并且定义了一个<code>isRed()</code>函数用于判断链接的颜色.</p>
+<p>这里节点的<strong>颜色指的是指向该节点的链接的颜色.</strong></p>
+<p><img src="http://algs4.cs.princeton.edu/33balanced/images/redblack-color.png" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span> RED = <span class="keyword">true</span>;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span> BLACK = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> Node root; <span class="comment">// root node</span></div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</div><div class="line">      <span class="keyword">private</span> K key;</div><div class="line">      <span class="keyword">private</span> V value;</div><div class="line">      <span class="keyword">private</span> Node left, right; <span class="comment">// links to left and right subtress</span></div><div class="line">      <span class="keyword">private</span> <span class="keyword">boolean</span> color; <span class="comment">// color of parent link</span></div><div class="line">      <span class="keyword">private</span> <span class="keyword">int</span> size; <span class="comment">// subtree count</span></div><div class="line"></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(K key, V value, <span class="keyword">boolean</span> color, <span class="keyword">int</span> size)</span> </span>&#123;</div><div class="line">          <span class="keyword">this</span>.key = key;</div><div class="line">          <span class="keyword">this</span>.value = value;</div><div class="line">          <span class="keyword">this</span>.color = color;</div><div class="line">          <span class="keyword">this</span>.size = size;</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line">	</div><div class="line"><span class="comment">// node x is red? if x is null return false.</span></div><div class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isRed</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">      <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">      <span class="keyword">return</span> x.color == RED;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<h2 id="旋转"><a href="#旋转" class="headerlink" title="旋转"></a>旋转</h2><hr>
+<p>当我们在实现某些操作时,可能会产生一些红色右链接或者两条连续的红色左链接.这时就需要在操作完成前进行旋转操作来修复<code>红黑树</code>的平衡性(<strong>旋转操作会改变红链接的指向</strong>).</p>
+<p>旋转操作保证了<code>红黑树</code>的两个重要性质 : <strong>有序性</strong>和<strong>完美平衡性</strong>. </p>
+<h4 id="左旋转"><a href="#左旋转" class="headerlink" title="左旋转"></a>左旋转</h4><p>假设当前有一条红色右链接需要被修正旋转为左链接.这个操作叫做<code>左旋转</code>.</p>
+<p><code>左旋转</code>函数接受一条指向<code>红黑树</code>中的某个节点的链接作为参数.然后<strong>会对树进行必要的调整并返回一个指向包含同一组键的子树且其左链接为红色的根节点的链接.</strong></p>
+<p>也可以认为是<strong>将用两个键中的较小者作为根节点变为将较大者作为根节点</strong>(右旋转中逻辑相反).</p>
+<p>旋转操作返回的链接可能是左链接也可能是右链接,这个链接可能是红色也可能是黑色的(在实现中我们使用<code>x.color = h.color</code>保留了它原本的颜色).这<strong>可能会产生两条连续的红链接,但算法会在后续操作中继续使用旋转操作修正这种情况.</strong></p>
+<p><strong>旋转操作只影响了根节点</strong>(返回的节点的子树中的所有键和旋转前都相同,只有根节点发生了变化).</p>
+<p>具体的实现如下图: </p>
+<p><img src="http://algs4.cs.princeton.edu/33balanced/images/redblack-left-rotate.png" alt=""></p>
+<h4 id="右旋转"><a href="#右旋转" class="headerlink" title="右旋转"></a>右旋转</h4><p>实现<code>右旋转</code>的逻辑基本与<code>左旋转</code>相同,只需要将<code>left</code>和<code>right</code>互换即可.</p>
+<p><img src="http://algs4.cs.princeton.edu/33balanced/images/redblack-right-rotate.png" alt=""></p>
+<h2 id="颜色转换"><a href="#颜色转换" class="headerlink" title="颜色转换"></a>颜色转换</h2><hr>
+<p>颜色转换操作也是用于保证<code>红黑树</code>的性质的.<strong>它将<code>父节点</code>的颜色由黑变红,将<code>子节点</code>的颜色由红变黑.</strong></p>
+<p>这项操作与旋转操作一样是局部变换,<strong>不会影响整棵树的黑色平衡性.</strong></p>
+<p><img src="http://algs4.cs.princeton.edu/33balanced/images/color-flip.png" alt=""></p>
+<h4 id="根节点总是为黑"><a href="#根节点总是为黑" class="headerlink" title="根节点总是为黑"></a>根节点总是为黑</h4><p>颜色转换可能会使<code>根节点</code>变为红色,但红色的<code>根节点</code>说明<code>根节点</code>是一个<code>3-节点</code>的一部分,实际情况并不是这样的.所以我们需要将<code>根节点</code>设为黑色.</p>
+<p><strong>每当<code>根节点</code>由红变黑时,树的黑链接高度就会加1.</strong></p>
+<h2 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h2><hr>
+<p>在<code>红黑树</code>中实现插入操作是比较复杂的,因为需要保持<code>红黑树</code>的平衡性.但只要利用好<code>左旋转</code>、<code>右旋转</code>、<code>颜色转换</code>这三个辅助操作,就能够保证插入操作后树的平衡性.</p>
+<h4 id="向单个2-节点中插入新键"><a href="#向单个2-节点中插入新键" class="headerlink" title="向单个2-节点中插入新键"></a>向单个2-节点中插入新键</h4><p>当一棵只含有一个键的<code>红黑树</code>只含有一个<code>2-节点</code>时,插入另一个键后需要马上进行<code>旋转</code>操作修正树的平衡性.</p>
+<ul>
+<li>如果新键小于老键,只需要新增一个红色的节点即可(这时,新的<code>红黑树</code>等价于一个<code>3-节点</code>).</li>
+</ul>
+<ul>
+<li>如果新键大于老键,那么新增的红色节点将会产生一条红色的右链接,这时就需要使用<code>左旋转</code>修正根节点的链接.</li>
+</ul>
+<ul>
+<li>以上两种情况最终的结果均为一棵等价于单个<code>3-节点</code>的<code>红黑树</code>,它含有两个键,一条红链接,树的黑链接高度为1.</li>
+</ul>
+<h4 id="向树底部的2-节点插入新键"><a href="#向树底部的2-节点插入新键" class="headerlink" title="向树底部的2-节点插入新键"></a>向树底部的2-节点插入新键</h4><p>和<code>二叉查找树</code>一样,向<code>红黑树</code>中插入一个新键会在树的底部新增一个节点,但<strong>在<code>红黑树</code>中总是用红链接将新节点和它的父节点相连.</strong></p>
+<p>如果它的父节点是一个<code>2-节点</code>,那么上一节讨论的方法依然适用.</p>
+<ul>
+<li>如果指向新节点的是父节点的左链接,那么父节点就直接成为一个<code>3-节点</code>.</li>
+</ul>
+<ul>
+<li>如果指向新节点的是父节点的右链接,那么就需要一次<code>左旋转</code>进行修正.</li>
+</ul>
+<h4 id="向一棵双键树-一个3-节点-中插入新键"><a href="#向一棵双键树-一个3-节点-中插入新键" class="headerlink" title="向一棵双键树(一个3-节点)中插入新键"></a>向一棵双键树(一个3-节点)中插入新键</h4><p>当向一个<code>3-节点</code>中插入新键时,会发生以下三种情况且每种情况都会产生一个同时连接到两条红链接的节点,我们需要修正这一点.</p>
+<ul>
+<li>如果<code>新键大于原树中的两个键</code> : 这是最容易处理的一种情况,这个<strong>键会被连接到<code>3-节点</code>的右链接</strong>.此时树是平衡的,<strong>根节点为中间大小的键</strong>,它有<strong>两条红链接分别和较小和较大的节点相连</strong>.只需要<strong>把这两条链接的颜色都由红变黑,那么就可以得到一棵由三个节点组成、高度为2的平衡树</strong>(其他两种情况最终也会转化为这样的树).</li>
+</ul>
+<ul>
+<li>如果<code>新键小于原树中的两个键</code> : 这个<strong>键会被连接到最左边的空链接,这样就产生了两条连续的红链接.</strong>此时<strong>只需要将上层的红链接<code>右旋转</code>即可得到第一种情况</strong>(中值键为根节点并和其他两个节点用红链接相连).</li>
+</ul>
+<ul>
+<li>如果<code>新键介于原树中的两个键之间</code> : 这种情况依然<strong>会产生两条连续的红链接:一条红色左链接接一条红色右链接.</strong>此时<strong>只需要将下层的红链接<code>左旋转</code>即可得到第二种情况</strong>(两条连续的红色左链接).</li>
+</ul>
+<p>通过以上这三种情况可以总结出 : 我们只需要通过0次、1次、2次旋转以及颜色转换就可以完成对<code>红黑树</code>的修正.</p>
+<h4 id="将红链接向上传递"><a href="#将红链接向上传递" class="headerlink" title="将红链接向上传递"></a>将红链接向上传递</h4><p>当每次旋转操作之后都会进行<code>颜色转换</code>,它会使得中间节点变为红色.<strong>从父节点的角度来看,处理这样一个红色节点的方式和处理一个新插入的红色节点完全相同</strong>(继续将红链接转移到中间节点).</p>
+<p>这个操作对应于<code>2-3树</code>中向<code>3-节点</code>进行插入的操作 : 即在一个<code>3-节点</code>下插入新键,需要创建一个临时的<code>4-节点</code>,将其分解并将中间键插入父节点(在<code>红黑树</code>中,是将红链接由中间键传递给它的父节点).重复这个过程,直至遇到一个<code>2-节点</code>或者根节点.</p>
+<p>当根节点变为红色时需要将根节点的颜色转换为黑色(对应<code>2-3树</code>中的根节点分解).</p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>插入操作的实现除了每次递归调用之后的对平衡性修正的操作,其他与<code>二叉查找树</code>中的插入操作没什么不同.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(K key, V val)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"first argument to put() is null"</span>);</div><div class="line">    <span class="keyword">if</span> (val == <span class="keyword">null</span>) &#123;</div><div class="line">        delete(key);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    root = put(root, key, val);</div><div class="line">    root.color = BLACK;</div><div class="line">    <span class="function"><span class="keyword">assert</span> <span class="title">check</span><span class="params">()</span></span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// insert the key-value pair in the subtree rooted at h</span></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">put</span><span class="params">(Node h, K key, V val)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (h == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">new</span> Node(key, val, RED, <span class="number">1</span>);</div><div class="line"></div><div class="line">    <span class="keyword">int</span> cmp = key.compareTo(h.key);</div><div class="line">    <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) h.left = put(h.left, key, val);</div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>) h.right = put(h.right, key, val);</div><div class="line">    <span class="keyword">else</span> h.value = val;</div><div class="line"></div><div class="line">    <span class="comment">// fix-up any right-leaning links</span></div><div class="line">    <span class="keyword">if</span> (isRed(h.right) &amp;&amp; !isRed(h.left)) h = rotateLeft(h);</div><div class="line">    <span class="keyword">if</span> (isRed(h.left) &amp;&amp; isRed(h.left.left)) h = rotateRight(h);</div><div class="line">    <span class="keyword">if</span> (isRed(h.left) &amp;&amp; isRed(h.right)) flipColors(h);</div><div class="line">    h.size = size(h.left) + size(h.right) + <span class="number">1</span>;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> h;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>只要在沿着插入点到根节点的路径向上移动时<strong>在所经过的每个节点中顺序完成以下操作</strong>,就能够实现<code>红黑树</code>的插入操作.</p>
+<ul>
+<li>如果<code>右子节点</code>是红色的而<code>左子节点</code>是黑色的,那么进行<code>左旋转</code>.</li>
+</ul>
+<ul>
+<li>如果<code>左子节点</code>是红色的而且它的<code>左子节点</code>也是红色的,那么进行<code>右旋转</code>.</li>
+</ul>
+<ul>
+<li>如果<code>左右子节点</code>都是红色的,那么进行<code>颜色转换</code>.</li>
+</ul>
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><hr>
+<p>删除操作也需要定义一系列<code>局部变换</code>来在<strong>删除一个节点的同时保持树的完美平衡性</strong>.然而,这个过程要比插入操作还要复杂,它<strong>不仅要在(为了删除一个节点而)构造临时<code>4-节点</code>时沿着查找路径向下进行变换,还要在分解遗留的<code>4-节点</code>时沿着查找路径向上进行变换(同插入操作)</strong>.</p>
+<h4 id="自顶向下的2-3-4树"><a href="#自顶向下的2-3-4树" class="headerlink" title="自顶向下的2-3-4树"></a>自顶向下的2-3-4树</h4><p><code>2-3-4树</code>是一种允许存在<code>4-节点</code>的树.它的插入算法就是一种沿着查找路径既能向上也能向下进行变换的算法.</p>
+<ul>
+<li>沿查找路径向下进行变换(向下变换与<code>2-3树</code>中分解<code>4-节点</code>所进行的变换完全相同)是为了保证当前节点不是<code>4-节点</code>(这样树的底部才有足够的空间插入新的键).</li>
+</ul>
+<ul>
+<li>沿查找路径向上进行变换是为了将之前创建的<code>4-节点</code>配平.</li>
+</ul>
+<ul>
+<li>如果<code>根节点</code>是一个<code>4-节点</code>,就将它分解成三个<code>2-节点</code>,树的高度加1.</li>
+</ul>
+<ul>
+<li>如果在向下查找的过程中,遇到了一个<code>父节点</code>为<code>2-节点</code>的<code>4-节点</code>,就将<code>4-节点</code>分解为两个<code>2-节点</code>并将<code>中间键</code>传递给它的<code>父节点</code>(这时<code>父节点</code>变为了一个<code>3-节点</code>).</li>
+</ul>
+<ul>
+<li>如果遇到了一个<code>父节点</code>为<code>3-节点</code>的<code>4-节点</code>,将<code>4-节点</code>分解为两个<code>2-节点</code>并将<code>中间键</code>传递给它的<code>父节点</code>(这时<code>父节点</code>变为了一个<code>4-节点</code>).</li>
+</ul>
+<ul>
+<li>不必担心遇见<code>父节点</code>为<code>4-节点</code>的<code>4-节点</code>,算法本身保证了不会出现这种情况,到达树的底部之后,只会遇到<code>2-节点</code>或者<code>3-节点</code>.</li>
+</ul>
+<p>如果要使用<code>红黑树</code>来实现这个算法,需要以下步骤 : </p>
+<ul>
+<li>将<code>4-节点</code>表示为由三个<code>2-节点</code>组成的一棵平衡的子树,<code>根节点</code>和两个子节点都用红链接相连.</li>
+</ul>
+<ul>
+<li>在向下的过程中分解所有<code>4-节点</code>并进行<code>颜色转换</code>.</li>
+</ul>
+<ul>
+<li>在向上的过程中使用<code>旋转</code>将<code>4-节点</code>配平.</li>
+</ul>
+<p>只需要将插入一节中的<code>put()</code>实现方法里的<code>flipColors</code>语句(及其if语句)移动到递归调用之前(null判断和比较操作之间)就能实现<code>2-3-4树</code>的插入操作.</p>
+<h4 id="删除最小键"><a href="#删除最小键" class="headerlink" title="删除最小键"></a>删除最小键</h4><p>从<code>2-节点</code>中删除一个键会留下一个空节点,一般会将它替换为一个空链接,但这样会破坏树的完美平衡性.所以在删除操作中,<strong>为了避免删除一个<code>2-节点</code>,我们沿着<code>左链接</code>向下进行变换时,需要确保当前节点不是<code>2-节点</code></strong>.</p>
+<p><code>根节点</code>可能有以下两种情况:</p>
+<ol>
+<li>如果<code>根节点</code>是一个<code>2-节点</code>且它的两个子节点都是<code>2-节点</code>,可以直接将这三个节点变成一个<code>4-节点</code>.</li>
+</ol>
+<ol>
+<li>否则,需要保证<code>根节点</code>的左子节点不是<code>2-节点</code>,必要时可以从它右侧的兄弟节点借走一个键.</li>
+</ol>
+<p>在沿着<code>左链接</code>向下的过程中,保证以下情况之一成立: </p>
+<ul>
+<li>如果当前节点的左子节点不是<code>2-节点</code>.</li>
+</ul>
+<ul>
+<li>如果当前节点的左子节点是<code>2-节点</code>而它的兄弟节点不是<code>2-节点</code>,将左子节点的兄弟节点中的一个键移动到左子节点中</li>
+</ul>
+<ul>
+<li>如果当前节点的左子节点和它的兄弟节点都是<code>2-节点</code>,将左子节点、父节点中的最小键和左子节点最近的兄弟节点合并为一个<code>4-节点</code>,使父节点由<code>3-节点</code>变为<code>2-节点</code>(或是从<code>4-节点</code>变为<code>3-节点</code>).</li>
+</ul>
+<p>只要保证了以上的条件,我们最终能够得到一个含有最小键的<code>3-节点</code>或<code>4-节点</code>(然后进行删除即可),之后再不断向上分解所有临时的<code>4-节点</code>.</p>
+<h5 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h5><p>在删除操作中,<code>颜色转换</code>的操作与插入操作中的实现略微有些不同(需要将父节点设为黑,而将两个子节点设为红).</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">flipColors</span><span class="params">(Node h)</span> </span>&#123;</div><div class="line">       h.color = !h.color;</div><div class="line">       h.left.color = !h.left.color;</div><div class="line">       h.right.color = !h.right.color;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// restore red-black tree invariant</span></div><div class="line">   <span class="function"><span class="keyword">private</span> Node <span class="title">balance</span><span class="params">(Node h)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (isRed(h.right)) h = rotateLeft(h);</div><div class="line">       <span class="keyword">if</span> (isRed(h.left) &amp;&amp; isRed(h.left.left)) h = rotateRight(h);</div><div class="line">       <span class="keyword">if</span> (isRed(h.left) &amp;&amp; isRed(h.right)) flipColors(h);</div><div class="line"></div><div class="line">       h.size = size(h.left) + size(h.right) + <span class="number">1</span>;</div><div class="line">       <span class="keyword">return</span> h;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// Assuming that h is red and both h.left and h.left.left</span></div><div class="line">   <span class="comment">// are black, make h.left or one of its children red.</span></div><div class="line">   <span class="function"><span class="keyword">private</span> Node <span class="title">moveRedLeft</span><span class="params">(Node h)</span> </span>&#123;</div><div class="line">       flipColors(h);</div><div class="line">       <span class="keyword">if</span> (isRed(h.right.left)) &#123;</div><div class="line">           h.right = rotateRight(h.right);</div><div class="line">           h = rotateLeft(h);</div><div class="line">           flipColors(h);</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">return</span> h;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteMin</span><span class="params">()</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (isEmpty()) <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"RedBlackBST underflow."</span>);</div><div class="line"></div><div class="line">       <span class="comment">// if both children of root are black, set root to red</span></div><div class="line">       <span class="keyword">if</span> (!isRed(root.left) &amp;&amp; !isRed(root.right))</div><div class="line">           root.color = RED;</div><div class="line"></div><div class="line">       root = deleteMin(root);</div><div class="line">       <span class="keyword">if</span> (!isEmpty())</div><div class="line">           root.color = BLACK;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// delete the key-value pair with the minimum key rooted at h</span></div><div class="line">   <span class="function"><span class="keyword">private</span> Node <span class="title">deleteMin</span><span class="params">(Node h)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (h.left == <span class="keyword">null</span>)</div><div class="line">           <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</div><div class="line">           h = moveRedLeft(h);</div><div class="line"></div><div class="line">       h.left = deleteMin(h.left);</div><div class="line">       <span class="keyword">return</span> balance(h);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h4 id="删除最大键"><a href="#删除最大键" class="headerlink" title="删除最大键"></a>删除最大键</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Assuming that h is red and both h.right and h.right.left</span></div><div class="line"><span class="comment">// are black, make h.right or one of its children red.</span></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">moveRedRight</span><span class="params">(Node h)</span> </span>&#123;</div><div class="line">    flipColors(h);</div><div class="line">    <span class="keyword">if</span> (isRed(h.left.left)) &#123;</div><div class="line">        h = rotateRight(h);</div><div class="line">        flipColors(h);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> h;</div><div class="line">&#125;</div><div class="line">	</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteMax</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (isEmpty()) <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"RedBlackBST underflow."</span>);</div><div class="line"></div><div class="line">    <span class="comment">// if both children of root are black, set root to red</span></div><div class="line">    <span class="keyword">if</span> (!isRed(root.left) &amp;&amp; !isRed(root.right))</div><div class="line">        root.color = RED;</div><div class="line"></div><div class="line">    root = deleteMax(root);</div><div class="line">    <span class="keyword">if</span> (!isEmpty())</div><div class="line">        root.color = BLACK;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// delete the key-value pair with the maximum key rooted at h</span></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">deleteMax</span><span class="params">(Node h)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (isRed(h.left))</div><div class="line">        h = rotateRight(h);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (h.right == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</div><div class="line">        h = moveRedRight(h);</div><div class="line"></div><div class="line">    h.right = deleteMax(h.right);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> balance(h);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="删除操作"><a href="#删除操作" class="headerlink" title="删除操作"></a>删除操作</h4><p>同样也需要像删除最小键那样在查找路径上进行变换来保证查找过程中任意当前节点均不是<code>2-节点</code>.如果目标键在树的底部,可以直接删除它;如果不在,则需要将它和它的后继节点交换.</p>
+<p>在删除操作之后需要向上变换分解余下的<code>4-节点</code>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called delete() with key is null."</span>);</div><div class="line">    <span class="keyword">if</span> (!contains(key)) <span class="keyword">return</span>;</div><div class="line"></div><div class="line">    <span class="comment">// if both children of root are black, set root to red</span></div><div class="line">    <span class="keyword">if</span> (!isRed(root.left) &amp;&amp; !isRed(root.right))</div><div class="line">        root.color = RED;</div><div class="line"></div><div class="line">    root = delete(root, key);</div><div class="line">    <span class="keyword">if</span> (!isEmpty()) root.color = BLACK;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// delete the key-value pair with the given key rooted at h</span></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">delete</span><span class="params">(Node h, K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key.compareTo(h.key) &lt; <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</div><div class="line">            h = moveRedLeft(h);</div><div class="line">        h.left = delete(h.left, key);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">if</span> (isRed(h.left))</div><div class="line">            h = rotateRight(h);</div><div class="line">        <span class="keyword">if</span> (key.compareTo(h.key) == <span class="number">0</span> &amp;&amp; (h.right == <span class="keyword">null</span>))</div><div class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">if</span> (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</div><div class="line">            h = moveRedRight(h);</div><div class="line">        <span class="keyword">if</span> (key.compareTo(h.key) == <span class="number">0</span>) &#123;</div><div class="line">            Node x = min(h.right);</div><div class="line">            h.key = x.key;</div><div class="line">            h.value = x.value;</div><div class="line">            h.right = deleteMin(h.right);</div><div class="line">        &#125; <span class="keyword">else</span> h.right = delete(h.right, key);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> balance(h);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><hr>
+<p>无论键的插入顺序如何,<code>红黑树</code>都几乎是完美平衡的,基于它实现的有序符号表操作的运行时间均为对数级别(除了范围查询).</p>
+<p>在<code>红黑树</code>的实现中复杂的代码仅限于<code>put()</code>和<code>delete()</code>方法,像<code>get()</code>这些不会涉及检查颜色的方法与<code>二叉查找树</code>中的实现一致(因为这些操作与平衡性无关).</p>
+<h2 id="end"><a href="#end" class="headerlink" title="end"></a>end</h2><hr>
+<ul>
+<li>Author : <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun</a></li>
+</ul>
+<ul>
+<li>Email : sylvanassun_xtz@163.com</li>
+</ul>
+<ul>
+<li>文中的完整实现代码见我的<a href="https://github.com/SylvanasSun/algs4-study" target="_blank" rel="external">GitHub</a> &amp; <a href="https://gist.github.com/SylvanasSun/731a1438c61492628cfaa1e9e618ecfb" target="_blank" rel="external">Gist</a></li>
+</ul>
+<ul>
+<li>本文参考资料引用自<a href="http://algs4.cs.princeton.edu/33balanced/" target="_blank" rel="external">《Algorithms,4th Editio》</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2017/03/30/2017-3-30-red_black_binary_search_tree/" data-id="cj4z0jkcp002buomje9t6b7s4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/2017/">2017</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/符号表/">符号表</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/04/08/2017-4-08-avl_tree/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          平衡查找树之AVL树
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/03/28/2017-3-28-2_3tree/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">《Algorithms,4th Edition》读书笔记-2-3查找树</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

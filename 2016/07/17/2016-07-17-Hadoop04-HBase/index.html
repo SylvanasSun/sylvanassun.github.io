@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Hadoop学习笔记(4)-HBase | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述&amp;nbsp;&amp;nbsp;HBase是一个分布式的、面向列的开源数据库，该技术来源于 Fay Chang 所撰写的Google论文“Bigtable：一个结构化数据的分布式存储系统”。就像Bigtable利用了Google文件系统（File System）所提供的分布式数据存储一样，HBase在Hadoop之上提供了类似于Bigtable的能力。HBase是Apache的Hadoop项目的子项">
+<meta name="keywords" content="后端开发,Hadoop,大数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop学习笔记(4)-HBase">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/07/17/2016-07-17-Hadoop04-HBase/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="概述&amp;nbsp;&amp;nbsp;HBase是一个分布式的、面向列的开源数据库，该技术来源于 Fay Chang 所撰写的Google论文“Bigtable：一个结构化数据的分布式存储系统”。就像Bigtable利用了Google文件系统（File System）所提供的分布式数据存储一样，HBase在Hadoop之上提供了类似于Bigtable的能力。HBase是Apache的Hadoop项目的子项">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f5wxvstywwj20dx03odg2.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f5x1207zfmj20gr0atq4h.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f5x2cuji5gj20k409ddho.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.885Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hadoop学习笔记(4)-HBase">
+<meta name="twitter:description" content="概述&amp;nbsp;&amp;nbsp;HBase是一个分布式的、面向列的开源数据库，该技术来源于 Fay Chang 所撰写的Google论文“Bigtable：一个结构化数据的分布式存储系统”。就像Bigtable利用了Google文件系统（File System）所提供的分布式数据存储一样，HBase在Hadoop之上提供了类似于Bigtable的能力。HBase是Apache的Hadoop项目的子项">
+<meta name="twitter:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f5wxvstywwj20dx03odg2.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-07-17-Hadoop04-HBase" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/17/2016-07-17-Hadoop04-HBase/" class="article-date">
+  <time datetime="2016-07-17T10:00:00.000Z" itemprop="datePublished">2016-07-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hadoop学习笔记(4)-HBase
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f5wxvstywwj20dx03odg2.jpg" alt=""></p>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>&nbsp;&nbsp;HBase是一个分布式的、面向列的开源数据库，该技术来源于 Fay Chang 所撰写的Google论文“Bigtable：一个结构化数据的分布式存储系统”。就像Bigtable利用了Google文件系统（File System）所提供的分布式数据存储一样，HBase在Hadoop之上提供了类似于Bigtable的能力。HBase是Apache的Hadoop项目的子项目。HBase不同于一般的关系数据库，它是一个适合于非结构化数据存储的数据库。另一个不同的是HBase基于列的而不是基于行的模式。</p>
+<p>&nbsp;&nbsp;与FUJITSU Cliq等商用大数据产品不同，HBase是Google Bigtable的开源实现，类似Google Bigtable利用GFS作为其文件存储系统，HBase利用Hadoop HDFS作为其文件存储系统；Google运行MapReduce来处理Bigtable中的海量数据，HBase同样利用Hadoop MapReduce来处理HBase中的海量数据；Google Bigtable利用 Chubby作为协同服务，HBase利用Zookeeper作为对应。</p>
+<h3 id="HBase的特点"><a href="#HBase的特点" class="headerlink" title="HBase的特点"></a>HBase的特点</h3><ol>
+<li>Hbase可以往数据里面insert，也可以update一些数据，但update的实际上也是insert，只是插入一个新的时间戳的一行。delete数据，也是insert，只是insert一行带有delete标记的一行。Hbase的所有操作都是追加插入操作。Hbase是一种日志集数据库。它的存储方式，像是日志文件一样。它是批量大量的往硬盘中写，通常都是以文件形式的读写。这个读写速度，取决于硬盘与机器之间的传输有多快。</li>
+<li>Hbase中数据可以保存许多不同时间戳的版本（即同一数据可以复制许多不同的版本，准许数据冗余，也是优势）。数据按时间排序，因此Hbase特别适合寻找按照时间排序寻找Top n的场景。找出某个人最近浏览的消息，最近写的N篇博客，N种行为等等，因此Hbase在互联网应用非常多。</li>
+<li>Hbase只有主键索引，因此在建模的时候会遇到了问题。例如，在一张表中，很多的列我都想做某种条件的查询。但却只能在主键上建快速查询。</li>
+<li>Hbase是列式数据库,列式数据库的优势在于数据分析。</li>
+<li>Hbase中的数据都是字符串，没有其他类型。</li>
+</ol>
+<h3 id="行式数据库与列式数据库的区别"><a href="#行式数据库与列式数据库的区别" class="headerlink" title="行式数据库与列式数据库的区别"></a>行式数据库与列式数据库的区别</h3><p> <strong>行式数据库</strong></p>
+<p> &nbsp;&nbsp;以Oracle为例，数据文件的基本组成单位：块/页。块中数据是按照一行行写入的。这就存在一个问题，当我们要读一个块中的某些列的时候，不能只读这些列，必须把这个块整个的读入内存中，再把这些列的内容读出来。换句话就是：为了读表中的某些列，必须要把整个表的行全部读完，才能读到这些列。这就是行数据库最糟糕的地方。</p>
+<p> <strong>列式数据库</strong> </p>
+<p> &nbsp;&nbsp;列式数据库是以列作为元素存储的。同一个列的元素会挤在一个块。当要读某些列，只需要把相关的列块读到内存中，这样读的IO量就会少很多。通常，同一个列的数据元素通常格式都是相近的。这就意味着，当数据格式相近的时候，数据就可以做大幅度的压缩。所以，列式数据库在数据压缩方面有很大的优势，压缩不仅节省了存储空间，同时也节省了IO。（这一点，可利用在当数据达到百万、千万级别以后，数据查询之间的优化，提高性能，示场景而定）</p>
+<h3 id="HBase架构"><a href="#HBase架构" class="headerlink" title="HBase架构"></a>HBase架构</h3><p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f5x1207zfmj20gr0atq4h.jpg" alt=""></p>
+<p>&nbsp;&nbsp;HBase采用Master/Slave架构搭建集群，它隶属于Hadoop生态系统，由以下类型节点组成：HMaster节点、HRegionServer节点、ZooKeeper集群，而在底层，它将数据存储于HDFS中，因而涉及到HDFS的NameNode、DataNode等节点。</p>
+<p><strong>Zookeeper</strong></p>
+<p>&nbsp;&nbsp;Zookeeper Quorum存储-ROOT-表地址、HMaster地址。HRegionServer把自己以Ephedral方式注册到Zookeeper中，HMaster随时感知各个HRegionServer的健康状况。</p>
+<p><strong>HMaster</strong></p>
+<p>&nbsp;&nbsp;HMaster没有单点问题,HBase中可以启动多个HMaster，通过Zookeeper的Master Election机制保证总有一个Master在运行。</p>
+<p>&nbsp;&nbsp;HMaster主要负责Table和Region的管理工作</p>
+<ol>
+<li>实现DDL操作（Data Definition Language，namespace和table的增删改，column familiy的增删改等）。</li>
+<li>管理HRegionServer的负载均衡，调整Region分布。</li>
+<li>管理和分配HRegion，比如在HRegion split时分配新的HRegion；在HRegionServer退出时迁移其内的HRegion到其他HRegionServer上。</li>
+<li>权限控制（ACL）。</li>
+</ol>
+<p><strong>HRegionServer</strong></p>
+<p>&nbsp;&nbsp;HBase中最核心的模块，主要负责响应用户I/O请求，向HDFS文件系统中读写数据。</p>
+<ol>
+<li>存放和管理本地HRegion。</li>
+<li>读写HDFS，管理Table中的数据。</li>
+<li>Client直接通过HRegionServer读写数据（从HMaster中获取元数据，找到RowKey所在的HRegion/HRegionServer后）。</li>
+</ol>
+<p><strong>HRegion</strong></p>
+<p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f5x2cuji5gj20k409ddho.jpg" alt=""></p>
+<p>&nbsp;&nbsp;HBase使用RowKey将表水平切割成多个HRegion，从HMaster的角度，每个HRegion都纪录了它的StartKey和EndKey（第一个HRegion的StartKey为空，最后一个HRegion的EndKey为空），由于RowKey是排序的，因而Client可以通过HMaster快速的定位每个RowKey在哪个HRegion中。HRegion由HMaster分配到相应的HRegionServer中，然后由HRegionServer负责HRegion的启动和管理，和Client的通信，负责数据的读(使用HDFS)。</p>
+<h3 id="HBase集群搭建"><a href="#HBase集群搭建" class="headerlink" title="HBase集群搭建"></a>HBase集群搭建</h3><p>&nbsp;&nbsp;如果HDFS是HA集群,需要把HDFS的core-site.xml和hdfs-site.xml copy到conf下。</p>
+<h4 id="hbase-env-sh"><a href="#hbase-env-sh" class="headerlink" title="hbase-env.sh"></a>hbase-env.sh</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">//告诉hbase使用外部的zookeeper</div><div class="line">export HBASE_MANAGES_ZK=false</div></pre></td></tr></table></figure>
+<h4 id="hbase-site-xml"><a href="#hbase-site-xml" class="headerlink" title="hbase-site.xml"></a>hbase-site.xml</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&lt;configuration&gt;</div><div class="line">	&lt;!-- 指定hbase在HDFS上存储的路径 --&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">        &lt;name&gt;hbase.rootdir&lt;/name&gt;</div><div class="line">        &lt;value&gt;hdfs://ns1/hbase&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">	&lt;!-- 指定hbase是分布式的 --&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">        &lt;name&gt;hbase.cluster.distributed&lt;/name&gt;</div><div class="line">        &lt;value&gt;true&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">	&lt;!-- 指定zk的地址，多个用“,”分割 --&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">        &lt;name&gt;hbase.zookeeper.quorum&lt;/name&gt;</div><div class="line">        &lt;value&gt;datanode01:2181,datanode02:2181,datanode03:2181&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">        &lt;name&gt;hbase.master.maxclockskew&lt;/name&gt;</div><div class="line">        &lt;value&gt;180000&lt;/value&gt;</div><div class="line">        &lt;description&gt;Time difference of regionserver from master&lt;/description&gt;</div><div class="line"> 	&lt;/property&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
+<h4 id="regionservers"><a href="#regionservers" class="headerlink" title="regionservers"></a>regionservers</h4><p>&nbsp;&nbsp;配置regionserver的节点,为了尽量实现数据本地化,可以与DataNode在同一个节点上。</p>
+<h3 id="HBase常用Shell命令"><a href="#HBase常用Shell命令" class="headerlink" title="HBase常用Shell命令"></a>HBase常用Shell命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div></pre></td><td class="code"><pre><div class="line">进入hbase命令行</div><div class="line">./hbase shell</div><div class="line"></div><div class="line">显示hbase中的表</div><div class="line">list</div><div class="line"></div><div class="line">创建user表，包含info、data两个列族</div><div class="line">create &apos;user&apos;, &apos;info1&apos;, &apos;data1&apos;</div><div class="line">create &apos;user&apos;, &#123;NAME =&gt; &apos;info&apos;, VERSIONS =&gt; &apos;3&apos;&#125;</div><div class="line"></div><div class="line">向user表中插入信息，row key为rk0001，列族info中添加name列标示符，值为zhangsan</div><div class="line">put &apos;user&apos;, &apos;rk0001&apos;, &apos;info:name&apos;, &apos;zhangsan&apos;</div><div class="line"></div><div class="line">向user表中插入信息，row key为rk0001，列族info中添加gender列标示符，值为female</div><div class="line">put &apos;user&apos;, &apos;rk0001&apos;, &apos;info:gender&apos;, &apos;female&apos;</div><div class="line"></div><div class="line">向user表中插入信息，row key为rk0001，列族info中添加age列标示符，值为20</div><div class="line">put &apos;user&apos;, &apos;rk0001&apos;, &apos;info:age&apos;, 20</div><div class="line"></div><div class="line">向user表中插入信息，row key为rk0001，列族data中添加pic列标示符，值为picture</div><div class="line">put &apos;user&apos;, &apos;rk0001&apos;, &apos;data:pic&apos;, &apos;picture&apos;</div><div class="line"></div><div class="line">获取user表中row key为rk0001的所有信息</div><div class="line">get &apos;user&apos;, &apos;rk0001&apos;</div><div class="line"></div><div class="line">获取user表中row key为rk0001，info列族的所有信息</div><div class="line">get &apos;user&apos;, &apos;rk0001&apos;, &apos;info&apos;</div><div class="line"></div><div class="line">获取user表中row key为rk0001，info列族的name、age列标示符的信息</div><div class="line">get &apos;user&apos;, &apos;rk0001&apos;, &apos;info:name&apos;, &apos;info:age&apos;</div><div class="line"></div><div class="line">获取user表中row key为rk0001，info、data列族的信息</div><div class="line">get &apos;user&apos;, &apos;rk0001&apos;, &apos;info&apos;, &apos;data&apos;</div><div class="line">get &apos;user&apos;, &apos;rk0001&apos;, &#123;COLUMN =&gt; [&apos;info&apos;, &apos;data&apos;]&#125;</div><div class="line"></div><div class="line">get &apos;user&apos;, &apos;rk0001&apos;, &#123;COLUMN =&gt; [&apos;info:name&apos;, &apos;data:pic&apos;]&#125;</div><div class="line"></div><div class="line">获取user表中row key为rk0001，列族为info，版本号最新5个的信息</div><div class="line">get &apos;user&apos;, &apos;rk0001&apos;, &#123;COLUMN =&gt; &apos;info&apos;, VERSIONS =&gt; 2&#125;</div><div class="line">get &apos;user&apos;, &apos;rk0001&apos;, &#123;COLUMN =&gt; &apos;info:name&apos;, VERSIONS =&gt; 5&#125;</div><div class="line">get &apos;user&apos;, &apos;rk0001&apos;, &#123;COLUMN =&gt; &apos;info:name&apos;, VERSIONS =&gt; 5, TIMERANGE =&gt; [1392368783980, 1392380169184]&#125;</div><div class="line"></div><div class="line">获取user表中row key为rk0001，cell的值为zhangsan的信息</div><div class="line">get &apos;people&apos;, &apos;rk0001&apos;, &#123;FILTER =&gt; &quot;ValueFilter(=, &apos;binary:图片&apos;)&quot;&#125;</div><div class="line"></div><div class="line">获取user表中row key为rk0001，列标示符中含有a的信息</div><div class="line">get &apos;people&apos;, &apos;rk0001&apos;, &#123;FILTER =&gt; &quot;(QualifierFilter(=,&apos;substring:a&apos;))&quot;&#125;</div><div class="line"></div><div class="line">put &apos;user&apos;, &apos;rk0002&apos;, &apos;info:name&apos;, &apos;fanbingbing&apos;</div><div class="line">put &apos;user&apos;, &apos;rk0002&apos;, &apos;info:gender&apos;, &apos;female&apos;</div><div class="line">put &apos;user&apos;, &apos;rk0002&apos;, &apos;info:nationality&apos;, &apos;中国&apos;</div><div class="line">get &apos;user&apos;, &apos;rk0002&apos;, &#123;FILTER =&gt; &quot;ValueFilter(=, &apos;binary:中国&apos;)&quot;&#125;</div><div class="line"></div><div class="line"></div><div class="line">查询user表中的所有信息</div><div class="line">scan &apos;user&apos;</div><div class="line"></div><div class="line">查询user表中列族为info的信息</div><div class="line">scan &apos;user&apos;, &#123;COLUMNS =&gt; &apos;info&apos;&#125;</div><div class="line">scan &apos;user&apos;, &#123;COLUMNS =&gt; &apos;info&apos;, RAW =&gt; true, VERSIONS =&gt; 5&#125;</div><div class="line">scan &apos;persion&apos;, &#123;COLUMNS =&gt; &apos;info&apos;, RAW =&gt; true, VERSIONS =&gt; 3&#125;</div><div class="line">查询user表中列族为info和data的信息</div><div class="line">scan &apos;user&apos;, &#123;COLUMNS =&gt; [&apos;info&apos;, &apos;data&apos;]&#125;</div><div class="line">scan &apos;user&apos;, &#123;COLUMNS =&gt; [&apos;info:name&apos;, &apos;data:pic&apos;]&#125;</div><div class="line"></div><div class="line"></div><div class="line">查询user表中列族为info、列标示符为name的信息</div><div class="line">scan &apos;user&apos;, &#123;COLUMNS =&gt; &apos;info:name&apos;&#125;</div><div class="line"></div><div class="line">查询user表中列族为info、列标示符为name的信息,并且版本最新的5个</div><div class="line">scan &apos;user&apos;, &#123;COLUMNS =&gt; &apos;info:name&apos;, VERSIONS =&gt; 5&#125;</div><div class="line"></div><div class="line">查询user表中列族为info和data且列标示符中含有a字符的信息</div><div class="line">scan &apos;user&apos;, &#123;COLUMNS =&gt; [&apos;info&apos;, &apos;data&apos;], FILTER =&gt; &quot;(QualifierFilter(=,&apos;substring:a&apos;))&quot;&#125;</div><div class="line"></div><div class="line">查询user表中列族为info，rk范围是[rk0001, rk0003)的数据</div><div class="line">scan &apos;people&apos;, &#123;COLUMNS =&gt; &apos;info&apos;, STARTROW =&gt; &apos;rk0001&apos;, ENDROW =&gt; &apos;rk0003&apos;&#125;</div><div class="line"></div><div class="line">查询user表中row key以rk字符开头的</div><div class="line">scan &apos;user&apos;,&#123;FILTER=&gt;&quot;PrefixFilter(&apos;rk&apos;)&quot;&#125;</div><div class="line"></div><div class="line">查询user表中指定范围的数据</div><div class="line">scan &apos;user&apos;, &#123;TIMERANGE =&gt; [1392368783980, 1392380169184]&#125;</div><div class="line"></div><div class="line">删除数据</div><div class="line">删除user表row key为rk0001，列标示符为info:name的数据</div><div class="line">delete &apos;people&apos;, &apos;rk0001&apos;, &apos;info:name&apos;</div><div class="line">删除user表row key为rk0001，列标示符为info:name，timestamp为1392383705316的数据</div><div class="line">delete &apos;user&apos;, &apos;rk0001&apos;, &apos;info:name&apos;, 1392383705316</div><div class="line"></div><div class="line"></div><div class="line">清空user表中的数据</div><div class="line">truncate &apos;people&apos;</div><div class="line"></div><div class="line"></div><div class="line">修改表结构</div><div class="line">首先停用user表（新版本不用）</div><div class="line">disable &apos;user&apos;</div><div class="line"></div><div class="line">添加两个列族f1和f2</div><div class="line">alter &apos;people&apos;, NAME =&gt; &apos;f1&apos;</div><div class="line">alter &apos;user&apos;, NAME =&gt; &apos;f2&apos;</div><div class="line">启用表</div><div class="line">enable &apos;user&apos;</div><div class="line"></div><div class="line"></div><div class="line">###disable &apos;user&apos;(新版本不用)</div><div class="line">删除一个列族：</div><div class="line">alter &apos;user&apos;, NAME =&gt; &apos;f1&apos;, METHOD =&gt; &apos;delete&apos; 或 alter &apos;user&apos;, &apos;delete&apos; =&gt; &apos;f1&apos;</div><div class="line"></div><div class="line">添加列族f1同时删除列族f2</div><div class="line">alter &apos;user&apos;, &#123;NAME =&gt; &apos;f1&apos;&#125;, &#123;NAME =&gt; &apos;f2&apos;, METHOD =&gt; &apos;delete&apos;&#125;</div><div class="line"></div><div class="line">将user表的f1列族版本号改为5</div><div class="line">alter &apos;people&apos;, NAME =&gt; &apos;info&apos;, VERSIONS =&gt; 5</div><div class="line">启用表</div><div class="line">enable &apos;user&apos;</div><div class="line"></div><div class="line"></div><div class="line">删除表</div><div class="line">disable &apos;user&apos;</div><div class="line">drop &apos;user&apos;</div><div class="line"></div><div class="line"></div><div class="line">get &apos;person&apos;, &apos;rk0001&apos;, &#123;FILTER =&gt; &quot;ValueFilter(=, &apos;binary:中国&apos;)&quot;&#125;</div><div class="line">get &apos;person&apos;, &apos;rk0001&apos;, &#123;FILTER =&gt; &quot;(QualifierFilter(=,&apos;substring:a&apos;))&quot;&#125;</div><div class="line">scan &apos;person&apos;, &#123;COLUMNS =&gt; &apos;info:name&apos;&#125;</div><div class="line">scan &apos;person&apos;, &#123;COLUMNS =&gt; [&apos;info&apos;, &apos;data&apos;], FILTER =&gt; &quot;(QualifierFilter(=,&apos;substring:a&apos;))&quot;&#125;</div><div class="line">scan &apos;person&apos;, &#123;COLUMNS =&gt; &apos;info&apos;, STARTROW =&gt; &apos;rk0001&apos;, ENDROW =&gt; &apos;rk0003&apos;&#125;</div><div class="line"></div><div class="line">scan &apos;person&apos;, &#123;COLUMNS =&gt; &apos;info&apos;, STARTROW =&gt; &apos;20140201&apos;, ENDROW =&gt; &apos;20140301&apos;&#125;</div><div class="line">scan &apos;person&apos;, &#123;COLUMNS =&gt; &apos;info:name&apos;, TIMERANGE =&gt; [1395978233636, 1395987769587]&#125;</div><div class="line">delete &apos;person&apos;, &apos;rk0001&apos;, &apos;info:name&apos;</div><div class="line"></div><div class="line">alter &apos;person&apos;, NAME =&gt; &apos;ffff&apos;</div><div class="line">alter &apos;person&apos;, NAME =&gt; &apos;info&apos;, VERSIONS =&gt; 10</div><div class="line"></div><div class="line"></div><div class="line">get &apos;user&apos;, &apos;rk0002&apos;, &#123;COLUMN =&gt; [&apos;info:name&apos;, &apos;data:pic&apos;]&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/07/17/2016-07-17-Hadoop04-HBase/" data-id="cj4z0jkb9000nuomjein2w18q" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/大数据/">大数据</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/18/2016-07-18-Hadoop05-Hive/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hadoop学习笔记(5)-Hive
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/07/15/2016-07-15-Hadoop03-HA/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hadoop学习笔记(3)-HA高可用集群搭建</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

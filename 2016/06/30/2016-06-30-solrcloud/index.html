@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>SolrCloud初体验 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="什么是SolrCloudSolrCloud是基于Solr和Zookeeper的分布式搜索方案,它的主要思想是使用Zookeeper作为集群的配置信息中心。 SolrCloud的特点1.近实时搜索立即推送式的replication（也支持慢推送）。可以在秒内检索到新加入索引。 2.自动容错SolrCloud对索引分片,并对每个分片创建多个Replication。每个Replication都可以对外">
+<meta name="keywords" content="后端开发,全文检索引擎,solr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SolrCloud初体验">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/06/30/2016-06-30-solrcloud/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="什么是SolrCloudSolrCloud是基于Solr和Zookeeper的分布式搜索方案,它的主要思想是使用Zookeeper作为集群的配置信息中心。 SolrCloud的特点1.近实时搜索立即推送式的replication（也支持慢推送）。可以在秒内检索到新加入索引。 2.自动容错SolrCloud对索引分片,并对每个分片创建多个Replication。每个Replication都可以对外">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f67ocs5srhj207g05m3yl.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f67oct3xegj20rx0qfdht.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f67ocpgc1zj20d80cwdjc.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f67ocqpcfqj20he097acw.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f67ocr82b3j20ig04ptas.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.882Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SolrCloud初体验">
+<meta name="twitter:description" content="什么是SolrCloudSolrCloud是基于Solr和Zookeeper的分布式搜索方案,它的主要思想是使用Zookeeper作为集群的配置信息中心。 SolrCloud的特点1.近实时搜索立即推送式的replication（也支持慢推送）。可以在秒内检索到新加入索引。 2.自动容错SolrCloud对索引分片,并对每个分片创建多个Replication。每个Replication都可以对外">
+<meta name="twitter:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f67ocs5srhj207g05m3yl.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-06-30-solrcloud" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/30/2016-06-30-solrcloud/" class="article-date">
+  <time datetime="2016-06-30T10:00:00.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SolrCloud初体验
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f67ocs5srhj207g05m3yl.jpg" alt=""></p>
+<h3 id="什么是SolrCloud"><a href="#什么是SolrCloud" class="headerlink" title="什么是SolrCloud"></a>什么是SolrCloud</h3><p>SolrCloud是基于Solr和Zookeeper的分布式搜索方案,它的主要思想是使用Zookeeper作为集群的配置信息中心。</p>
+<h3 id="SolrCloud的特点"><a href="#SolrCloud的特点" class="headerlink" title="SolrCloud的特点"></a>SolrCloud的特点</h3><h4 id="1-近实时搜索"><a href="#1-近实时搜索" class="headerlink" title="1.近实时搜索"></a>1.近实时搜索</h4><p>立即推送式的replication（也支持慢推送）。可以在秒内检索到新加入索引。</p>
+<h4 id="2-自动容错"><a href="#2-自动容错" class="headerlink" title="2.自动容错"></a>2.自动容错</h4><p>SolrCloud对索引分片,并对每个分片创建多个Replication。每个Replication都可以对外提供服务。一个Replication挂掉不会影响索引服务。更强大的是，它还能自动的在其它机器上帮你把失败机器上的索引Replication重建并投入使用。</p>
+<h4 id="3-查询时自动负载均衡"><a href="#3-查询时自动负载均衡" class="headerlink" title="3.查询时自动负载均衡"></a>3.查询时自动负载均衡</h4><p>SolrCloud索引的多个Replication可以分布在多台机器上,均衡查询压力。如果查询压力大，可以通过扩展机器，增加Replication来减缓。</p>
+<h4 id="4-集中式的配置信息"><a href="#4-集中式的配置信息" class="headerlink" title="4.集中式的配置信息"></a>4.集中式的配置信息</h4><p>SolrCloud可以将配置文件上传到Zookeeper,由Zookeeper对配置文件进行管理。</p>
+<h3 id="结构分析"><a href="#结构分析" class="headerlink" title="结构分析"></a>结构分析</h3><p>为了减少处理压力,SolrCloud需要由多台服务器共同完成索引和搜索。</p>
+<h4 id="1-实现思路"><a href="#1-实现思路" class="headerlink" title="1.实现思路"></a>1.实现思路</h4><p>SolrCloud将索引数据进行分片(Shard),每个分片由多台服务器共同完成。</p>
+<h4 id="2-结构"><a href="#2-结构" class="headerlink" title="2.结构"></a>2.结构</h4><p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f67oct3xegj20rx0qfdht.jpg" alt=""></p>
+<p><strong>物理结构</strong><br>SolrCloud由三个Solr服务器组成,每个Solr服务器包含2个Core。</p>
+<p><strong>逻辑结构</strong><br>一个Collection包含2个Shard,每个Shard由3个core组成(一个Leader,两个Replication)。</p>
+<p><strong>Collection</strong><br>Collection是一个在逻辑意义上完整的索引结构,它常常被划分为一个或多个Shard分片,它们使用相同的配置信息。如果Shard数超过一个，它就是分布式索引，SolrCloud让你通过Collection名称引用它，而不需要关心分布式检索时需要使用的和Shard相关参数。</p>
+<p><strong>Core</strong><br>一个Solr中包含一个或者多个Solr Core，每个Solr Core可以独立提供索引和查询功能，每个Solr Core对应一个索引或者Collection的Shard，Solr Core的提出是为了增加管理灵活性和共用资源。在SolrCloud中有个不同点是它使用的配置是在Zookeeper中的，传统的Solr core的配置文件是在磁盘上的配置目录中。</p>
+<p><strong>Shard</strong><br>Collection的逻辑分片。每个Shard被化成一个或者多个replicas，通过选举确定哪个是Leader。</p>
+<p><strong>Replication</strong><br>在master-slave结构中,Replication是一个从节点,同一个Shard下主从节点存储的数据是一致的。</p>
+<p><strong>Leader</strong><br>在master-slave结构中,Leader是一个主节点,Leader是赢得选举的Replication。选举可以发生在任何时间，但是通常它们仅在某个Solr实例发生故障时才会触发。当索引documents时，SolrCloud会传递它们到此Shard对应的Leader，Leader再分发它们到全部Shard的Replication。</p>
+<h3 id="SolrCloud的搭建"><a href="#SolrCloud的搭建" class="headerlink" title="SolrCloud的搭建"></a>SolrCloud的搭建</h3><h4 id="1-Zookeeper"><a href="#1-Zookeeper" class="headerlink" title="1.Zookeeper"></a>1.Zookeeper</h4><p>SolrCloud需要Zookeeper进行管理,所以需要先安装Zookeeper。</p>
+<ul>
+<li><p>.解压缩zookeeper.tar.gz,并复制出3个Zookeeper实例。</p>
+</li>
+<li><p>.进入zookeeper01目录,创建一个data文件夹,并在data中创建一个myid文件,内容为1(其他Zookeeper实例为2和3)。</p>
+</li>
+<li><p>进入conf文件夹,将zoo_sample.cfg改名为zoo.cfg</p>
+</li>
+<li><p>vim zoo.cfg 修改dataDir=data文件夹所在的目录,<br>添加:<br>server.myid的值=ip:每个Zookeeper服务器之间的通讯端口:Zookeeper与其他应用的通讯端口。(每个Zookeeper实例都需要添加这行内容)<br>例如:</p>
+<p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f67ocpgc1zj20d80cwdjc.jpg" alt=""></p>
+</li>
+</ul>
+<h4 id="2-Solr实例"><a href="#2-Solr实例" class="headerlink" title="2.Solr实例"></a>2.Solr实例</h4><ul>
+<li><p>安装一个单机的Solr实例,并复制成4份,分别对应4个SolrHome。</p>
+</li>
+<li><p>修改SolrHome的solr.xml文件</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f67ocqpcfqj20he097acw.jpg" alt=""></p>
+</li>
+<li><p>将配置文件上传到Zookeeper,当配置文件发生改变时,需要重新上传。</p>
+</li>
+</ul>
+<pre><code> java -classpath .:/usr/local/solr-cloud/solr-lib/* org.apache.solr.cloud.ZkCLI -cmd upconfig -zkhost 127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183 -confdir /usr/local/solr-cloud/solrhome01/collection1/conf  -confname solr-conf
+
+-cmd upconfig 上传配置文件命令
+-zkhost Zookeeper集群的ip与端口
+-confdir 配置文件的目录
+-confname 上传到Zookeeper后的文件夹名称
+
+其中参数/usr/local/solr-cloud/solr-lib/可以自己创建，内容如下：
+        复制tomcat/webapps/solr/WEB-INF/lib下所有jar包
+        复制example/lib/ext下所有jar包
+        复制example/resources/log4j.properties
+</code></pre><ul>
+<li><p>通知Solr实例Zookeeper的地址,需要修改tomcat/bin/catalina.sh<br>添加一行:JAVA_OPTS=”-DzkHost=Zookeeper集群的地址列表”</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f67ocr82b3j20ig04ptas.jpg" alt=""></p>
+</li>
+</ul>
+<h4 id="3-设置Shard"><a href="#3-设置Shard" class="headerlink" title="3.设置Shard"></a>3.设置Shard</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://web容器/solr/admin/collections?action=CREATE&amp;name=Collection名称&amp;numShards=Shard个数&amp;replicationFactor=Replication个数</div></pre></td></tr></table></figure>
+<p>例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">http://192.168.145.150:8080/solr/admin/collections?action=CREATE&amp;name=collection2&amp;numShards=2&amp;replicationFactor=2</div><div class="line">上面的命令为 创建一个name为collection2的Collection,并分成了2个Shard,每个Shard有2个Replication</div></pre></td></tr></table></figure>
+<p>删除一个Collection</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">http://192.168.145.150:8080/solr/admin/collections?action=DELETE&amp;name=collection1</div><div class="line">上面的命令为 删除一个name为collection1的Collection</div></pre></td></tr></table></figure>
+<h3 id="Spring整合SolrCloud"><a href="#Spring整合SolrCloud" class="headerlink" title="Spring整合SolrCloud"></a>Spring整合SolrCloud</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;!-- SolrCloud --&gt;</div><div class="line">	&lt;bean id=&quot;cloudSolrServer&quot; class=&quot;org.apache.solr.client.solrj.impl.CloudSolrServer&quot;&gt;</div><div class="line">		&lt;constructor-arg name=&quot;zkHost&quot;</div><div class="line">			value=&quot;192.168.145.136:2181,192.168.145.136:2182,192.168.145.136:2183&quot; /&gt;</div><div class="line">		&lt;!-- 设置默认搜索的Collection --&gt;</div><div class="line">		&lt;property name=&quot;defaultCollection&quot; value=&quot;collection2&quot; /&gt;</div><div class="line">	&lt;/bean&gt;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/06/30/2016-06-30-solrcloud/" data-id="cj4z0jkat000buomjo6ppkedn" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solr/">solr</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/03/2016-07-03-activemq/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          ActiveMQ消息队列
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/06/27/2016-06-27-redis-cluster01/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">如何搭建与维护一个Redis集群</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

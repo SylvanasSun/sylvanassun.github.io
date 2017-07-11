@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>如何搭建与维护一个Redis集群 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Redis集群架构  每一个Redis节点使用PING-PONG的形式互相通信。  当半数以上的节点fail时,则整个集群失效。  客户端不需要连接集群所有节点,只要连接集群中任意一个节点即可。  Redis集群中内置了16384个哈希槽,当操作数据时,Redis会对key使用crc16算法算出一个结果,并把结果对16384取余,每个key都会对应0-16383之间的哈希槽,Redis会根据节点">
+<meta name="keywords" content="后端开发,redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何搭建与维护一个Redis集群">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/06/27/2016-06-27-redis-cluster01/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="Redis集群架构  每一个Redis节点使用PING-PONG的形式互相通信。  当半数以上的节点fail时,则整个集群失效。  客户端不需要连接集群所有节点,只要连接集群中任意一个节点即可。  Redis集群中内置了16384个哈希槽,当操作数据时,Redis会对key使用crc16算法算出一个结果,并把结果对16384取余,每个key都会对应0-16383之间的哈希槽,Redis会根据节点">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f67o71v3m6j20av0640st.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f67o70ppf9j20dr0fudhb.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f67o717oqhj20cn0acmy4.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f67o71g231j20cz03lta6.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f67obgv67nj20an07gdim.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.882Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何搭建与维护一个Redis集群">
+<meta name="twitter:description" content="Redis集群架构  每一个Redis节点使用PING-PONG的形式互相通信。  当半数以上的节点fail时,则整个集群失效。  客户端不需要连接集群所有节点,只要连接集群中任意一个节点即可。  Redis集群中内置了16384个哈希槽,当操作数据时,Redis会对key使用crc16算法算出一个结果,并把结果对16384取余,每个key都会对应0-16383之间的哈希槽,Redis会根据节点">
+<meta name="twitter:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f67o71v3m6j20av0640st.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-06-27-redis-cluster01" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/27/2016-06-27-redis-cluster01/" class="article-date">
+  <time datetime="2016-06-27T10:00:00.000Z" itemprop="datePublished">2016-06-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      如何搭建与维护一个Redis集群
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f67o71v3m6j20av0640st.jpg" alt=""></p>
+<h3 id="Redis集群架构"><a href="#Redis集群架构" class="headerlink" title="Redis集群架构"></a>Redis集群架构</h3><p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f67o70ppf9j20dr0fudhb.jpg" alt=""></p>
+<ol>
+<li><p>每一个<code>Redis</code>节点使用PING-PONG的形式互相通信。</p>
+</li>
+<li><p>当半数以上的节点fail时,则整个集群失效。</p>
+</li>
+<li><p>客户端不需要连接集群所有节点,只要连接集群中任意一个节点即可。</p>
+</li>
+<li><p><code>Redis</code>集群中内置了16384个哈希槽,当操作数据时,<code>Redis</code>会对key使用crc16算法算出一个结果,<br>并把结果对16384取余,每个key都会对应0-16383之间的哈希槽,<code>Redis</code>会根据节点数量平均的将<br>哈希槽映射到不同的节点上。</p>
+</li>
+</ol>
+<h3 id="Redis投票机制"><a href="#Redis投票机制" class="headerlink" title="Redis投票机制"></a>Redis投票机制</h3><p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f67o717oqhj20cn0acmy4.jpg" alt=""></p>
+<p><code>Redis</code>集群中每一个节点都会参与投票,如果当半数以上的节点认为一个节点通信超时,则该节点fail。</p>
+<p>当集群中任意节点的master(主机)挂掉,且这个节点没有slave(从机),则整个集群进入fail状态。</p>
+<h3 id="搭建Redis集群"><a href="#搭建Redis集群" class="headerlink" title="搭建Redis集群"></a>搭建Redis集群</h3><h4 id="1-安装Ruby环境"><a href="#1-安装Ruby环境" class="headerlink" title="1.安装Ruby环境"></a>1.安装Ruby环境</h4><p>因为redis-trib.rb脚本依赖ruby环境,所以需要先安装ruby。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum install ruby </div><div class="line">yum install rubygems</div></pre></td></tr></table></figure>
+<p>安装ruby和redis的接口程序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gem install /usr/local/redis-3.0.0.gem</div></pre></td></tr></table></figure>
+<h4 id="2-搭建Redis集群"><a href="#2-搭建Redis集群" class="headerlink" title="2.搭建Redis集群"></a>2.搭建Redis集群</h4><p>一个<code>Redis</code>集群最少需要3组主从机,即6个<code>Redis</code>。</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f67o71g231j20cz03lta6.jpg" alt=""></p>
+<p>修改redis.conf配置文件,将集群开关开启。</p>
+<p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f67obgv67nj20an07gdim.jpg" alt=""></p>
+<p>启动<code>Redis</code>实例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">cd redis01</div><div class="line">./redis-server redis.conf</div><div class="line">cd ..</div><div class="line">cd redis02</div><div class="line">./redis-server redis.conf</div><div class="line">cd ..</div><div class="line">cd redis03</div><div class="line">./redis-server redis.conf</div><div class="line">cd ..</div><div class="line">cd redis04</div><div class="line">./redis-server redis.conf</div><div class="line">cd ..</div><div class="line">cd redis05</div><div class="line">./redis-server redis.conf</div><div class="line">cd ..</div><div class="line">cd redis06</div><div class="line">./redis-server redis.conf</div><div class="line">cd ..</div></pre></td></tr></table></figure>
+<p>使用redis-trib.rb创建集群</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./redis-trib.rb create --replicas 1 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005  127.0.0.1:7006</div></pre></td></tr></table></figure>
+<h4 id="3-添加主节点"><a href="#3-添加主节点" class="headerlink" title="3.添加主节点"></a>3.添加主节点</h4><p>如果想添加一个port为7007的<code>Redis</code>实例,可以使用以下命令。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./redis-trib.rb add-node 127.0.0.1:7007 127.0.0.1:7001</div></pre></td></tr></table></figure>
+<p>当添加了一个主节点后,需要重新分配哈希槽。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./redis-trib.rb reshard 127.0.0.1:7001</div></pre></td></tr></table></figure>
+<h4 id="4-添加从节点"><a href="#4-添加从节点" class="headerlink" title="4.添加从节点"></a>4.添加从节点</h4><p>添加一个port为7008的<code>Redis</code>实例做为7007的从节点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./redis-trib.rb add-node --slave --master-id cad9f7413ec6842c971dbcc2c48b4ca959eb5db4  127.0.0.1:7008 127.0.0.1:7001</div></pre></td></tr></table></figure>
+<p>命令格式: ./redis-trib.rb add-node –slave –master-id 主节点id 新加从节点的ip和端口 集群中节点的ip和端口(任意一个节点)。</p>
+<p>主节点id可以在client中使用 <strong>cluster nodes</strong> 命令查询。</p>
+<p>注意: 如果原来该结点在集群中的配置信息已经生成到cluster-config-file指定的配置文件中（如果cluster-config-file没有指定则默认为nodes.conf),则会报错:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[ERR] Node XXXXXX is not empty. Either the node already knows other nodes (check with CLUSTER NODES) or contains some key in database 0</div></pre></td></tr></table></figure>
+<p>解决方法: 删除生成的配置文件 nodes.conf,再执行./redis-trib.rb add-node命令。</p>
+<h4 id="5-删除节点"><a href="#5-删除节点" class="headerlink" title="5.删除节点"></a>5.删除节点</h4><p>./redis-trib.rb del-node 要删除的节点的ip和端口 节点id<br>注意: 如果这个节点已经占有哈希槽,则无法删除,需要先将哈希槽分配出去。</p>
+<h3 id="Jedis连接集群"><a href="#Jedis连接集群" class="headerlink" title="Jedis连接集群"></a>Jedis连接集群</h3><p>使用Jedis连接集群需要先创建JedisCluster对象。代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test01</span><span class="params">()</span></span>&#123;</div><div class="line">	Set&lt;HostAndPort&gt; nodes = <span class="keyword">new</span> HashSet&lt;HostAndPort&gt;();</div><div class="line">	nodes.add(<span class="keyword">new</span> HostAndPort(<span class="string">"192.168.145.134"</span>, <span class="number">7001</span>));</div><div class="line">	nodes.add(<span class="keyword">new</span> HostAndPort(<span class="string">"192.168.145.134"</span>, <span class="number">7002</span>));</div><div class="line">	nodes.add(<span class="keyword">new</span> HostAndPort(<span class="string">"192.168.145.134"</span>, <span class="number">7003</span>));</div><div class="line">	nodes.add(<span class="keyword">new</span> HostAndPort(<span class="string">"192.168.145.134"</span>, <span class="number">7004</span>));</div><div class="line">	nodes.add(<span class="keyword">new</span> HostAndPort(<span class="string">"192.168.145.134"</span>, <span class="number">7005</span>));</div><div class="line">	nodes.add(<span class="keyword">new</span> HostAndPort(<span class="string">"192.168.145.134"</span>, <span class="number">7006</span>));</div><div class="line">	<span class="comment">// 创建JedisCluster</span></div><div class="line">	JedisCluster jedisCluster = <span class="keyword">new</span> JedisCluster(nodes);</div><div class="line">	<span class="comment">// 操作redis</span></div><div class="line">	String set = jedisCluster.set(<span class="string">"hello"</span>, <span class="string">"helloWorld"</span>);</div><div class="line">	String hello = jedisCluster.get(<span class="string">"hello"</span>);</div><div class="line">	System.out.println(set);</div><div class="line">	System.out.println(hello);</div><div class="line">	<span class="comment">// 关闭JedisCluster</span></div><div class="line">	jedisCluster.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在Spring容器中维护:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">   &lt;bean class=&quot;redis.clients.jedis.JedisCluster&quot;&gt;</div><div class="line">	&lt;constructor-arg name=&quot;nodes&quot;&gt;</div><div class="line">		&lt;set&gt;</div><div class="line">			&lt;bean class=&quot;redis.clients.jedis.HostAndPort&quot;&gt;</div><div class="line">				&lt;constructor-arg name=&quot;host&quot; value=&quot;192.168.145.134&quot;/&gt;</div><div class="line">				&lt;constructor-arg name=&quot;port&quot; value=&quot;7001&quot;/&gt;</div><div class="line">			&lt;/bean&gt;</div><div class="line">			&lt;bean class=&quot;redis.clients.jedis.HostAndPort&quot;&gt;</div><div class="line">				&lt;constructor-arg name=&quot;host&quot; value=&quot;192.168.145.134&quot;/&gt;</div><div class="line">				&lt;constructor-arg name=&quot;port&quot; value=&quot;7002&quot;/&gt;</div><div class="line">			&lt;/bean&gt;</div><div class="line">			&lt;bean class=&quot;redis.clients.jedis.HostAndPort&quot;&gt;</div><div class="line">				&lt;constructor-arg name=&quot;host&quot; value=&quot;192.168.145.134&quot;/&gt;</div><div class="line">				&lt;constructor-arg name=&quot;port&quot; value=&quot;7003&quot;/&gt;</div><div class="line">			&lt;/bean&gt;</div><div class="line">			&lt;bean class=&quot;redis.clients.jedis.HostAndPort&quot;&gt;</div><div class="line">				&lt;constructor-arg name=&quot;host&quot; value=&quot;192.168.145.134&quot;/&gt;</div><div class="line">				&lt;constructor-arg name=&quot;port&quot; value=&quot;7004&quot;/&gt;</div><div class="line">			&lt;/bean&gt;</div><div class="line">			&lt;bean class=&quot;redis.clients.jedis.HostAndPort&quot;&gt;</div><div class="line">				&lt;constructor-arg name=&quot;host&quot; value=&quot;192.168.145.134&quot;/&gt;</div><div class="line">				&lt;constructor-arg name=&quot;port&quot; value=&quot;7005&quot;/&gt;</div><div class="line">			&lt;/bean&gt;</div><div class="line">			&lt;bean class=&quot;redis.clients.jedis.HostAndPort&quot;&gt;</div><div class="line">				&lt;constructor-arg name=&quot;host&quot; value=&quot;192.168.145.134&quot;/&gt;</div><div class="line">				&lt;constructor-arg name=&quot;port&quot; value=&quot;7006&quot;/&gt;</div><div class="line">			&lt;/bean&gt;</div><div class="line">		&lt;/set&gt;</div><div class="line">	&lt;/constructor-arg&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/06/27/2016-06-27-redis-cluster01/" data-id="cj4z0jkas000auomjnagwrkac" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/redis/">redis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/06/30/2016-06-30-solrcloud/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          SolrCloud初体验
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/06/24/2016-06-24-nginx-initiation/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">如何安装与搭建一个Nginx服务器</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

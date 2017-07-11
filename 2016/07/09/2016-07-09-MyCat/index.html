@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>MyCat快速入门 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="MyCat概述 &amp;nbsp;&amp;nbsp;MyCat是基于Cobar二次开发的数据库中间件。它可以低成本的将现有的单机数据库和应用平滑迁移到“云”端，解决数据存储和业务规模迅速增长情况下的数据瓶颈问题。 &amp;nbsp;&amp;nbsp;从定义和分类来看，它是一个开源的分布式数据库系统，是一个实现了MySQL协议的的Server，前端用户可以把 它看作是一个数据库代理，用MySQL客户端工具和命令行访问，而">
+<meta name="keywords" content="后端开发,数据库,MyCat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MyCat快速入门">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/07/09/2016-07-09-MyCat/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="MyCat概述 &amp;nbsp;&amp;nbsp;MyCat是基于Cobar二次开发的数据库中间件。它可以低成本的将现有的单机数据库和应用平滑迁移到“云”端，解决数据存储和业务规模迅速增长情况下的数据瓶颈问题。 &amp;nbsp;&amp;nbsp;从定义和分类来看，它是一个开源的分布式数据库系统，是一个实现了MySQL协议的的Server，前端用户可以把 它看作是一个数据库代理，用MySQL客户端工具和命令行访问，而">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f67ok1ytybj207s05674d.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f67ok1abxhj20td0g0jtk.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f67ok1sk3wj20fv0c40ui.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f67ok0u4qqj20j002wmyh.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f67ok0c0gsj20gx09ogmo.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f67ok01dxoj20j70dota9.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.883Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MyCat快速入门">
+<meta name="twitter:description" content="MyCat概述 &amp;nbsp;&amp;nbsp;MyCat是基于Cobar二次开发的数据库中间件。它可以低成本的将现有的单机数据库和应用平滑迁移到“云”端，解决数据存储和业务规模迅速增长情况下的数据瓶颈问题。 &amp;nbsp;&amp;nbsp;从定义和分类来看，它是一个开源的分布式数据库系统，是一个实现了MySQL协议的的Server，前端用户可以把 它看作是一个数据库代理，用MySQL客户端工具和命令行访问，而">
+<meta name="twitter:image" content="http://ww4.sinaimg.cn/mw690/63503acbjw1f67ok1ytybj207s05674d.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-07-09-MyCat" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/09/2016-07-09-MyCat/" class="article-date">
+  <time datetime="2016-07-09T10:00:00.000Z" itemprop="datePublished">2016-07-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MyCat快速入门
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f67ok1ytybj207s05674d.jpg" alt=""></p>
+<h3 id="MyCat概述"><a href="#MyCat概述" class="headerlink" title="MyCat概述"></a>MyCat概述</h3><p> &nbsp;&nbsp;MyCat是基于Cobar二次开发的数据库中间件。它可以低成本的将现有的单机数据库和应用平滑迁移到“云”端，解决数据存储和业务规模迅速增长情况下的数据瓶颈问题。</p>
+<p>&nbsp;&nbsp;从定义和分类来看，它是一个开源的分布式数据库系统，是一个实现了MySQL协议的的Server，前端用户可以把 它看作是一个数据库代理，用MySQL客户端工具和命令行访问，而其后端可以用MySQL原生（Native）协议与多个MySQL服务 器通信，也可以用JDBC协议与大多数主流数据库服务器通信，其核心功能是分表分库，即将一个大表水平分割为N个小表，存储 在后端MySQL服务器里或者其他数据库里。</p>
+<p>&nbsp;&nbsp;Mycat发展到目前的版本，已经不是一个单纯的MySQL代理了，它的后端可以支持MySQL、SQL Server、Oracle、DB2、 PostgreSQL等主流数据库，也支持MongoDB这种新型NoSQL方式的存储，未来还会支持更多类型的存储。而在最终用户看 来，无论是那种存储方式，在Mycat里，都是一个传统的数据库表，支持标准的SQL语句进行数据的操作，这样一来，对前端业 务系统来说，可以大幅降低开发难度，提升开发速度，在测试阶段，可以将一个表定义为任何一种Mycat支持的存储方式，比如 MySQL的MyASIM表、内存表、或者MongoDB、LevelDB以及号称是世界上最快的内存数据库MemSQL上。试想一下，用户表 存放在MemSQL上，大量读频率远超过写频率的数据如订单的快照数据存放于InnoDB中，一些日志数据存放于MongoDB中， 而且还能把Oracle的表跟MySQL的表做关联查询，你是否有一种不能呼吸的感觉？而未来，还能通过Mycat自动将一些计算分析 后的数据灌入到Hadoop中，并能用Mycat+Storm/Spark Stream引擎做大规模数据分析，看到这里，你大概明白了，Mycat是 什么？Mycat就是BigSQL，Big Data On SQL Database。</p>
+<h3 id="MyCat特点"><a href="#MyCat特点" class="headerlink" title="MyCat特点"></a>MyCat特点</h3><ul>
+<li>支持SQL92标准。</li>
+<li>支持Mysql集群,可以作为Proxy使用。</li>
+<li>支持JDBC连接ORACLE、DB2、SQL Server。</li>
+<li>支持galera for mysql集群，percona-cluster或者mariadb cluster，提供高可用性数据分片集群。</li>
+<li>支持自动故障切换,实现高可用。</li>
+<li>支持读写分离,Mysql双主多从,以及一主多从模式。</li>
+<li>支持全局表。</li>
+<li>支持独有的基于E-R关系分片策略,实现了高效的表关联查询。</li>
+<li>支持多平台,部署简单。</li>
+</ul>
+<h3 id="MyCat原理"><a href="#MyCat原理" class="headerlink" title="MyCat原理"></a>MyCat原理</h3><p>&nbsp;&nbsp;Mycat的原理中最重要的一个动词是“拦截”，它拦截了用户发送过来的SQL语句，首先对SQL语句做了一些特定的分析：如分片分析、路由分析、读写分离分析、缓存分析等，然后将此SQL发往后端的真实数据库，并将返回的结果做适当的处理，最终再返回给用户。</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f67ok1abxhj20td0g0jtk.jpg" alt=""></p>
+<h3 id="分片策略"><a href="#分片策略" class="headerlink" title="分片策略"></a>分片策略</h3><p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f67ok1sk3wj20fv0c40ui.jpg" alt=""></p>
+<p>MyCat支持横向分片与纵向分片。</p>
+<ul>
+<li><strong>横向分片</strong>:一个表的数据分割到多个节点上,按照行分隔。</li>
+<li><strong>纵向分片</strong>:一个数据库中有多个表A、B、C,A存储到节点1,B存储到节点2,C存储到节点3。</li>
+</ul>
+<p>MyCat通过定义表的分片规则来实现分片,每个表可以捆绑一个分片规则,每个分片规则指定一个分片字段并绑定一个函数,实现动态分片算法。</p>
+<ol>
+<li><strong>schema</strong>:逻辑库,一个逻辑库中定义了所包含的Table。</li>
+<li><p><strong>table</strong></p>
+<p><strong>逻辑表</strong>:既然有逻辑库，那么就会有逻辑表，分布式数据库中，对应用来说，读写数据的表就是逻辑表。逻辑表，可以是数据切分后，分布在一个或多个分片库中，也可以不做数据切分，不分片，只有一个表构成。</p>
+<p><strong>分片表</strong>:指那些原有的很大数据的表，需要切分到多个数据库的表，这样，每个分片都有一部分数据，所有分片构成了完整的 数据。</p>
+<p>例如在mycat配置中的t_node就属于分片表，数据按照规则被分到dn1,dn2两个分片节点(dataNode)上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;table name=&quot;t_node&quot; primaryKey=&quot;vid&quot; autoIncrement=&quot;true&quot; dataNode=&quot;dn1,dn2&quot; rule=&quot;rule1&quot; /&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<pre><code>**非分片表**:如果一个数据库中并不是所有的表都有很大的数据,某些表是可以不用进行切分的,
+非分片表是相对于分片表来说的,就是不需要进行数据切分的表。
+
+例如下面配置的t_node,只存在于一个分片节点dn1上。
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;table name=&quot;t_node&quot; primaryKey=&quot;vid&quot; autoIncrement=&quot;true&quot; dataNode=&quot;dn1&quot; /</div></pre></td></tr></table></figure>
+
+
+**ER表**:关系型数据库是基于实体关系模型(Entity-RelationshipModel)之上的,通过其描述了真实世界中的事物与关系。MyCat提出了基于E-R关系的数据分片策略,子表的记录与所关联的父表记录存放在同一个数据分片中,即子表依赖于父表,通过表分组(TableGroup)保证数据Join不会跨库操作。
+
+**全局表**:一个真实的业务系统中，往往存在大量的类似字典表的表，这些表基本上很少变动，字典表具有以下几个特性： 
+
+- 变动不频繁。
+- 数据量总体变化不大。
+- 数据规模不大。
+
+对于这类的表，在分片的情况下，当业务表因为规模而进行分片以后，业务表与这些附属的字典表之间的关联，就成了比较棘手的问题，所以Mycat中通过数据冗余来解决这类表的join，即所有的分片都有一份数据的拷贝，所有将字典表或者符合字典表特 性的一些表定义为全局表。
+</code></pre><ol>
+<li><p><strong>dataNode</strong>:分片节点。数据切分后,一个大表被切分到不同的分片数据库上面,每个表分片所在的数据库就是分片节点。</p>
+</li>
+<li><p><strong>dataHost</strong>:节点主机。数据切分后，每个分片节点（dataNode）不一定都会独占一台机器，同一机器上面可以有多个分片数据库，这样一个或多个分片节点（dataNode）所在的机器就是节点主机（dataHost）,为了规避单节点主机并发数限制，尽量将读写压力高的分片节点 （dataNode）均衡的放在不同的节点主机（dataHost）.</p>
+</li>
+<li><p><strong>rule</strong>:分片规则。按照某种业务规则把数据分到某个分片的规则就是分片规则,数据切分选择合适的分片规则非常重要,将极大的避免后续数据处理的难度。</p>
+</li>
+<li><p><strong>sequence</strong>:全局序列号。数据切分后，原有的关系数据库中的主键约束在分布式条件下将无法使用，因此需要引入外部机制保证数据唯一性标识，这种保证全局性的数据唯一标识的机制就是全局序列号（sequence）。</p>
+</li>
+</ol>
+<h3 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h3><p>&amp;&nbsp;&nbsp;MyCat是是使用JAVA语言开发的,所以需要先安装JAVA运行环境,并且要求JDK版本在1.7以上。</p>
+<h4 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1.环境准备"></a>1.环境准备</h4><p>JDK下载地址:<a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html" target="_blank" rel="external">http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html</a></p>
+<p>MySQL下载地址:<a href="http://dev.mysql.com/downloads/mysql/5.5.html#downloads" target="_blank" rel="external">http://dev.mysql.com/downloads/mysql/5.5.html#downloads</a></p>
+<p>MyCat下载地址:<a href="https://github.com/MyCATApache/Mycat-download" target="_blank" rel="external">https://github.com/MyCATApache/Mycat-download</a></p>
+<h4 id="2-MyCat的安装"><a href="#2-MyCat的安装" class="headerlink" title="2.MyCat的安装"></a>2.MyCat的安装</h4><ol>
+<li>将下载的MyCat压缩包上传到linux服务器。</li>
+<li>解压缩MyCat压缩包。</li>
+</ol>
+<h4 id="3-MyCat目录结构"><a href="#3-MyCat目录结构" class="headerlink" title="3.MyCat目录结构"></a>3.MyCat目录结构</h4><p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f67ok0u4qqj20j002wmyh.jpg" alt=""></p>
+<p><strong>bin程序目录</strong> 存放了window版本和linux版本，除了提供封装成服务的版本之外，也提供了nowrap的shell脚本命令，方便大 家选择和修改，进入到bin目录： </p>
+<ul>
+<li>Windows下运行：运行: mycat.bat console 在控制台启动程序，也可以装载成服务，若此程序运行有问题，也可以运行 startup_nowrap.bat，确保java命令可以在命令执行.</li>
+<li>Windows下将MyCAT做成系统服务：MyCAT提供warp方式的命令，可以将MyCAT安装成系统服务并可启动和停止。 <ul>
+<li>进入bin目录下执行命令 mycat install 执行安装mycat服务. </li>
+<li>输入 mycat start 启动mycat服务.</li>
+</ul>
+</li>
+</ul>
+<p><strong>conf目录</strong>存放配置文件，server.xml是Mycat服务器参数调整和用户授权的配置文件，schema.xml是逻辑库定义和表以及分片定义的配置文件，rule.xml是分片规则的配置文件，分片规则的具体一些参数信息单独存放为文件，也在这个目录下，配置文件修改，需要重启Mycat或者通过9066端口reload.</p>
+<p><strong>lib目录</strong>主要存放mycat依赖的一些jar文件.</p>
+<p>日志存放在logs/mycat.log中，每天一个文件，日志的配置是在conf/log4j.xml中，根据自己的需要，可以调整输出级别为 debug，debug级别下，会输出更多的信息，方便排查问题.</p>
+<h4 id="4-服务启动"><a href="#4-服务启动" class="headerlink" title="4.服务启动"></a>4.服务启动</h4><p> MyCAT在Linux中部署启动时，首先需要在Linux系统的环境变量中配置MYCAT_HOME,操作方式如下： </p>
+<ol>
+<li>vi /etc/profile,在系统环境变量文件中增加 MYCAT_HOME=/usr/local/Mycat </li>
+<li>执行 source /etc/profile 命令，使环境变量生效。</li>
+</ol>
+<p>如果是在多台linux系统中组建的MyCat集群,则需要在MyCat Server所在的服务器上配置对其他Ip和主机名的映射。</p>
+<ol>
+<li>vi /etc/hosts</li>
+<li>例如<br>192.168.145.1 test_1<br>192.168.145.2 test_2</li>
+</ol>
+<p>配置完毕后,可以cd到/usr/local/mycat/bin目录下执行 ./mycat start 启动服务。<br><strong>注:MyCat的默认服务端口为8066.</strong></p>
+<h3 id="MyCat切分数据"><a href="#MyCat切分数据" class="headerlink" title="MyCat切分数据"></a>MyCat切分数据</h3><h4 id="1-配置schema-xml"><a href="#1-配置schema-xml" class="headerlink" title="1.配置schema.xml"></a>1.配置schema.xml</h4><p>Schema.xml作为MyCat中重要的配置文件之一，管理着MyCat的逻辑库、表、分片规则、DataNode以及DataSource。弄懂这些配置，是正确使用MyCat的前提。这里就一层层对该文件进行解析。</p>
+<p><strong>schema标签</strong></p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>值</th>
+<th>数量限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dataNode</td>
+<td>String</td>
+<td>0..1</td>
+</tr>
+<tr>
+<td>checkSQLschema</td>
+<td>Boolean</td>
+<td>1</td>
+</tr>
+<tr>
+<td>sqlMaxLimit</td>
+<td>Integer</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>dataNode<br>该属性用于绑定逻辑库到某个具体的database上，如果定义了这个属性，那么这个逻辑库就不能工作在分库分表模式下了。也就是说对这个逻辑库的所有操作会直接作用到绑定的dataNode上，这个schema就可以用作读写分离和主从切换，具体如下配置:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;schema name=&quot;USERDB&quot; checkSQLschema=&quot;false&quot; sqlMaxLimit=&quot;100&quot; dataNode=&quot;dn1&quot;&gt;    </div><div class="line">&lt;!—这里不能配置任何逻辑表信息--&gt; </div><div class="line">&lt;/schema&gt;</div></pre></td></tr></table></figure>
+<p> 那么现在USERDB就绑定到dn1所配置的具体database上，可以直接访问这个database。当然该属性只能配置绑定到一个 database上，不能绑定多个dn。</p>
+<ul>
+<li><p>checkSQLschema<br>当该值设置为 true 时，如果我们执行语句<strong>select * from TESTDB.travelrecord;</strong>则MyCat会把语句修改为<strong>select * from travelrecord;</strong>。即把表示schema的字符去掉，避免发送到后端数据库执行时报（ERROR 1146 (42S02): Table ‘testdb.travelrecord’ doesn’t exist）。 不过，即使设置该值为 true ，如果语句所带的是并非是schema指定的名字，例如：<strong>select * from db1.travelrecord;</strong> 那么 MyCat并不会删除db1这个字段，如果没有定义该库的话则会报错，所以在提供SQL语句的最好是不带这个字段。</p>
+</li>
+<li><p>sqlMaxLimit<br>当该值设置为某个数值时。每条执行的SQL语句，如果没有加上limit语句，MyCat也会自动的加上所对应的值。例如设置值为 100，执行select <em> fromTESTDB.travelrecord;的效果为和执行select </em> from TESTDB.travelrecord limit 100;相同。 不设置该值的话，MyCat默认会把查询到的信息全部都展示出来，造成过多的输出。所以，在正常使用中，还是建议加上一个 值，用于减少过多的数据返回。<br>当然SQL语句中也显式的指定limit的大小，不受该属性的约束。<br>需要注意的是，如果运行的schema为非拆分库的，那么该属性不会生效。需要手动添加limit语句。</p>
+</li>
+</ul>
+<p>&nbsp;&nbsp;schema 标签用于定义MyCat实例中的逻辑库，MyCat可以有多个逻辑库，每个逻辑库都有自己的相关配置。可以使用 schema 标 签来划分这些不同的逻辑库。</p>
+<p>如果不配置 schema 标签，所有的表配置，会属于同一个默认的逻辑库。</p>
+<p>注意：若是LINUX版本的MYSQL，则需要设置为Mysql大小写不敏感，否则可能会发生表找不到的问题。<br>在MySQL的配置文件中my.ini [mysqld] 中增加一行<br>　　lower_case_table_names = 1</p>
+<p><strong>table标签</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;table name=&quot;travelrecord&quot; dataNode=&quot;dn1,dn2,dn3&quot; rule=&quot;auto-sharding-long&quot; &gt;&lt;/table&gt;</div></pre></td></tr></table></figure>
+<p>Table 标签定义了MyCat中的逻辑表，所有需要拆分的表都需要在这个标签中定义。</p>
+<p><strong>name属性</strong></p>
+<p>逻辑表的表名,同个schema标签中定义的名字必须唯一。</p>
+<p><strong>dataNode属性</strong></p>
+<p>定义这个逻辑表所属的dataNode,该属性的值需要和dataNode标签中name属性的值相互对应。如果需要定义的dn过多可以使 用如下的方法减少配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;table name=&quot;travelrecord&quot; dataNode=&quot;multipleDn$0-99,multipleDn2$100-199&quot; rule=&quot;auto-sharding-long&quot; &gt;</div><div class="line">&lt;/table&gt;</div><div class="line"></div><div class="line">&lt;dataNode name=&quot;multipleDn&quot; dataHost=&quot;localhost1&quot; database=&quot;db$0-99&quot; &gt;&lt;/dataNode&gt;</div><div class="line">&lt;dataNode name=&quot;multipleDn2&quot; dataHost=&quot;localhost1&quot; database=&quot; db$0-99&quot; &gt;&lt;/dataNode&gt;</div><div class="line"></div><div class="line">这里需要注意的是database属性所指定的真实database name需要在后面添加一个，例如上面的例子中，我需要在真实的mysql 上建立名称为dbs0到dbs99的database。</div></pre></td></tr></table></figure>
+<p><strong>rule属性</strong></p>
+<p>该属性用于指定逻辑表要使用的规则名字，规则名字在rule.xml中定义，必须与tableRule标签中name属性属性值一一对应。</p>
+<p><strong>ruleRequired属性</strong></p>
+<p>该属性用于指定表是否绑定分片规则，如果配置为true，但没有配置具体rule的话 ，程序会报错。</p>
+<p><strong>primaryKey属性</strong></p>
+<p>该逻辑表对应真实表的主键，例如：分片的规则是使用非主键进行分片的，那么在使用主键查询的时候，就会发送查询语句到所有配置的DN上，如果使用该属性配置真实表的主键。<br>那么MyCat会缓存主键与具体DN的信息，那么再次使用非主键进行查询的 时候就不会进行广播式的查询，就会直接发送语句给具体的DN，但是尽管配置该属性，如果缓存并没有命中的话，还是会发送语 句给具体的DN，来获得数据。</p>
+<p><strong>type属性</strong></p>
+<p>该属性定义了逻辑表的类型，目前逻辑表只有“全局表”和”普通表”两种类型。对应的配置：</p>
+<ul>
+<li>全局表 global</li>
+<li>普通表 不指定该值为global的所有表。</li>
+</ul>
+<p><strong>autoIncrement属性</strong></p>
+<p>mysql对非自增长主键，使用last_insert_id()是不会返回结果的，只会返回0。所以，只有定义了自增长主键的表才可以用 last_insert_id()返回主键值。</p>
+<p>mycat目前提供了自增长主键功能，但是如果对应的mysql节点上数据表，没有定义auto_increment，那么在mycat层调用 last_insert_id()也是不会返回结果的。</p>
+<p>由于insert操作的时候没有带入分片键，mycat会先取下这个表对应的全局序列，然后赋值给分片键。这样才能正常的插入到数据 库中，最后使用last_insert_id()才会返回插入的分片键值。</p>
+<p>如果要使用这个功能最好配合使用数据库模式的全局序列。</p>
+<p>使用autoIncrement=“true”指定这个表有使用自增长主键，这样mycat才会不抛出分片键找不到的异常。<br>使用autoIncrement=“false”来禁用这个功能，当然你也可以直接删除掉这个属性。默认就是禁用的。</p>
+<p><strong>needAddLimit属性</strong></p>
+<p>指定表是否需要自动的在每个语句后面加上limit限制。由于使用了分库分表，数据量有时会特别巨大。这时候执行查询语句，如果恰巧又忘记了加上数量限制的话。那么查询所有的数据出来，也够等上一小会儿的。 所以，mycat就自动的为我们加上LIMIT 100。当然，如果语句中有limit，就不会在次添加了。</p>
+<p>这个属性默认为true,你也可以设置成false`禁用掉默认行为。</p>
+<p><strong>childTable标签</strong></p>
+<p>childTable标签用于定义E-R分片的子表。通过标签上的属性与父表进行关联。</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>值</th>
+<th>数量限制</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>1</td>
+<td>定义子表的表名。</td>
+</tr>
+<tr>
+<td>joinKey</td>
+<td>String</td>
+<td>1</td>
+<td>插入子表的时候会使用这个列的值查找父表存储的数据节点。</td>
+</tr>
+<tr>
+<td>parentKey</td>
+<td>String</td>
+<td>1</td>
+<td>属性指定的值一般为与父表建立关联关系的列名。程序首先获取joinkey的值，再通过<strong>parentKey</strong>属性指定的列名产生查询语 句，通过执行该语句得到父表存储在哪个分片上。从而确定子表存储的位置。</td>
+</tr>
+<tr>
+<td>primaryKey</td>
+<td>String</td>
+<td>0..1</td>
+<td>同table标签所描述的。</td>
+</tr>
+<tr>
+<td>needAddLimit</td>
+<td>Boolean</td>
+<td>0..1</td>
+<td>同table标签所描述的。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>dataNode标签</strong></p>
+<p>dataNode 标签定义了MyCat中的数据节点，也就是我们通常说所的数据分片。一个<strong>dataNode</strong> 标签就是一个独立的数据分 片。 </p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>值</th>
+<th>数量限制</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>1</td>
+<td>定义数据节点的名字，这个名字需要是唯一的，我们需要在table标签上应用这个名字，来建立表与分片对应的关系。</td>
+</tr>
+<tr>
+<td>dataHost</td>
+<td>String</td>
+<td>1</td>
+<td>该属性用于定义该分片属于哪个数据库实例的，属性值是引用dataHost标签上定义的name属性。</td>
+</tr>
+<tr>
+<td>database</td>
+<td>String</td>
+<td>1</td>
+<td>该属性用于定义该分片属性哪个具体数据库实例上的具体库，因为这里使用两个纬度来定义分片，就是：实例+具体的库。因为 每个库上建立的表和表结构是一样的。所以这样做就可以轻松的对表进行水平拆分。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>dataHost标签</strong></p>
+<p>作为Schema.xml中最后的一个标签，该标签在mycat逻辑库中也是作为最底层的标签存在，直接定义了具体的数据库实例、读 写分离配置和心跳语句。</p>
+<p><strong>name属性</strong></p>
+<p>唯一标识dataHost标签，供上层的标签使用。</p>
+<p><strong>maxCon属性</strong></p>
+<p>指定每个读写实例连接池的最大连接。也就是说，标签内嵌套的writeHost、readHost标签都会使用这个属性的值来实例化出连接池的最大连接数。</p>
+<p><strong>minCon属性</strong></p>
+<p>指定每个读写实例连接池的最小连接，初始化连接池的大小。</p>
+<p><strong>balance属性</strong></p>
+<p>负载均衡类型，目前的取值有3种：</p>
+<ol>
+<li>balance=“0”, 所有读操作都发送到当前可用的writeHost上。 </li>
+<li>balance=“1”，所有读操作都随机的发送到readHost。 </li>
+<li>balance=“2”，所有读操作都随机的在writeHost、readhost上分发。</li>
+</ol>
+<p><strong>writeType属性</strong></p>
+<p>负载均衡类型，目前的取值有3种： </p>
+<ol>
+<li>writeType=“0”, 所有写操作都发送到可用的writeHost上。 </li>
+<li>writeType=“1”，所有写操作都随机的发送到readHost。 </li>
+<li>writeType=“2”，所有写操作都随机的在writeHost、readhost分上发。</li>
+</ol>
+<p><strong>dbType属性</strong></p>
+<p>指定后端连接的数据库类型，目前支持二进制的mysql协议，还有其他使用JDBC连接的数据库。例如：mongodb、oracle、 spark等。</p>
+<p><strong>dbDriver属性</strong></p>
+<p>指定连接后端数据库使用的Driver，目前可选的值有native和JDBC。使用native的话，因为这个值执行的是二进制的mysql协 议，所以可以使用mysql和maridb。其他类型的数据库则需要使用JDBC驱动来支持。<br>如果使用JDBC的话需要将符合JDBC 4标准的驱动JAR包放到MYCAT\lib目录下，并检查驱动JAR包中包括如下目录结构的文 件：META-INF\services\java.sql.Driver。在这个文件内写上具体的Driver类名，例如：com.mysql.jdbc.Driver。</p>
+<p><strong>heartbeat标签</strong></p>
+<p>这个标签内指明用于和后端数据库进行心跳检查的语句。例如,MYSQL可以使用select user()，Oracle可以使用select 1 from dual等。<br>这个标签还有一个connectionInitSql属性，主要是当使用Oracla数据库时，需要执行的初始化SQL语句就这个放到这里面来。例 如：alter session set nls_date_format=’yyyy-mm-dd hh24:miss’</p>
+<p><strong>writeHost标签、readHost标签</strong></p>
+<p>这两个标签都指定后端数据库的相关配置给mycat，用于实例化后端连接池。唯一不同的是，writeHost指定写实例、readHost 指定读实例，组着这些读写实例来满足系统的要求。</p>
+<p>在一个dataHost内可以定义多个writeHost和readHost。但是，如果writeHost指定的后端数据库宕机，那么这个writeHost绑 定的所有readHost都将不可用。另一方面，由于这个writeHost宕机系统会自动的检测到，并切换到备用的writeHost上去。</p>
+<p>这两个标签的属性相同，这里就一起介绍。</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>值</th>
+<th>数量限制</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>host</td>
+<td>String</td>
+<td>1</td>
+<td>用于标识不同实例，一般writeHost我们使用<em>M1，readHost我们用</em>S1。</td>
+</tr>
+<tr>
+<td>url</td>
+<td>String</td>
+<td>1</td>
+<td>后端实例连接地址，如果是使用native的dbDriver，则一般为address:port这种形式。用JDBC或其他的dbDriver，则需要特殊 指定。当使用JDBC时则可以这么写：jdbc:mysql://localhost:3306/。</td>
+</tr>
+<tr>
+<td>password</td>
+<td>String</td>
+<td>1</td>
+<td>后端存储实例需要的用户名字</td>
+</tr>
+<tr>
+<td>user</td>
+<td>String</td>
+<td>1</td>
+<td>后端存储实例需要的密码</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-配置server-xml"><a href="#2-配置server-xml" class="headerlink" title="2.配置server.xml"></a>2.配置server.xml</h4><p>server.xml几乎保存了所有mycat需要的系统配置信息。最常用的是在此配置用户名、密码及权限。</p>
+<p>例如:给TESTDB配置一个test用户。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;user name=&quot;test&quot;&gt;</div><div class="line">    &lt;property name=&quot;password&quot;&gt;test&lt;/property&gt;</div><div class="line">    &lt;property name=&quot;schemas&quot;&gt;TESTDB&lt;/property&gt;</div><div class="line">    &lt;property name=&quot;readOnly&quot;&gt;true&lt;/property&gt;</div><div class="line">&lt;/user&gt;</div></pre></td></tr></table></figure>
+<h4 id="3-配置rule-xml"><a href="#3-配置rule-xml" class="headerlink" title="3.配置rule.xml"></a>3.配置rule.xml</h4><p>rule.xml里面就定义了我们对表进行拆分所涉及到的规则定义。我们可以灵活的对表使用不同的分片算法，或者对表使用相同的算法但具体的参数不同。这个文件里面主要有tableRule和function这两个标签。在具体使用过程中可以按照需求添加tableRule和function。</p>
+<h3 id="MyCat读写分离"><a href="#MyCat读写分离" class="headerlink" title="MyCat读写分离"></a>MyCat读写分离</h3><p>数据库读写分离对于大型系统或者访问量很高的互联网应用来说，是必不可少的一个重要功能。对于MySQL来说，标准的读写分离是主从模式，一个写节点Master后面跟着多个读节点，读节点的数量取决于系统的压力，通常是1-3个读节点的配置。</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f67ok0c0gsj20gx09ogmo.jpg" alt="Mycat读写分离和自动切换机制，需要mysql的主从复制机制配合。"></p>
+<h4 id="1-Mysql主从复制"><a href="#1-Mysql主从复制" class="headerlink" title="1.Mysql主从复制"></a>1.Mysql主从复制</h4><p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f67ok01dxoj20j70dota9.jpg" alt=""></p>
+<p>Mysql主从配置需要注意的地方:</p>
+<ol>
+<li>主DBServer和从DBServer需要版本一致。</li>
+<li>主DBServer和从DBServer数据一致。</li>
+<li>主DB server开启二进制日志,主DB server和从DB server的server_id都必须唯一。</li>
+</ol>
+<h4 id="2-Mysql主服务器配置"><a href="#2-Mysql主服务器配置" class="headerlink" title="2.Mysql主服务器配置"></a>2.Mysql主服务器配置</h4><p>修改/etc路径下的my.cnf文件,在[mysqld]段中添加:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">binlog-do-db=db1</div><div class="line">binlog-ignore-db=mysql</div><div class="line">#启用二进制日志</div><div class="line">log-bin=mysql-bin</div><div class="line">#服务器唯一ID，一般取IP最后一段</div><div class="line">server-id=138</div></pre></td></tr></table></figure>
+<p>修改后,重启mysql服务service mysqld restart</p>
+<p>创建一个账户并授权slave。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt;GRANT FILE ON *.* TO &apos;backup&apos;@&apos;%&apos; IDENTIFIED BY &apos;123456&apos;;</div><div class="line">mysql&gt;GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* to &apos;backup&apos;@&apos;%&apos; identified by &apos;123456&apos;; </div><div class="line">#一般不用root帐号，“%”表示所有客户端都可能连，只要帐号，密码正确，此处可用具体客户端IP代替，如192.168.145.226，加强安全。</div></pre></td></tr></table></figure>
+<p>之后刷新权限:FLUSH PRIVILEGES;</p>
+<p>可以使用show master status;命令 查询主服务器状态。</p>
+<h4 id="3-Mysql从服务器配置"><a href="#3-Mysql从服务器配置" class="headerlink" title="3.Mysql从服务器配置"></a>3.Mysql从服务器配置</h4><p>修改/etc路径下的my.cnf文件,在[mysqld]段中添加一个serverid。</p>
+<p>配置从服务器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mysql&gt;change master to master_host=&apos;192.168.145.138&apos;,master_user=&apos;backup&apos;,master_password=&apos;123456&apos;,</div><div class="line"> master_log_file=&apos;mysql-bin.000002&apos;,master_log_pos=679;</div></pre></td></tr></table></figure>
+<p>注意语句中间不要断开，master_port为mysql服务器端口号(无引号)，master_user为执行同步操作的数据库账户，“120”无单引号(此处的120就是show master status 中看到的position的值，这里的mysql-bin.000001就是file对应的值)。</p>
+<p>之后启动从服务器复制功能 mysql&gt;start slave;</p>
+<p>检查从服务器状态 show slave status;</p>
+<p>注：Slave_IO及Slave_SQL进程必须正常运行，即YES状态，否则都是错误的状态(如：其中一个NO均属错误)。</p>
+<p>如果出现此错误：<br>Fatal error: The slave I/O thread stops because master and slave have equal MySQL server UUIDs; these UUIDs must be different for replication to work.<br>因为是mysql是克隆的系统所以mysql的uuid是一样的，所以需要修改。</p>
+<p>解决方法:<br>删除/var/lib/mysql/auto.cnf文件，重新启动服务。</p>
+<h4 id="4-MyCat配置"><a href="#4-MyCat配置" class="headerlink" title="4.MyCat配置"></a>4.MyCat配置</h4><p>Mycat 1.4 支持MySQL主从复制状态绑定的读写分离机制，让读更加安全可靠，配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;dataNode name=&quot;dn1&quot; dataHost=&quot;localhost1&quot; database=&quot;db1&quot; /&gt;</div><div class="line">	&lt;dataNode name=&quot;dn2&quot; dataHost=&quot;localhost1&quot; database=&quot;db2&quot; /&gt;</div><div class="line">	&lt;dataNode name=&quot;dn3&quot; dataHost=&quot;localhost1&quot; database=&quot;db3&quot; /&gt;</div><div class="line">	&lt;dataHost name=&quot;localhost1&quot; maxCon=&quot;1000&quot; minCon=&quot;10&quot; balance=&quot;1&quot;</div><div class="line">		writeType=&quot;0&quot; dbType=&quot;mysql&quot; dbDriver=&quot;native&quot; switchType=&quot;2&quot;  slaveThreshold=&quot;100&quot;&gt;</div><div class="line">		&lt;heartbeat&gt;show slave status&lt;/heartbeat&gt;</div><div class="line">		&lt;writeHost host=&quot;hostM&quot; url=&quot;192.168.25.138:3306&quot; user=&quot;root&quot;</div><div class="line">			password=&quot;root&quot;&gt;</div><div class="line">			&lt;readHost host=&quot;hostS&quot; url=&quot;192.168.25.166:3306&quot; user=&quot;root&quot;</div><div class="line">			password=&quot;root&quot; /&gt;</div><div class="line">		&lt;/writeHost&gt;</div><div class="line">	&lt;/dataHost&gt;</div></pre></td></tr></table></figure>
+<p>readHost是从属于writeHost的，即意味着它从那个writeHost获取同步数据，因此，当它所属的writeHost宕机了，则它也不会再参与到读写分离中来，即“不工作了”，这是因为此时，它的数据已经“不可靠”了。基于这个考虑，目前mycat 1.3和1.4版本中，若想支持MySQL一主一从的标准配置，并且在主节点宕机的情况下，从节点还能读取数据，则需要在Mycat里配置为两个writeHost并设置banlance=1。</p>
+<p>设置 switchType=”2” 与slaveThreshold=”100”</p>
+<p>switchType 目前有三种选择：</p>
+<p>-1：表示不自动切换</p>
+<p>1 ：默认值，自动切换</p>
+<p>2 ：基于MySQL主从同步的状态决定是否切换</p>
+<p>Mycat心跳检查语句配置为 show slave status ，dataHost 上定义两个新属性: switchType=”2” 与slaveThreshold=”100”，此时意味着开启MySQL主从复制状态绑定的读写分离与切换机制。</p>
+<p>Mycat心跳机制通过检测 show slave status 中的 “Seconds_Behind_Master”, “Slave_IO_Running”, “Slave_SQL_Running” 三个字段来确定当前主从同步的状态以及Seconds_Behind_Master主从复制时延。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/07/09/2016-07-09-MyCat/" data-id="cj4z0jkav000duomj3fxvbgj5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库/">数据库</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/12/2016-07-12-Hadoop-HDFS/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hadoop学习笔记(1)-HDFS
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/07/03/2016-07-03-activemq/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">ActiveMQ消息队列</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

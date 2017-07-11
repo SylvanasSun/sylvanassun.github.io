@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Hadoop学习笔记(5)-Hive | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述&amp;nbsp;&amp;nbsp;Hive是建立在Hadoop上的数据仓库基础架构。它提供了一系列的工具，用来进行数据提取、转换、加载，这是一种可以存储、查询和分析存储在Hadoop中的大规模数据机制。可以把Hadoop下结构化数据文件映射为一张成Hive中的表，并提供类sql查询功能，除了不支持更新、索引和事务，sql其它功能都支持。可以将sql语句转换为MapReduce任务进行运行，作为sql到">
+<meta name="keywords" content="后端开发,Hadoop,大数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop学习笔记(5)-Hive">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/07/18/2016-07-18-Hadoop05-Hive/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="概述&amp;nbsp;&amp;nbsp;Hive是建立在Hadoop上的数据仓库基础架构。它提供了一系列的工具，用来进行数据提取、转换、加载，这是一种可以存储、查询和分析存储在Hadoop中的大规模数据机制。可以把Hadoop下结构化数据文件映射为一张成Hive中的表，并提供类sql查询功能，除了不支持更新、索引和事务，sql其它功能都支持。可以将sql语句转换为MapReduce任务进行运行，作为sql到">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f5x3hcttd1j20ai0513yq.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.885Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hadoop学习笔记(5)-Hive">
+<meta name="twitter:description" content="概述&amp;nbsp;&amp;nbsp;Hive是建立在Hadoop上的数据仓库基础架构。它提供了一系列的工具，用来进行数据提取、转换、加载，这是一种可以存储、查询和分析存储在Hadoop中的大规模数据机制。可以把Hadoop下结构化数据文件映射为一张成Hive中的表，并提供类sql查询功能，除了不支持更新、索引和事务，sql其它功能都支持。可以将sql语句转换为MapReduce任务进行运行，作为sql到">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f5x3hcttd1j20ai0513yq.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-07-18-Hadoop05-Hive" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/18/2016-07-18-Hadoop05-Hive/" class="article-date">
+  <time datetime="2016-07-18T10:00:00.000Z" itemprop="datePublished">2016-07-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hadoop学习笔记(5)-Hive
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f5x3hcttd1j20ai0513yq.jpg" alt=""></p>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>&nbsp;&nbsp;Hive是建立在Hadoop上的数据仓库基础架构。它提供了一系列的工具，用来进行数据提取、转换、加载，这是一种可以存储、查询和分析存储在Hadoop中的大规模数据机制。可以把Hadoop下结构化数据文件映射为一张成Hive中的表，并提供类sql查询功能，除了不支持更新、索引和事务，sql其它功能都支持。可以将sql语句转换为MapReduce任务进行运行，作为sql到MapReduce的映射器。提供shell、JDBC/ODBC、Thrift、Web等接口。</p>
+<p>&nbsp;&nbsp;Hive 并不适合那些需要低延迟的应用，例如，联机事务处理（OLTP）。Hive 查询操作过程严格遵守Hadoop MapReduce 的作业执行模型，Hive 将用户的HiveQL 语句通过解释器转换为MapReduce 作业提交到Hadoop 集群上，Hadoop 监控作业执行过程，然后返回作业执行结果给用户。Hive 并非为联机事务处理而设计，Hive 并不提供实时的查询和基于行级的数据更新操作。Hive 的最佳使用场合是大数据集的批处理作业，例如，网络日志分析。</p>
+<h3 id="元数据存储"><a href="#元数据存储" class="headerlink" title="元数据存储"></a>元数据存储</h3><p>&nbsp;&nbsp;Hive将元数据存储在RDBMS中，有三种方式可以连接到数据库。</p>
+<ol>
+<li>内嵌模式：元数据保持在内嵌数据库的Derby，一般用于单元测试，只允许一个会话连接。</li>
+<li>多用户模式：在本地安装Mysql，把元数据放到Mysql内。</li>
+<li>远程模式：元数据放置在远程的Mysql数据库。</li>
+</ol>
+<h3 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h3><p> &nbsp;&nbsp;Hive没有专门的数据存储格式，也没有为数据建立索引，用于可以非常自由的组织Hive中的表，只需要在创建表的时候告诉Hive数据中的列分隔符和行分隔符。</p>
+<p> &nbsp;&nbsp;Hive中所有的数据都存储在HDFS中，Hive中包含4中数据模型：Tabel、ExternalTable、Partition、Bucket。</p>
+<p> <strong>Table</strong></p>
+<p> &nbsp;&nbsp;类似与传统数据库中的Table，每一个Table在Hive中都有一个相应的目录来存储数据。例如：一个表zz，它在HDFS中的路径为：/wh/zz，其中wh是在hive-site.xml中由${hive.metastore.warehouse.dir}指定的数据仓库的目录，所有的Table数据（不含External Table）都保存在这个目录中。</p>
+<p> <strong>Partition</strong></p>
+<p> &nbsp;&nbsp;类似于传统数据库中划分列的索引。在Hive中，表中的一个Partition对应于表下的一个目录，所有的Partition数据都存储在对应的目录中。例如：zz表中包含ds和city两个Partition，则对应于ds=20140214，city=beijing的HDFS子目录为：/wh/zz/ds=20140214/city=Beijing。</p>
+<p> <strong>ExternalTable</strong></p>
+<p> &nbsp;&nbsp;指向已存在HDFS中的数据，可创建Partition。和Table在元数据组织结构相同，在实际存储上有较大差异。Table创建和数据加载过程，可以用统一语句实现，实际数据被转移到数据仓库目录中，之后对数据的访问将会直接在数据仓库的目录中完成。删除表时，表中的数据和元数据都会删除。ExternalTable只有一个过程，因为加载数据和创建表是同时完成。时间数据是存储在Location后面指定的HDFS路径中的，并不会移动到数据仓库中。</p>
+<p> <strong>Bcuket</strong></p>
+<p> &nbsp;&nbsp;对指定列计算的hash，根据hash值切分数据，目的是为了便于并行，每一个Buckets对应一个文件。将user列分数至32个Bucket上，首先对user列的值计算hash，比如，对应hash=0的HDFS目录为：/wh/zz/ds=20140214/city=Beijing/part-00000;对应hash=20的，目录为：/wh/zz/ds=20140214/city=Beijing/part-00020。</p>
+<h3 id="Hive常用优化方法"><a href="#Hive常用优化方法" class="headerlink" title="Hive常用优化方法"></a>Hive常用优化方法</h3><ol>
+<li>join连接时的优化：当三个或多个以上的表进行join操作时，如果每个on使用相同的字段连接时只会产生一个mapreduce。</li>
+<li>join连接时的优化：当多个表进行查询时，从左到右表的大小顺序应该是从小到大。原因：hive在对每行记录操作时会把其他表先缓存起来，直到扫描最后的表进行计算。</li>
+<li>在where字句中增加分区过滤器。</li>
+<li>当可以使用left semi join 语法时不要使用inner join，前者效率更高。原因：对于左表中指定的一条记录，一旦在右表中找到立即停止扫描。</li>
+<li>如果所有表中有一张表足够小，则可置于内存中，这样在和其他表进行连接的时候就能完成匹配，省略掉reduce过程。设置属性即可实现，set hive.auto.covert.join=true; 用户可以配置希望被优化的小表的大小 set hive.mapjoin.smalltable.size=2500000; 如果需要使用这两个配置可置入$HOME/.hiverc文件中。</li>
+<li>同一种数据的多种处理：从一个数据源产生的多个数据聚合，无需每次聚合都需要重新扫描一次。<br>例如:insert overwrite table student select <em>　from employee; insert overwrite table person select </em> from employee;<br>可以优化成 from employee insert overwrite table student select <em> insert overwrite table person select </em></li>
+<li>limit调优：limit语句通常是执行整个语句后返回部分结果。set hive.limit.optimize.enable=true;</li>
+<li>开启并发执行。某个job任务中可能包含众多的阶段，其中某些阶段没有依赖关系可以并发执行，开启并发执行后job任务可以更快的完成。设置属性：set hive.exec.parallel=true;</li>
+<li>hive提供的严格模式，禁止3种情况下的查询模式。<ul>
+<li>当表为分区表时，where字句后没有分区字段和限制时，不允许执行。</li>
+<li>当使用order by语句时，必须使用limit字段，因为order by 只会产生一个reduce任务。</li>
+<li>限制笛卡尔积的查询。</li>
+</ul>
+</li>
+<li>合理的设置map和reduce数量。</li>
+<li>jvm重用。可在hadoop的mapred-site.xml中设置jvm被重用的次数。</li>
+</ol>
+<h3 id="安装Hive"><a href="#安装Hive" class="headerlink" title="安装Hive"></a>安装Hive</h3><ol>
+<li>解压Hive。</li>
+<li>将mysql的驱动jar包copy到${HIVE_HOME}/lib目录下。</li>
+<li>cp hive-default.xml.template  hive-size.xml。</li>
+<li>配置hive-size.xml。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"> &lt;configuration&gt;</div><div class="line">	&lt;!-- 指定数据库URL --&gt;</div><div class="line">	&lt;property&gt;</div><div class="line">		&lt;name&gt;javax.jdo.option.ConnectionURL&lt;/name&gt;</div><div class="line">		&lt;value&gt;jdbc:mysql://192.168.145.148:3306/hive?createDatabaseIfNotExist=true&lt;/value&gt;</div><div class="line">	&lt;/property&gt;</div><div class="line">	&lt;property&gt;</div><div class="line">		&lt;name&gt;javax.jdo.option.ConnectionDriverName&lt;/name&gt;</div><div class="line">		&lt;value&gt;com.mysql.jdbc.Driver&lt;/value&gt;</div><div class="line">	&lt;/property&gt;</div><div class="line">	&lt;property&gt;</div><div class="line">		&lt;name&gt;javax.jdo.option.ConnectionUserName&lt;/name&gt;</div><div class="line">		&lt;value&gt;root&lt;/value&gt;</div><div class="line">	&lt;/property&gt;</div><div class="line">	&lt;property&gt;</div><div class="line">		&lt;name&gt;javax.jdo.option.ConnectionPassword&lt;/name&gt;</div><div class="line">		&lt;value&gt;root&lt;/value&gt;</div><div class="line">	&lt;/property&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="Hive-QL"><a href="#Hive-QL" class="headerlink" title="Hive QL"></a>Hive QL</h3><h4 id="文件格式"><a href="#文件格式" class="headerlink" title="文件格式"></a>文件格式</h4><p>&nbsp;&nbsp;Hive创建表可以指定四种文件格式。</p>
+<ol>
+<li>文本格式的数据是Hadoop中经常碰到的。如TextFile 、XML和JSON。 文本格式除了会占用更多磁盘资源外，对它的解析开销一般会比二进制格式高几十倍以上，尤其是XML 和JSON，它们的解析开销比Textfile 还要大，因此强烈不建议在生产系统中使用这些格式进行储存。如果需要输出这些格式，请在客户端做相应的转换操作。 文本格式经常会用于日志收集，数据库导入，Hive默认配置也是使用文本格式，而且常常容易忘了压缩，所以请确保使用了正确的格式。另外文本格式的一个缺点是它不具备类型和模式，比如销售金额、利润这类数值数据或者日期时间类型的数据，如果使用文本格式保存，由于它们本身的字符串类型的长短不一，或者含有负数，导致MR没有办法排序，所以往往需要将它们预处理成含有模式的二进制格式，这又导致了不必要的预处理步骤的开销和储存资源的浪费。</li>
+<li>SequenceFile是Hadoop API 提供的一种二进制文件，它将数据以<key,value>的形式序列化到文件中。这种二进制文件内部使用Hadoop 的标准的Writable 接口实现序列化和反序列化。它与Hadoop API中的MapFile 是互相兼容的。Hive 中的SequenceFile 继承自Hadoop API 的SequenceFile，不过它的key为空，使用value 存放实际的值， 这样是为了避免MR 在运行map 阶段的排序过程。如果你用Java API 编写SequenceFile，并让Hive 读取的话，请确保使用value字段存放数据，否则你需要自定义读取这种SequenceFile 的InputFormat class 和OutputFormat class。</key,value></li>
+<li>RCFile是Hive推出的一种专门面向列的数据格式。 它遵循“先按列划分，再垂直划分”的设计理念。当查询过程中，针对它并不关心的列时，它会在IO上跳过这些列。需要说明的是，RCFile在map阶段从远端拷贝仍然是拷贝整个数据块，并且拷贝到本地目录后RCFile并不是真正直接跳过不需要的列，并跳到需要读取的列， 而是通过扫描每一个row group的头部定义来实现的，但是在整个HDFS Block 级别的头部并没有定义每个列从哪个row group起始到哪个row group结束。所以在读取所有列的情况下，RCFile的性能反而没有SequenceFile高。</li>
+<li>Avro是一种用于支持数据密集型的二进制文件格式。它的文件格式更为紧凑，若要读取大量数据时，Avro能够提供更好的序列化和反序列化性能。并且Avro数据文件天生是带Schema定义的，所以它不需要开发者在API 级别实现自己的Writable对象。</li>
+<li>其他格式:Hadoop实际上支持任意文件格式，只要能够实现对应的RecordWriter和RecordReader即可。其中数据库格式也是会经常储存在Hadoop中，比如Hbase，Mysql，Cassandra，MongoDB。 这些格式一般是为了避免大量的数据移动和快速装载的需求而用的。他们的序列化和反序列化都是由这些数据库格式的客户端完成，并且文件的储存位置和数据布局(Data Layout)不由Hadoop控制，他们的文件切分也不是按HDFS的块大小（blocksize）进行切割。</li>
+</ol>
+<h4 id="create-table"><a href="#create-table" class="headerlink" title="create table"></a>create table</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">create table test_user(id int,name string) </div><div class="line">    // 注释</div><div class="line">    comment &apos;This is the test table&apos;</div><div class="line">    row format delimited</div><div class="line">    // 指定切分格式规则</div><div class="line">    fields terminated by &apos;,&apos;</div><div class="line">    // 指定文件格式</div><div class="line">    stored as textfile;</div></pre></td></tr></table></figure>
+<h4 id="insert-select"><a href="#insert-select" class="headerlink" title="insert select"></a>insert select</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">//使用select语句来批量插入数据</div><div class="line">insert overwrite table test_user select * from tab_user;</div></pre></td></tr></table></figure>
+<h4 id="load-data"><a href="#load-data" class="headerlink" title="load data"></a>load data</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">//从本地导入数据到hive的表中（实质就是将文件上传到hdfs中hive管理目录下）</div><div class="line">load data local inpath &apos;/home/hadoop/test.txt&apos; into table test_user;</div><div class="line"></div><div class="line">//从hdfs上导入数据到hive表中（实质就是将文件从原始目录移动到hive管理的目录下）</div><div class="line">load data inpath &apos;hdfs://ns1/data.log&apos; into table test_user;</div></pre></td></tr></table></figure>
+<h4 id="external-table"><a href="#external-table" class="headerlink" title="external table"></a>external table</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//LOCATION指定的是hdfs路径</div><div class="line">//如果LOCATION路径有数据,则可以直接映射数据建表</div><div class="line">CREATE EXTERNAL TABLE test_user_external(id int, name string)</div><div class="line"> ROW FORMAT DELIMITED</div><div class="line"> FIELDS TERMINATED BY &apos;,&apos;</div><div class="line"> STORED AS TEXTFILE</div><div class="line"> LOCATION &apos;/external/user&apos;;</div></pre></td></tr></table></figure>
+<h4 id="CTAS"><a href="#CTAS" class="headerlink" title="CTAS"></a>CTAS</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//CTAS是通过查询,然后根据查询的结果来建立表格的一种方式。</div><div class="line">//CTAS会根据SELECT语句创建表结构,并把数据一并复制过来。</div><div class="line">CREATE TABLE test_user_ctas</div><div class="line">   AS</div><div class="line">SELECT id new_id, name new_name</div><div class="line">FROM test_user</div><div class="line">SORT BY new_id;</div></pre></td></tr></table></figure>
+<h4 id="Partition"><a href="#Partition" class="headerlink" title="Partition"></a>Partition</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">//创建一个分区表,以year年份作为分区字段</div><div class="line">create table test_user_part(id int,name string) </div><div class="line">    partitioned by (year string)</div><div class="line">    row format delimited fields terminated by &apos;,&apos;;</div><div class="line"></div><div class="line">//将data.log导入到test_user_part表中,并设置分区为1990    </div><div class="line">load data local inpath &apos;/home/hadoop/data.log&apos; overwrite into table test_user_part</div><div class="line">     partition(year=&apos;1990&apos;);</div><div class="line">    </div><div class="line">    </div><div class="line">load data local inpath &apos;/home/hadoop/data2.log&apos; overwrite into table test_user_part</div><div class="line">     partition(year=&apos;2000&apos;);</div></pre></td></tr></table></figure>
+<h4 id="Array-amp-amp-Map"><a href="#Array-amp-amp-Map" class="headerlink" title="Array&amp;&amp;Map"></a>Array&amp;&amp;Map</h4><p>&nbsp;&nbsp;hive中的列支持使用struct、map和array集合数据类型。大多数关系型数据库中不支持这些集合数据类型，因为它们会破坏标准格式。关系型数据库中为实现集合数据类型是由多个表之间建立合适的外键关联来实现。在大数据系统中，使用集合类型的数据的好处在于提高数据的吞吐量，减少寻址次数来提高查询速度。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">//array </div><div class="line">create table tab_array(a array&lt;int&gt;,b array&lt;string&gt;)</div><div class="line">row format delimited</div><div class="line">fields terminated by &apos;\t&apos;</div><div class="line">collection items terminated by &apos;,&apos;;</div><div class="line"></div><div class="line">select a[0] from tab_array;</div><div class="line">select * from tab_array where array_contains(b,&apos;word&apos;);</div><div class="line">insert into table tab_array select array(0),array(name,ip) from tab_ext t; </div><div class="line"></div><div class="line">//map</div><div class="line">create table tab_map(name string,info map&lt;string,string&gt;)</div><div class="line">row format delimited</div><div class="line">fields terminated by &apos;\t&apos;</div><div class="line">collection items terminated by &apos;,&apos;</div><div class="line">map keys terminated by &apos;:&apos;;</div><div class="line"></div><div class="line">load data local inpath &apos;/home/hadoop/hivetemp/tab_map.txt&apos; overwrite into table tab_map;</div><div class="line">insert into table tab_map select name,map(&apos;name&apos;,name,&apos;ip&apos;,ip) from tab_ext;</div></pre></td></tr></table></figure>
+<h3 id="UDF"><a href="#UDF" class="headerlink" title="UDF"></a>UDF</h3><p>&nbsp;&nbsp;UDF即用户自定义函数(User Defined Function),Hive支持UDF进行自定义函数的编写。</p>
+<p>&nbsp;&nbsp;需要先使用Java代码开发UDF,然后再把jar包导入到Hive中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FindRegionByPhone</span> <span class="keyword">extends</span> <span class="title">UDF</span> </span>&#123;</div><div class="line">	</div><div class="line">	<span class="comment">//使用map模拟数据库</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> HashMap&lt;String,String&gt;  dataDictionary = <span class="keyword">new</span> HashMap&lt;String,String&gt;();</div><div class="line">	</div><div class="line">	<span class="keyword">static</span>&#123;</div><div class="line">		dataDictionary.put(<span class="string">"136"</span>,<span class="string">"beijing"</span>);</div><div class="line">		dataDictionary.put(<span class="string">"137"</span>,<span class="string">"guangzhou"</span>);</div><div class="line">		dataDictionary.put(<span class="string">"138"</span>,<span class="string">"shenzhen"</span>);</div><div class="line">		dataDictionary.put(<span class="string">"139"</span>,<span class="string">"shanghai"</span>);</div><div class="line">	&#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">evaluate</span><span class="params">(String phone)</span> </span>&#123;</div><div class="line">        </div><div class="line">        <span class="comment">// 如果没有匹配到对应的区域则返回"other"</span></div><div class="line">		<span class="keyword">return</span> areaMap.get(phone.substring(<span class="number">0</span>, <span class="number">3</span>)) == <span class="keyword">null</span> ? <span class="string">"other"</span> : areaMap</div><div class="line">				.get(phone.substring(<span class="number">0</span>, <span class="number">3</span>));</div><div class="line"></div><div class="line">	&#125;	</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="添加jar包到Hive"><a href="#添加jar包到Hive" class="headerlink" title="添加jar包到Hive"></a>添加jar包到Hive</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">方式1:添加到hive</div><div class="line">hive&gt; add jar /root/MyUDF.jar;</div><div class="line"></div><div class="line">方式2:添加到hdfs,调用时需要指定jar包地址</div><div class="line">hdfs -dfs -put MyUDF.jar &apos;hdfs:///user/hadoop/hiveUDF&apos;</div></pre></td></tr></table></figure>
+<h4 id="创建临时函数"><a href="#创建临时函数" class="headerlink" title="创建临时函数"></a>创建临时函数</h4><p>&nbsp;&nbsp;临时函数只在当前session中有效,临时函数不能指定库。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">create temporary function testUDF as &apos;cn.sylvanas.hive.udf.FindRegionByPhone&apos; using jar &apos;hdfs:///user/hadoop/hiveUDF/MyUDF.jar&apos;</div></pre></td></tr></table></figure>
+<h4 id="创建永久函数"><a href="#创建永久函数" class="headerlink" title="创建永久函数"></a>创建永久函数</h4><p><strong>格式</strong></p>
+<p>CREATE FUNCTION [db_name.]function_name AS class_name[USING JAR|FILE|ARCHIVE ‘file_uri’ [, JAR|FILE|ARCHIVE ‘file_uri’] ];</p>
+<p><strong>例如</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">create function test.testUDF as &apos;cn.sylvanas.hive.udf.FindRegionByPhone&apos; using jar &apos;hdfs:///user/hadoop/hiveUDF/MyUDF.jar&apos;</div><div class="line"></div><div class="line">函数需要属于某个库,如这里是’test’,当其他库调用时,需要加上库名,如’test.testUDF’.</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/07/18/2016-07-18-Hadoop05-Hive/" data-id="cj4z0jkbd000puomjfiapxv3k" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/大数据/">大数据</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/19/2016-07-19-Hadoop06-Storm/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hadoop学习笔记(6)-Storm
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/07/17/2016-07-17-Hadoop04-HBase/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hadoop学习笔记(4)-HBase</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>探秘HotSpot虚拟机中的对象 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="对象的创建 &amp;nbsp;&amp;nbsp;在Java程序运行过程中无时无刻都有对象被创建出来.在语言层面上,创建对象通常仅仅是一个new关键字而已,而在虚拟机中,创建一个对象不像只需要new一下那么简单了. &amp;nbsp;&amp;nbsp;以下为虚拟机中对象创建的过程(仅限于普通Java对象,不包括数组和Class对象等).  虚拟机遇到一条new指令时,首先将去检查这个指令的参数是否能在常量池中定位到一个类的">
+<meta name="keywords" content="Java,JVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探秘HotSpot虚拟机中的对象">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/09/05/2016-09-5-HotSpotObject/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="对象的创建 &amp;nbsp;&amp;nbsp;在Java程序运行过程中无时无刻都有对象被创建出来.在语言层面上,创建对象通常仅仅是一个new关键字而已,而在虚拟机中,创建一个对象不像只需要new一下那么简单了. &amp;nbsp;&amp;nbsp;以下为虚拟机中对象创建的过程(仅限于普通Java对象,不包括数组和Class对象等).  虚拟机遇到一条new指令时,首先将去检查这个指令的参数是否能在常量池中定位到一个类的">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f7l9o8a5qpj20tw0fhmyc.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/63503acbjw1f7l9o8m90vj20tw0fhq3w.jpg">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.889Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="探秘HotSpot虚拟机中的对象">
+<meta name="twitter:description" content="对象的创建 &amp;nbsp;&amp;nbsp;在Java程序运行过程中无时无刻都有对象被创建出来.在语言层面上,创建对象通常仅仅是一个new关键字而已,而在虚拟机中,创建一个对象不像只需要new一下那么简单了. &amp;nbsp;&amp;nbsp;以下为虚拟机中对象创建的过程(仅限于普通Java对象,不包括数组和Class对象等).  虚拟机遇到一条new指令时,首先将去检查这个指令的参数是否能在常量池中定位到一个类的">
+<meta name="twitter:image" content="http://ww1.sinaimg.cn/mw690/63503acbjw1f7l9o8a5qpj20tw0fhmyc.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-09-5-HotSpotObject" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/05/2016-09-5-HotSpotObject/" class="article-date">
+  <time datetime="2016-09-05T10:00:00.000Z" itemprop="datePublished">2016-09-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      探秘HotSpot虚拟机中的对象
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h3><hr>
+<p>&nbsp;&nbsp;在Java程序运行过程中无时无刻都有对象被创建出来.在语言层面上,创建对象通常仅仅是一个new关键字而已,而在虚拟机中,创建一个对象不像只需要new一下那么简单了.</p>
+<p>&nbsp;&nbsp;以下为虚拟机中对象创建的过程(仅限于普通Java对象,不包括数组和Class对象等).</p>
+<ol>
+<li><p>虚拟机遇到一条new指令时,首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用,并且检查这个符号引用代表的类是否已被加载、解析和初始化过.如果没有,那必须先执行相应的类加载过程.</p>
+</li>
+<li><p>在类加载检查通过后,接下来虚拟机将为新生对象分配内存.对象所需内存的大小在类加载完成后便可完全确定,为对象分配空间的任务等同于把一块确定大小的内存从Java堆中划分出来.</p>
+<ul>
+<li><p>如果Java堆中内存是绝对规整的,所有用过的内存都放在一边,中间放着一个指针作为分界点的指示器,那所分配内存就仅仅是把那个指针向空闲空间那边挪动一段与对象大小相等的距离,这种分配方式称为”指针碰撞(Bump the Pointer)”.在使用Serial、ParNew等待Compact过程的收集器时,系统采用的分配算法为指针碰撞.</p>
+</li>
+<li><p>如果Java堆中内存并不是规整的,已使用的内存和空闲的内存相互交错,那就没有办法简单地进行指针碰撞了,虚拟机就必须维护一个列表,记录上哪些内存块是可用的,在分配的时候从列表中找到一块足够大的空间划分给对象实例,并更新列表上的记录,这种分配方式称为”空闲列表(Free List)”.在使用CMS这种基于Mark-Sweep算法的收集器,通常采用空闲列表.</p>
+</li>
+<li><p>由于创建对象是一件非常频繁的事情,所以除了划分可用空间之外,虚拟机还要考虑线程安全的问题,可能出现正在给对象A分配内存,指针还没来得及修改,对象B又同时使用了原来的指针来分配内存的情况.解决这个问题有两种方案,一种是对分配内存空间的动作进行同步处理(虚拟机采用CAS配上失败重试的方式保证更新操作的原子性);另一种是把内存分配的动作按照线程划分在不同的空间之中进行,即每个线程在Java堆中预先分配一小块内存,称为本地线程分配缓冲(Thread Local Allocation Buffer TLAB).哪个线程要分配内存,就在哪个线程的TLAB上分配,只有TLAB用完并分配新的TLAB时,才需要同步锁定.虚拟机是否使用TLAB,可以通过-XX:+/-UseTLAB参数来设置.</p>
+</li>
+</ul>
+</li>
+<li><p>在内存分配完成后,虚拟机需要将分配到的内存空间都初始化为零值(不包括对象头),如果使用TLAB,这一工作也可以提前至TLAB分配时进行.这一步操作保证了对象的实例字段在Java代码中可以不赋初始值就直接使用,程序能访问到这些字段的数据类型所对应的零值.</p>
+</li>
+<li><p>最后一步,虚拟机要对对象进行必要的设置,例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的GC分代年龄等信息.这些信息存放在对象的对象头(Object Header)之中.根据虚拟机当前的运作状态的不同,如是否启动偏向锁等,对象头会有不同的设置方式.</p>
+</li>
+<li><p>以上工作全部完成后,从虚拟机的角度来看,一个新的对象已经产生了,但从Java程序的视角来看,对象的创建才刚刚开始(init方法还没有执行,所有字段都还为零值).一般来说(由字节码中是否跟随invokespecial指令所决定),执行new指令之后会接着执行init()方法,把对象按照程序员的意愿进行初始化,这样一个真正可用的对象才算完全产生出来.</p>
+</li>
+</ol>
+<h3 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h3><hr>
+<p>&nbsp;&nbsp;在HotSpot虚拟机中,对象在内存中存储的布局可以分为三块区域:对象头(Object Header)、实例数据(Instance Data)和对齐填充(Padding).</p>
+<h4 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h4><p>&nbsp;&nbsp;对象头包括两部分信息,第一部分用于存储对象自身的运行时数据(例如哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等),这部分数据的长度在32位和64位的虚拟机(未开启压缩指针)中分别为32bit和64bit,官方称其为”Mark Word”.这些运行时数据很多,其实已经超过了32位、64位Bitmap结构所能记录的限度.考虑到虚拟机的空间效率,Mark Word被设计成一个非固定的数据结构以便在极小的空间内存储尽量多的信息,它会根据对象的状态复用自己的存储空间.例如,在32位的HotSpot虚拟机中,如果对象处于未被锁定的状态下,那么Mark Word的32bit空间中的25bit用于存储对象哈希码,4bit用于存储对象分代年龄,2bit用于存储锁标志位,1bit固定为0,而在其他状态(轻量级锁定、重量级锁定、GC标记、可偏向)下对象的存储内容参见下表.</p>
+<table>
+<thead>
+<tr>
+<th>存储内容</th>
+<th>标志位</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对象哈希码、对象分代年龄</td>
+<td>01</td>
+<td>未锁定</td>
+</tr>
+<tr>
+<td>指向锁记录的指针</td>
+<td>00</td>
+<td>轻量级锁定</td>
+</tr>
+<tr>
+<td>指向重量级锁的指针</td>
+<td>10</td>
+<td>膨胀(重量级锁定)</td>
+</tr>
+<tr>
+<td>空,不需要记录信息</td>
+<td>11</td>
+<td>GC标记</td>
+</tr>
+<tr>
+<td>偏向线程ID、偏向时间戳、对象分代年龄</td>
+<td>01</td>
+<td>可偏向</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;&nbsp;对象头的另一部分为类型指针,即对象指向它的类元数据的指针,虚拟机通过这个指针来确定这个对象是哪个类的实例.并不是所有的虚拟机实现都必须在对象数据上保留类型指针,也可以认为,查找对象的元数据信息并不一定要经过对象本身.如果对象是一个Java数组,那在对象头中还必须有一块用于记录数组长度的数据,因为虚拟机可以通过普通Java对象的元数据信息确定Java对象的大小,但是从数组的元数据中无法确定数组的大小.</p>
+<h4 id="实例数据"><a href="#实例数据" class="headerlink" title="实例数据"></a>实例数据</h4><p>&nbsp;&nbsp;实例数据是对象真正存储的有效信息,也是在程序代码中所定义的各种类型的字段内容.无论是从父类继承下来的,还是子类中定义的,都需要记录起来.</p>
+<p>&nbsp;&nbsp;实例数据的存储顺序会受到虚拟机分配策略参数(FieldsAllocationStyle)和字段在Java源码中定义顺序的影响.HotSpot虚拟机默认的分配策略为longs/doubles、ints、shorts/chars、bytes/booleans、oops(Ordinary Object Pointers),从以上分配策略中可以看出,相同宽度的字段总是被分配到一起.在满足这个前提条件的情况下,父类中定义的变量会出现在子类之前.如果CompactFields参数值为true(默认为true),那么子类中较窄的变量也可能会插入到父类变量的空隙之中.</p>
+<h4 id="对齐填充"><a href="#对齐填充" class="headerlink" title="对齐填充"></a>对齐填充</h4><p>&nbsp;&nbsp;对齐填充并不是必然存在的,它也没有特别的含义,只是用于当作占位符而已.</p>
+<p>&nbsp;&nbsp;因为HotSpot虚拟机的自动内存管理系统要求对象起始地址必须是8字节的整数值,即是对象的大小必须是8字节的整数倍.而对象头部分正好是8字节的倍数(1倍或2倍),所以,当对象实例数据部分没有对齐时,就需要通过对齐填充来补全.</p>
+<h3 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h3><hr>
+<p>&nbsp;&nbsp;Java程序需要通过栈上的reference数据来操作堆上的具体对象.由于reference类型在Java虚拟机规范中只规定了一个指向对象的引用,所以对象访问方式也是取决于虚拟机实现而定的.</p>
+<p>&nbsp;&nbsp;目前主流的访问方式为句柄和直接指针两种.</p>
+<h4 id="句柄"><a href="#句柄" class="headerlink" title="句柄"></a>句柄</h4><p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f7l9o8a5qpj20tw0fhmyc.jpg" alt="通过句柄访问对象"></p>
+<p>&nbsp;&nbsp;使用句柄访问对象,Java堆中将会划分出一块内存作为句柄池,reference中存储的就是对象的句柄地址,而句柄中包含了对象实例数据与类型数据各自的具体地址信息.</p>
+<p>&nbsp;&nbsp;使用句柄来访问的最大好处就是reference中存储的是稳定的句柄地址,在对象被移动时(垃圾收集时移动对象是非常普遍的行为)只会改变句柄中的实例数据指针,而reference本身不需要修改.</p>
+<h4 id="直接指针"><a href="#直接指针" class="headerlink" title="直接指针"></a>直接指针</h4><p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f7l9o8m90vj20tw0fhq3w.jpg" alt="通过直接指针访问对象"></p>
+<p>&nbsp;&nbsp;使用直接指针访问对象,Java堆对象的布局中就必须考虑如何放置访问类型数据的相关信息,而reference中存储的直接就是对象地址.</p>
+<p>&nbsp;&nbsp;使用直接指针访问方式的最大好处就是速度更快,它节省了一次指针定位的时间开销,由于对象的访问在Java中非常频繁,积少成多后也是一项非常可观的执行成本.HotSpot虚拟机就是使用直接指针方式进行对象访问的.</p>
+<h3 id="End"><a href="#End" class="headerlink" title="End"></a>End</h3><hr>
+<blockquote>
+<p>资料参考于 &lt;&lt;深入理解 Java虚拟机 第二版&gt;&gt;.</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/09/05/2016-09-5-HotSpotObject/" data-id="cj4z0jkbw001buomjt1q58k9h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/01/12/2017-01-12-SimpleHashMap/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          实现一个简单的HashMap
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/09/04/2016-09-4-JavaMemoryRegion/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Java虚拟机中的内存区域</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

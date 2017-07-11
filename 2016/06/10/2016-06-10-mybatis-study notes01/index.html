@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>MyBatis学习笔记-01 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1.什么是MyBatis? MyBatis 本是apache的一个开源项目iBatis, 2010年这个项目由apache software foundation 迁移到了google code，并且改名为MyBatis 。2013年11月迁移到Github。 iBATIS一词来源于“internet”和“abatis”的组合，是一个基于Java的持久层框架。iBATIS提供的持久层框架包括SQ">
+<meta name="keywords" content="后端开发,Java,MyBatis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MyBatis学习笔记-01">
+<meta property="og:url" content="https://sylvanassun.github.io/2016/06/10/2016-06-10-mybatis-study notes01/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="1.什么是MyBatis? MyBatis 本是apache的一个开源项目iBatis, 2010年这个项目由apache software foundation 迁移到了google code，并且改名为MyBatis 。2013年11月迁移到Github。 iBATIS一词来源于“internet”和“abatis”的组合，是一个基于Java的持久层框架。iBATIS提供的持久层框架包括SQ">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f4pf96s0tcj209302caa2.jpg">
+<meta property="og:image" content="http://i4.buimg.com/47c91060a0871659.png">
+<meta property="og:image" content="http://i4.buimg.com/60494497248097cf.png">
+<meta property="og:image" content="http://i4.buimg.com/fb28faf508066198.png">
+<meta property="og:image" content="http://i4.buimg.com/0382b4a78a6080a2.png">
+<meta property="og:image" content="http://i4.buimg.com/134368652f63916c.png">
+<meta property="og:updated_time" content="2017-01-17T07:22:25.878Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MyBatis学习笔记-01">
+<meta name="twitter:description" content="1.什么是MyBatis? MyBatis 本是apache的一个开源项目iBatis, 2010年这个项目由apache software foundation 迁移到了google code，并且改名为MyBatis 。2013年11月迁移到Github。 iBATIS一词来源于“internet”和“abatis”的组合，是一个基于Java的持久层框架。iBATIS提供的持久层框架包括SQ">
+<meta name="twitter:image" content="http://ww3.sinaimg.cn/mw690/63503acbjw1f4pf96s0tcj209302caa2.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2016-06-10-mybatis-study notes01" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/10/2016-06-10-mybatis-study notes01/" class="article-date">
+  <time datetime="2016-06-09T16:00:00.000Z" itemprop="datePublished">2016-06-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MyBatis学习笔记-01
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f4pf96s0tcj209302caa2.jpg" alt="MyBatis"></p>
+<h3 id="1-什么是MyBatis"><a href="#1-什么是MyBatis" class="headerlink" title="1.什么是MyBatis?"></a>1.什么是MyBatis?</h3><ul>
+<li>MyBatis 本是apache的一个开源项目iBatis, 2010年这个项目由apache software foundation 迁移到了google code，并且改名为MyBatis 。2013年11月迁移到Github。</li>
+<li>iBATIS一词来源于“internet”和“abatis”的组合，是一个基于Java的持久层框架。iBATIS提供的持久层框架包括SQL Maps和Data Access Objects（DAO）</li>
+<li>MyBatis 是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。</li>
+<li>MyBatis 可以对配置和原生Map使用简单的 XML 或注解，将接口和 Java 的 POJOs(Plain Old Java Objects,普通的 Java对象)映射成数据库中的记录。</li>
+</ul>
+<h3 id="2-MyBatis框架原理"><a href="#2-MyBatis框架原理" class="headerlink" title="2.MyBatis框架原理"></a>2.MyBatis框架原理</h3><h4 id="MyBatis的功能架构分为三层"><a href="#MyBatis的功能架构分为三层" class="headerlink" title="MyBatis的功能架构分为三层"></a>MyBatis的功能架构分为三层</h4><ol>
+<li>API接口层：提供给外部使用的接口API，开发人员通过这些本地API来操纵数据库。接口层一接收到调用请求就会调用数据处理层来完成具体的数据处理。  </li>
+<li>数据处理层：负责具体的SQL查找、SQL解析、SQL执行和执行结果映射处理等。它主要的目的是根据调用的请求完成一次数据库操作。  </li>
+<li>基础支撑层：负责最基础的功能支撑，包括连接管理、事务管理、配置加载和缓存处理，这些都是共用的东西，将他们抽取出来作为最基础的组件。为上层的数据处理层提供最基础的支撑。<br><img src="http://i4.buimg.com/47c91060a0871659.png" alt=""></li>
+</ol>
+<h4 id="MyBatis框架架构流程"><a href="#MyBatis框架架构流程" class="headerlink" title="MyBatis框架架构流程"></a>MyBatis框架架构流程</h4><p><img src="http://i4.buimg.com/60494497248097cf.png" alt=""></p>
+<ol>
+<li>MyBatis应用程序通过读取XML配置文件,构造出SqlSessionFactory(SQL会话工厂)。</li>
+<li>SqlSessionFactory再根据配置,构造一个SqlSession(SQL会话)。MyBatis通过SqlSession完成数据库操作。</li>
+<li>SqlSession本身不能直接操作数据库,它是通过底层Executor接口操作数据库的。Executor有2个实现类,默认使用缓存执行器。</li>
+<li>Executor将处理的SQL信息封装到一个底层对象 MappedStatement 中。该对象包含了SQL语句、输入参数信息、输出结果集信息。</li>
+<li>输入参数和输出结果集的映射类型为java的简单类型、HashMap集合类型、POJO对象类型。</li>
+</ol>
+<h3 id="3-MyBatis的优点与缺点"><a href="#3-MyBatis的优点与缺点" class="headerlink" title="3.MyBatis的优点与缺点"></a>3.MyBatis的优点与缺点</h3><p>优点</p>
+<ul>
+<li>学习成本低、简单易学。</li>
+<li>灵活性较高,可以直接对SQL进行性能优化。</li>
+<li>SQL与业务逻辑代码低耦合,提高了维护性。</li>
+<li>可以编写动态SQL语句。</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li>SQL语句依赖数据库,即数据库发生变更时,需要重新写SQL语句, 移植性较差。</li>
+<li>SQL语句繁多,工作量大。</li>
+<li>二级缓存机制不佳。</li>
+</ul>
+<h3 id="4-MyBatis入门"><a href="#4-MyBatis入门" class="headerlink" title="4.MyBatis入门"></a>4.MyBatis入门</h3><p>我们使用MyBatis完成一个根据id查询用户的需求。</p>
+<p><strong>创建一个JavaBean</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class User &#123;</div><div class="line"></div><div class="line">     private int id ;</div><div class="line">     private String username ;// 姓名</div><div class="line">     private String sex ;// 性别</div><div class="line">     private Date birthday ;// 生日</div><div class="line">     private String address ;// 地址</div></pre></td></tr></table></figure>
+<p><strong>为User类配置一个映射文件</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;? xml version ="1.0" encoding= "UTF-8" ?&gt;</div><div class="line">&lt;! DOCTYPE mapper</div><div class="line">PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"</div><div class="line">"http://mybatis.org/dtd/mybatis-3-mapper.dtd" &gt;</div><div class="line">&lt; mapper namespace ="com.sun.test.mapper.UserMapper" &gt;</div><div class="line">     &lt;!-- 根据id查询User</div><div class="line">          在命名空间 com.sun.test.mapper.UserMapper中定义了一个id为findById的映射语句。</div><div class="line">          当我们调用时可以使用 namespace.id 来进行调用。</div><div class="line">          即：com.sun.test.mapper.UserMapper.findById </div><div class="line">     --&gt;</div><div class="line">     &lt;select id= "findById" parameterType ="int" resultType ="com.sun.test.entity.User" &gt;</div><div class="line">         select * from user where id = #&#123;id&#125;</div><div class="line">     &lt;/select &gt;</div><div class="line">&lt;/ mapper&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li>命名空间(Namespace): 必须且非常重要,最好使用对应mapper接口的全限定名(比如:com.sun.test.mapper.UserMapper )。</li>
+<li>parameterType: 输入参数的类型,可以使用类型的全限定名或者别名。</li>
+<li>resultType: 返回参数的类型,如果是集合类型,则应使用集合内可以包含的类型,而不能是集合本身,可以使用类型的全限定名或者别名。</li>
+</ul>
+<p><strong>创建一个全局配置文件,并配置数据源、事务管理器、映射文件等基本配置。</strong>    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&lt;? xml version =&quot;1.0&quot; encoding= &quot;UTF-8&quot; ?&gt;</div><div class="line">&lt;! DOCTYPE configuration</div><div class="line">  PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;</div><div class="line">  &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot; &gt;</div><div class="line">&lt; configuration&gt;</div><div class="line">     &lt;environments default= &quot;development&quot;&gt;</div><div class="line">          &lt; environment id= &quot;development&quot; &gt;</div><div class="line">              &lt;!-- 配置事务管理器 --&gt;</div><div class="line">              &lt; transactionManager type =&quot;JDBC&quot; /&gt;</div><div class="line">              &lt;!-- 配置数据源 --&gt;</div><div class="line">              &lt; dataSource type =&quot;POOLED&quot; &gt;</div><div class="line">                  &lt; property name =&quot;driver&quot; value =&quot;com.mysql.jdbc.Driver&quot; /&gt;</div><div class="line">                  &lt; property name =&quot;url&quot; value =&quot;jdbc:mysql:///mybatis&quot; /&gt;</div><div class="line">                  &lt; property name =&quot;username&quot; value =&quot;root&quot; /&gt;</div><div class="line">                  &lt; property name =&quot;password&quot; value =&quot;root&quot; /&gt;</div><div class="line">              &lt;/ dataSource&gt;</div><div class="line">          &lt;/ environment&gt;</div><div class="line">     &lt;/environments &gt;</div><div class="line">     &lt;!-- 配置映射文件 --&gt;</div><div class="line">     &lt;mappers &gt;</div><div class="line">          &lt;!-- 使用package可以查找到所有 mapper接口与 mapper映射文件但需要同名并且放在同一包下 --&gt;</div><div class="line">          &lt; package name =&quot;com.sun.test.mapper&quot; /&gt;</div><div class="line">     &lt;/mappers &gt;</div><div class="line">&lt;/ configuration&gt;</div></pre></td></tr></table></figure>
+<p><strong>测试</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test01</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">         <span class="comment">// 获得配置文件的资源流</span></div><div class="line">        InputStream inputStream = Resources.getResourceAsStream( <span class="string">"sqlMapConfig.xml"</span>);</div><div class="line">         <span class="comment">// 加载配置文件,构造SqlSessionFactory</span></div><div class="line">        SqlSessionFactory sqlSessionFactory = <span class="keyword">new</span> SqlSessionFactoryBuilder().build(inputStream );</div><div class="line">         <span class="comment">// 使用SqlSessionFactory构造一个SqlSession</span></div><div class="line">        SqlSession sqlSession = sqlSessionFactory .openSession();</div><div class="line">         <span class="comment">/**</span></div><div class="line">         * 执行statement</div><div class="line">         * 参数1：statement的id 建议使用 namespace.statementId</div><div class="line">         * 参数2：输入参数的值,它的类型要和映射文件中的parameterType类型一致</div><div class="line">         */</div><div class="line">        User user = sqlSession .selectOne(<span class="string">"com.sun.test.mapper.UserMapper.findById"</span> , <span class="number">1</span>);</div><div class="line">         <span class="comment">// 输出结果</span></div><div class="line">        System. out .println(user );</div><div class="line">         <span class="comment">// 关闭SqlSession</span></div><div class="line">        sqlSession .close();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>Resources：MyBatis中的一个工具类,可以从classpath或其他位置加载资源文件。</li>
+<li>SqlSessionFactoryBuilder： 这个类可以被实例化、使用和丢弃,一旦创建了 SqlSessionFactory,就不再需要它了。因此 SqlSessionFactoryBuilder 实例的最佳范围是方法范围（也就是局部方法变量）。</li>
+<li>SqlSessionFactory：一旦被创建就应该在应用的运行期间一直存在,所以它应该是单例的,且在应用运行期间不要多次创建。</li>
+<li>SqlSession：用于操作数据库的对象,每个线程都应该有一个SqlSession实例,它是多例的,并且它是线程不安全的,不能放在全局变量上。</li>
+</ul>
+<h3 id="5-自增主键"><a href="#5-自增主键" class="headerlink" title="5.自增主键"></a>5.自增主键</h3><p>如果你的数据库支持自动生成主键的字段,那么你可以设置 useGeneratedKeys=”true”,再把keyProperty设置到目标属性上即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;insert id=&quot;insertUser&quot; useGeneratedKeys=&quot;true&quot; parameterType =&quot;com.sun.test.entity.User&quot; keyProperty=&quot;id&quot;&gt;</div><div class="line">     insert into user(username,birthday,sex,address)</div><div class="line">     values(#&#123;username&#125;,#&#123;birthday&#125;,#&#123;sex&#125;,#&#123;address&#125;)</div><div class="line">&lt;/insert&gt;</div></pre></td></tr></table></figure>
+<p>如果不支持自动生成主键则可以使用另外一种方法生成主键</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt; insert id= &quot;insertUser&quot; parameterType =&quot;com.sun.test.entity.User&quot; &gt;</div><div class="line">          &lt;!-- 返回自增主键</div><div class="line">             keyProperty:生成主键的属性</div><div class="line">             resultType:生成主键的类型</div><div class="line">             order:查询主键SQL的执行顺序,相对于insert,如果设置为 BEFORE，那么它会首先选择主键，设置 keyProperty 然后执行插入语句。</div><div class="line">             如果设置为 AFTER，那么会先执行插入语句。</div><div class="line">             LAST_INSERT_ID():MySQL的函数,获取最后插入的主键</div><div class="line">         --&gt;</div><div class="line">          &lt; selectKey keyProperty =&quot;id&quot; resultType =&quot;int&quot; order= &quot;AFTER&quot;&gt;</div><div class="line">             select LAST_INSERT_ID()</div><div class="line">          &lt;/ selectKey&gt;</div><div class="line">         insert into user(username,birthday,sex,address)</div><div class="line">        values(#&#123;username&#125;,#&#123;birthday&#125;,#&#123;sex&#125;,#&#123;address&#125;)</div><div class="line">     &lt;/insert &gt;</div></pre></td></tr></table></figure>
+<h4 id="与-的区别"><a href="#与-的区别" class="headerlink" title="#{} 与 ${}的区别"></a>#{} 与 ${}的区别</h4><ol>
+<li>#{}可以表示为占位符?,#{id}里面的id表示输入参数的参数名称,如果是简单类型,则名称可以任意填写。</li>
+<li>${}表示字符串替换,${value},value表示输入参数的参数名称,如果是简单类型,则名称必须为value。</li>
+<li>${}是不安全的,会导致潜在的sql注入攻击,但如果要动态传入order by的列名则必须使用${} 即：order by ${columnName}。</li>
+</ol>
+<h3 id="6-使用Mapper构建Dao"><a href="#6-使用Mapper构建Dao" class="headerlink" title="6.使用Mapper构建Dao"></a>6.使用Mapper构建Dao</h3><p>使用Mapper构建Dao则只需要开发接口即可。</p>
+<h4 id="规范"><a href="#规范" class="headerlink" title="规范"></a>规范</h4><ol>
+<li>mapper接口的全限定名称要和mapper映射文件的namespace一致。</li>
+<li>mapper接口的方法名称要和mapper映射文件的MappedStatement的id一致。</li>
+<li>mapper接口的方法参数类型与返回值类型要和mapper映射文件的MappedStatement的parameterType与resultType一致。</li>
+</ol>
+<p>例:</p>
+<p><img src="http://i4.buimg.com/fb28faf508066198.png" alt="mapper"></p>
+<p><img src="http://i4.buimg.com/0382b4a78a6080a2.png" alt="mapper.xml"></p>
+<p><img src="http://i4.buimg.com/134368652f63916c.png" alt="test"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2016/06/10/2016-06-10-mybatis-study notes01/" data-id="cj4z0jka60000uomjpe53j30h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端开发/">后端开发</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/06/11/2016-06-11-MyBatis-XML配置与映射文件/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          MyBatis-XML配置与映射文件
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

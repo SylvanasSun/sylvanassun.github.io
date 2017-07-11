@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>谈谈如何实现一个非阻塞的线程安全的集合 | SylvanasSun Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述 众所周知,想要在java中要实现一个线程安全的类有很多方法.最简单直接的即是使用synchronized关键字或ReentrantLock. 但是,这两种同步方法都是基于锁的,基于锁的同步方法是阻塞的,即未争夺到锁的线程需要阻塞等待(或挂起)直到锁可用. 这种方法具有一些明显的缺点:  被阻塞的线程无法去做任何其他事情,如果这个线程是优先级较高的线程甚至会发生非常不好的结果(优先级倒置).">
+<meta name="keywords" content="2017,数据结构,多线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="谈谈如何实现一个非阻塞的线程安全的集合">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/05/29/2017-5-29-cas_concurrent_stack/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="概述 众所周知,想要在java中要实现一个线程安全的类有很多方法.最简单直接的即是使用synchronized关键字或ReentrantLock. 但是,这两种同步方法都是基于锁的,基于锁的同步方法是阻塞的,即未争夺到锁的线程需要阻塞等待(或挂起)直到锁可用. 这种方法具有一些明显的缺点:  被阻塞的线程无法去做任何其他事情,如果这个线程是优先级较高的线程甚至会发生非常不好的结果(优先级倒置).">
+<meta property="og:updated_time" content="2017-05-29T11:11:56.964Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="谈谈如何实现一个非阻塞的线程安全的集合">
+<meta name="twitter:description" content="概述 众所周知,想要在java中要实现一个线程安全的类有很多方法.最简单直接的即是使用synchronized关键字或ReentrantLock. 但是,这两种同步方法都是基于锁的,基于锁的同步方法是阻塞的,即未争夺到锁的线程需要阻塞等待(或挂起)直到锁可用. 这种方法具有一些明显的缺点:  被阻塞的线程无法去做任何其他事情,如果这个线程是优先级较高的线程甚至会发生非常不好的结果(优先级倒置).">
+  
+    <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">SylvanasSun Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">SylvanasSun的博客 | SylvanasSun Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://sylvanassun.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2017-5-29-cas_concurrent_stack" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/05/29/2017-5-29-cas_concurrent_stack/" class="article-date">
+  <time datetime="2017-05-29T10:00:00.000Z" itemprop="datePublished">2017-05-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      谈谈如何实现一个非阻塞的线程安全的集合
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
+<p>众所周知,想要在<code>java</code>中要实现一个线程安全的类有很多方法.最简单直接的即是使用<code>synchronized</code>关键字或<code>ReentrantLock</code>.</p>
+<p>但是,这两种同步方法都是基于锁的,基于锁的同步方法是阻塞的,即未争夺到锁的线程需要阻塞等待(或挂起)直到锁可用.</p>
+<p>这种方法具有一些明显的缺点:</p>
+<ul>
+<li>被阻塞的线程无法去做任何其他事情,如果这个线程是优先级较高的线程甚至会发生非常不好的结果(优先级倒置).</li>
+</ul>
+<ul>
+<li>由于<code>java</code>的线程模型是基于内核线程实现的,挂起恢复线程需要来回地切换到内核态,性能开销很大.</li>
+</ul>
+<ul>
+<li>当两个(或多个)线程都阻塞着等待另一方释放锁时,将会引发死锁.</li>
+</ul>
+<p>那么有非阻塞的方法来实现同步吗?(<code>volatile</code>关键字也是非阻塞的,但它只保证了数据的可见性与有序性,并不保证原子性)</p>
+<p>有!在<code>jdk5</code>中,java增加了大量的原子类来保证无锁下的操作原子性,可以说<code>java.util.concurrent</code>包下的所有类都几乎用到了这些原子类.</p>
+<h3 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h3><hr>
+<p>这些原子类都是基于<code>CAS</code>实现的,<code>CAS</code>即是<strong>Compare And Swap</strong>,它的原理简单来讲就是<strong>在更新新值之前先去比较原值有没有发生变化,如果没发生变化则进行更新</strong>.</p>
+<p><code>java</code>中的<code>CAS</code>是通过<code>Unsafe</code>类中的本地方法实现的,而这些本地方法需要通过现代处理器提供的<code>CAS</code>指令实现(在<code>Intel</code>处理器中该指令为<code>cmpxchg</code>).</p>
+<p>所以我们发现,<strong><code>CAS</code>操作的原子性是由处理器来保证的</strong>.</p>
+<h4 id="比较的过程"><a href="#比较的过程" class="headerlink" title="比较的过程"></a>比较的过程</h4><p>在<code>CAS</code>操作中包含了三个数,<code>V(内存位置)</code>,<code>A(预期值)</code>,<code>B(新值)</code>.</p>
+<ul>
+<li>首先会将<code>V</code>与<code>A</code>进行匹配.</li>
+</ul>
+<ul>
+<li>如果两个值相等,则使用<code>B</code>作为新值进行更新.</li>
+</ul>
+<ul>
+<li>如果不相等,则不进行更新操作(一般的补救措施是继续进行请求).</li>
+</ul>
+<h4 id="与锁相比的优点"><a href="#与锁相比的优点" class="headerlink" title="与锁相比的优点"></a>与锁相比的优点</h4><ul>
+<li><p><code>CAS</code>操作是无锁的实现,所以它不会发生死锁情况.</p>
+</li>
+<li><p>虽然<code>CAS</code>操作失败需要不断的进行请求重试,但相对于不断地挂起或恢复线程来说,性能开销要低得多.</p>
+</li>
+<li><p><code>CAS</code>的粒度更细,操作也更加轻量与灵活.</p>
+</li>
+</ul>
+<h3 id="ConcurrentStack"><a href="#ConcurrentStack" class="headerlink" title="ConcurrentStack"></a>ConcurrentStack</h3><hr>
+<p>我们通过实现一个简单的<code>ConcurentStack</code>来看看<code>CAS</code>操作是如何保证线程安全的.</p>
+<p><a href="https://gist.github.com/SylvanasSun/15353e5567e1890b45f516f7fe6a187d" target="_blank" rel="external">完整代码请从作者的Gist中获取</a></p>
+<h4 id="节点的实现"><a href="#节点的实现" class="headerlink" title="节点的实现"></a>节点的实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcurrentStack</span>&lt;<span class="title">E</span>&gt; <span class="keyword">implements</span> <span class="title">Iterable</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> AtomicReference&lt;Node&lt;E&gt;&gt; head = <span class="keyword">new</span> AtomicReference&lt;&gt;(<span class="keyword">null</span>);</div><div class="line">    <span class="keyword">private</span> AtomicInteger size = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * This internal static class represents the nodes in the stack.</div><div class="line">     */</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">final</span> E value;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">volatile</span> Node&lt;E&gt; next;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">private</span> <span class="title">Node</span><span class="params">(E value, Node&lt;E&gt; next)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.value = value;</div><div class="line">            <span class="keyword">this</span>.next = next;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="push"><a href="#push" class="headerlink" title="push"></a>push</h4><p>push函数主要是通过观察头节点(这里的头节点即是<code>V</code>),然后构建一个新的节点(它代表<code>B</code>)放于栈顶,如果<code>V</code>没有发生变化,则进行更新.如果发生了变化(被其他线程修改),就重新尝试进行<code>CAS</code>操作.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Insert a new element to the this stack.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@return</span> if &#123;<span class="doctag">@code</span> true&#125; insert success,&#123;<span class="doctag">@code</span> false&#125; otherwise</div><div class="line"> * <span class="doctag">@throws</span> IllegalArgumentException if &#123;<span class="doctag">@code</span> value&#125; is null</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">put</span><span class="params">(E value)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (value == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</div><div class="line">    <span class="keyword">return</span> putAndReturnResult(value);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">putAndReturnResult</span><span class="params">(E value)</span> </span>&#123;</div><div class="line">    Node&lt;E&gt; oldNode;</div><div class="line">    Node&lt;E&gt; newNode;</div><div class="line">    <span class="keyword">do</span> &#123;</div><div class="line">        oldNode = head.get();</div><div class="line">        newNode = <span class="keyword">new</span> Node&lt;E&gt;(value, oldNode);</div><div class="line">    &#125; <span class="keyword">while</span> (!head.compareAndSet(oldNode, newNode));</div><div class="line">    sizePlusOne();</div><div class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h4><p>pop函数中的<code>CAS</code>操作的思想基本与push函数一致.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Return the element of stack top and remove this element.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@throws</span> NullPointerException if this stack is empty</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (isEmpty())</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</div><div class="line">    <span class="keyword">return</span> removeAndReturnElement();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> E <span class="title">removeAndReturnElement</span><span class="params">()</span> </span>&#123;</div><div class="line">    Node&lt;E&gt; oldNode;</div><div class="line">    Node&lt;E&gt; newNode;</div><div class="line">    E result;</div><div class="line">    <span class="keyword">do</span> &#123;</div><div class="line">        oldNode = head.get();</div><div class="line">        newNode = oldNode.next;</div><div class="line">        result = oldNode.value;</div><div class="line">    &#125; <span class="keyword">while</span> (!head.compareAndSet(oldNode, newNode));</div><div class="line">    sizeMinusOne();</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><hr>
+<p>非阻塞的算法实现的复杂度要比阻塞算法复杂的多,但它能带来更少的性能开销,在<code>jdk</code>中,很多线程安全类都是在尽量地避免使用锁的基础上来实现线程安全.</p>
+<blockquote>
+<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanassun_xtz@163.com)</a>,转载请务必指明原文链接.</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://sylvanassun.github.io/2017/05/29/2017-5-29-cas_concurrent_stack/" data-id="cj4z0jkcn0028uomjp4g1hgw8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/2017/">2017</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据结构/">数据结构</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/06/07/2017-06-07-IoC&AOP/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          IoC与AOP的那点事儿
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/04/13/2017-4-13-hash_table/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">《Algorithms,4th Edition》读书笔记-散列表</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2017/">2017</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ActiveMQ/">ActiveMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hadoop/">Hadoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lucene/">Lucene</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyCat/">MyCat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solr/">solr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/全文检索引擎/">全文检索引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端开发/">后端开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/大数据/">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据结构/">数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/符号表/">符号表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程思想/">编程思想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/2017/" style="font-size: 17.78px;">2017</a> <a href="/tags/ActiveMQ/" style="font-size: 10px;">ActiveMQ</a> <a href="/tags/Hadoop/" style="font-size: 14.44px;">Hadoop</a> <a href="/tags/HashMap/" style="font-size: 10px;">HashMap</a> <a href="/tags/JVM/" style="font-size: 12.22px;">JVM</a> <a href="/tags/Java/" style="font-size: 18.89px;">Java</a> <a href="/tags/Lucene/" style="font-size: 10px;">Lucene</a> <a href="/tags/MyBatis/" style="font-size: 12.22px;">MyBatis</a> <a href="/tags/MyCat/" style="font-size: 10px;">MyCat</a> <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a> <a href="/tags/Spring/" style="font-size: 15.56px;">Spring</a> <a href="/tags/SpringMVC/" style="font-size: 11.11px;">SpringMVC</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/solr/" style="font-size: 10px;">solr</a> <a href="/tags/全文检索引擎/" style="font-size: 11.11px;">全文检索引擎</a> <a href="/tags/后端开发/" style="font-size: 20px;">后端开发</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/大数据/" style="font-size: 14.44px;">大数据</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/数据结构/" style="font-size: 16.67px;">数据结构</a> <a href="/tags/符号表/" style="font-size: 13.33px;">符号表</a> <a href="/tags/算法/" style="font-size: 13.33px;">算法</a> <a href="/tags/编程思想/" style="font-size: 10px;">编程思想</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/27/2017-06-27-DynamicProgramming/">什么是动态规划?</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/2017-06-16-RedBlackTree/">红黑树那点事儿</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/14/2017-06-14-sort_algorithms_qucikSort/">深入浅出排序算法(3)-快速排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/">深入浅出排序算法(2)-归并排序</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/09/2017-06-09-sort_algorithms_heapSort/">深入浅出排序算法(1)-堆排序</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 SylvanasSun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

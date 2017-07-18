@@ -1,0 +1,1614 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Algorithms,2017,Graph," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="在数学中,一个图(Graph)是表示物件与物件之间关系的方法,是图论的基本研究对象.一个图是由顶点(Vertex)与连接这些顶点的边(Edge)组成的. 图论作为数学领域中的一个重要分支已经有数百年的历史了.人们发现了图的许多重要而实用的性质,发明了许多重要的算法,给你一个图(Graph)你可以联想到许多问题: 两个顶点之间是否存在一条链接?如果存在,两个顶点之间最短的连接又是哪一条?…. 在生活">
+<meta name="keywords" content="Algorithms,2017,Graph">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图的那点事儿(1)-无向图">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/07/18/2017-07-18-Graph_UndirectedGraph/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="在数学中,一个图(Graph)是表示物件与物件之间关系的方法,是图论的基本研究对象.一个图是由顶点(Vertex)与连接这些顶点的边(Edge)组成的. 图论作为数学领域中的一个重要分支已经有数百年的历史了.人们发现了图的许多重要而实用的性质,发明了许多重要的算法,给你一个图(Graph)你可以联想到许多问题: 两个顶点之间是否存在一条链接?如果存在,两个顶点之间最短的连接又是哪一条?…. 在生活">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/graph-anatomy.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/tree.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/forest.png">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Simple-bipartite-graph.svg/600px-Simple-bipartite-graph.svg.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/adjacency-lists.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/search-api.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/paths-api.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/cc-api.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/routes.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/symbol-graph-api.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/41graph/images/symbol-graph.png">
+<meta property="og:updated_time" content="2017-07-18T03:18:03.770Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="图的那点事儿(1)-无向图">
+<meta name="twitter:description" content="在数学中,一个图(Graph)是表示物件与物件之间关系的方法,是图论的基本研究对象.一个图是由顶点(Vertex)与连接这些顶点的边(Edge)组成的. 图论作为数学领域中的一个重要分支已经有数百年的历史了.人们发现了图的许多重要而实用的性质,发明了许多重要的算法,给你一个图(Graph)你可以联想到许多问题: 两个顶点之间是否存在一条链接?如果存在,两个顶点之间最短的连接又是哪一条?…. 在生活">
+<meta name="twitter:image" content="http://algs4.cs.princeton.edu/41graph/images/graph-anatomy.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://sylvanassun.github.io/2017/07/18/2017-07-18-Graph_UndirectedGraph/"/>
+
+
+
+
+
+  <title>图的那点事儿(1)-无向图 | SylvanasSun Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SylvanasSun Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://sylvanassun.github.io/2017/07/18/2017-07-18-Graph_UndirectedGraph/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SylvanasSun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SylvanasSun Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">图的那点事儿(1)-无向图</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-18T11:00:00+08:00">
+                2017-07-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithms/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithms</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithms/Graph/" itemprop="url" rel="index">
+                    <span itemprop="name">Graph</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/18/2017-07-18-Graph_UndirectedGraph/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/07/18/2017-07-18-Graph_UndirectedGraph/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/07/18/2017-07-18-Graph_UndirectedGraph/" class="leancloud_visitors" data-flag-title="图的那点事儿(1)-无向图">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在数学中,一个<code>图(Graph)</code>是表示物件与物件之间关系的方法,是<code>图论</code>的基本研究对象.一个图是由<code>顶点(Vertex)</code>与连接这些<code>顶点</code>的<code>边(Edge)</code>组成的.</p>
+<p><code>图论</code>作为数学领域中的一个重要分支已经有数百年的历史了.人们发现了图的许多重要而实用的性质,发明了许多重要的算法,给你一个<code>图(Graph)</code>你可以联想到许多问题: 两个<code>顶点</code>之间是否存在一条链接?如果存在,两个<code>顶点</code>之间最短的连接又是哪一条?….</p>
+<p>在生活中,到处都可以发现<code>图论</code>的应用: </p>
+<ul>
+<li>地图: 在使用地图中,我们经常会想知道”从xx到xx的最短路线”这样的问题,要回答这些问题,就需要把地图抽象成一个<code>图(Graph)</code>,十字路口就是<code>顶点</code>,公路就是<code>边</code>.</li>
+</ul>
+<ul>
+<li>互联网: 整个互联网其实就是一张<code>图</code>,它的<code>顶点</code>为网页,<code>边</code>为超链接.而<code>图论</code>可以帮助我们在网络上定位信息.</li>
+</ul>
+<ul>
+<li>任务调度: 当一些任务拥有优先级限制且需要满足前置条件时,如何在满足条件的情况下用最少的时间完成就需要用到<code>图论</code>.</li>
+</ul>
+<ul>
+<li>社交网络: 在使用社交网站时,你就是一个<code>顶点</code>,你和你的朋友建立的关系则是<code>边</code>.分析这些社交网络的性质也是<code>图论</code>的一个重要应用.</li>
+</ul>
+<p><strong><code>图</code>就是由一组<code>顶点</code>和一组能够将两个<code>顶点</code>相连的<code>边</code>组成的.</strong></p>
+<h3 id="基本术语"><a href="#基本术语" class="headerlink" title="基本术语"></a>基本术语</h3><hr>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/graph-anatomy.png" alt="图中的元素"></p>
+<ul>
+<li>相邻: 当两个<code>顶点</code>通过一条<code>边</code>相连接时,这两个<code>顶点</code>即为相邻的(也可以说这条<code>边</code>依附于这两个<code>顶点</code>).</li>
+</ul>
+<ul>
+<li>度数: 某个<code>顶点</code>的<code>度数</code>即为依附于它的<code>边</code>的总数.</li>
+</ul>
+<ul>
+<li>阶: <code>图G</code>中的<code>顶点集合V</code>的大小称为<code>G</code>的阶.</li>
+</ul>
+<ul>
+<li>自环: 一条连接一个<code>顶点</code>和其自身的<code>边</code>.</li>
+</ul>
+<ul>
+<li><p>平行边: 连接同一对<code>顶点</code>的两条<code>边</code>称为平行边.</p>
+</li>
+<li><p>桥: 如果去掉一条<code>边</code>会使整个<code>图</code>变成<code>非连通图</code>,则该<code>边</code>称为桥.</p>
+</li>
+<li><p>路径: 当<code>顶点v</code>到<code>顶点w</code>是连通时,我们用<code>v-&gt;x-&gt;y-&gt;w</code>为一条<code>v</code>到<code>w</code>的路径,用<code>v-&gt;x-&gt;y-&gt;v</code>表示一条环.</p>
+</li>
+</ul>
+<ul>
+<li>子图: 也称作<code>连通分量</code>,它由一张<code>图</code>的所有边的一个子集组成的<code>图</code>(以及依附的所有顶点).</li>
+</ul>
+<ul>
+<li>连通图: <code>连通图</code>是一个整体,而<code>非连通图</code>则包含两个或多个<code>连通分量</code>.</li>
+</ul>
+<ul>
+<li>稀疏图: 如果一张图中不同的<code>边</code>的数量在<code>顶点</code>总数<code>V</code>的一个小的常数倍内,那么该图就为稀疏图,否则为稠密图.</li>
+</ul>
+<ul>
+<li>简单图与多重图: 含有<code>平行边</code>与<code>自环</code>的图称为<code>多重图</code>,而不含有<code>平行边</code>和<code>自环</code>的图称为<code>简单图</code>.</li>
+</ul>
+<h3 id="树"><a href="#树" class="headerlink" title="树"></a>树</h3><hr>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/tree.png" alt="树"></p>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/forest.png" alt="森林"></p>
+<p>树是一张<code>无环连通图</code>,互不相连的树组成的集合称为森林.<code>连通图</code>的<code>生成树</code>是它的一张子图,它含有图中的所有顶点且是一棵树.图的<code>生成树森林</code>是它的所有<code>连通分量</code>的<code>生成树</code>的集合.</p>
+<p>图<code>G</code>只要满足以下性质,那么它就是一棵树: </p>
+<ul>
+<li><code>G</code>有<code>V-1</code>条边且不含有环.</li>
+</ul>
+<ul>
+<li><code>G</code>有<code>V-1</code>条边且是连通的.</li>
+</ul>
+<ul>
+<li><code>G</code>是连通的,但删除任意一条边都会使它不再连通.</li>
+</ul>
+<ul>
+<li><code>G</code>是无环图,但添加任意一条边都会产生一条环.</li>
+</ul>
+<ul>
+<li><code>G</code>中的任意一对顶点之间仅存在一条简单路径(一条没有重复顶点的路径).</li>
+</ul>
+<h3 id="二分图"><a href="#二分图" class="headerlink" title="二分图"></a>二分图</h3><hr>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Simple-bipartite-graph.svg/600px-Simple-bipartite-graph.svg.png" alt="U和V就是两个顶点集合"></p>
+<p><code>二分图</code>是一种能够将所有<code>顶点</code>分为两部分的图,其中<code>图</code>的每条边所连接的两个<code>顶点</code>都分别属于不同的部分.</p>
+<p>设<code>G = (V,E)</code>为一张<code>无向图</code>,如果顶点<code>V</code>可以分割为两个互不相交的子集<code>(U,V)</code>,且图中的每条边<code>(x,y)</code>所关联的两个顶点<code>x</code>,<code>y</code>分别属于这两个不同的顶点集合<code>(x in U , y in V)</code>,则<code>G</code>为<code>二分图</code>.</p>
+<p>也可以将<code>(U,V)</code>当做一张<code>着色图</code>: <code>U</code>中的所有顶点为蓝色,<code>V</code>中的所有顶点为绿色,每条边所关联的两个<code>顶点</code>颜色不同.</p>
+<h3 id="无向图"><a href="#无向图" class="headerlink" title="无向图"></a>无向图</h3><hr>
+<p><code>无向图</code>是一种最简单的图模型,它的每条边都没有方向.</p>
+<h4 id="图的表示方法"><a href="#图的表示方法" class="headerlink" title="图的表示方法"></a>图的表示方法</h4><hr>
+<p>实现一张<code>图</code>的<code>API</code>需要满足以下两个要求:</p>
+<ol>
+<li>必须为可能在应用中碰到的各种类型的<code>图</code>预留出足够的空间.</li>
+</ol>
+<ol>
+<li><code>图</code>的实现一定要足够快(因为这是所有处理<code>图</code>的算法的基础结构).</li>
+</ol>
+<p>有以下三种数据结构能够用来表示一张图:</p>
+<ul>
+<li>邻接矩阵: 使用一个<code>V * V</code>的布尔矩阵.当顶点<code>v</code>和顶点<code>w</code>之间有相连接的<code>边</code>时,将<code>v</code>行<code>w</code>列的元素设为<code>true</code>,否则为<code>false</code>.这种方法不符合第一个条件,当<code>图</code>的顶点非常多时,邻接矩阵所需的空间将会非常大.且它无法表示平行边.</li>
+</ul>
+<ul>
+<li>边的数组: 使用一个<code>Edge</code>类,它含有两个<code>int</code>成员变量来表示所依附的顶点.这种方法简单直接但不满足第二个条件(要实现查询邻接点的函数需要检查图中的所有边).</li>
+</ul>
+<ul>
+<li>邻接表数组: <strong>使用一个<code>顶点</code>为索引的<code>链表数组</code>,其中的每个元素都是和该<code>顶点</code>相邻的顶点列表(邻接点)</strong>.这种方法同时满足了两个条件,我们会使用这种方法来实现<code>图</code>的数据结构.</li>
+</ul>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/adjacency-lists.png" alt="邻接表数组"></p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Graph</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">vertex</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">edge</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">addEdge</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span></span>;</div><div class="line"></div><div class="line">    <span class="function">Iterable&lt;Integer&gt; <span class="title">adj</span><span class="params">(<span class="keyword">int</span> v)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">degree</span><span class="params">(<span class="keyword">int</span> v)</span></span>;</div><div class="line"></div><div class="line">    <span class="function">String <span class="title">toString</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UndirectedGraph</span> <span class="keyword">implements</span> <span class="title">Graph</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String NEW_LINE_SEPARATOR = System.getProperty(<span class="string">"line.separator"</span>);</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> vertex; <span class="comment">// 顶点</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> edge; <span class="comment">// 边</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Bag&lt;Integer&gt;[] adjacent; <span class="comment">// 邻接表数组,Bag是一个没有实现删除操作的Stack</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UndirectedGraph</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        checkVertex(vertex);</div><div class="line"></div><div class="line">        <span class="keyword">this</span>.vertex = vertex;</div><div class="line">        <span class="keyword">this</span>.edge = <span class="number">0</span>;</div><div class="line">        <span class="keyword">this</span>.adjacent = (Bag&lt;Integer&gt;[]) <span class="keyword">new</span> Bag[vertex];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++)</div><div class="line">            adjacent[v] = <span class="keyword">new</span> Bag&lt;Integer&gt;();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">	<span class="comment">// 读取一个文件并初始化为无向图</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UndirectedGraph</span><span class="params">(Scanner scanner)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (scanner == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Specified input stream must not null!"</span>);</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">			<span class="comment">// 文件的第一行为顶点数</span></div><div class="line">            <span class="keyword">this</span>.vertex = scanner.nextInt();</div><div class="line">            checkVertex(<span class="keyword">this</span>.vertex);</div><div class="line">			<span class="comment">// 文件的第二行为边数</span></div><div class="line">            <span class="keyword">int</span> edge = scanner.nextInt();</div><div class="line">            checkEdge(<span class="keyword">this</span>.edge);</div><div class="line">            <span class="keyword">this</span>.adjacent = (Bag&lt;Integer&gt;[]) <span class="keyword">new</span> Bag[<span class="keyword">this</span>.vertex];</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; <span class="keyword">this</span>.vertex; v++)</div><div class="line">                adjacent[v] = <span class="keyword">new</span> Bag&lt;Integer&gt;();</div><div class="line">			</div><div class="line">			<span class="comment">// 文件的剩余行为相连的顶点对 </span></div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; edge; i++) &#123;</div><div class="line">                <span class="keyword">int</span> v = scanner.nextInt();</div><div class="line">                <span class="keyword">int</span> w = scanner.nextInt();</div><div class="line">                addEdge(v, w);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (NoSuchElementException e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Invalid input format in Undirected Graph constructor"</span>, e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UndirectedGraph</span><span class="params">(Graph graph)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>(graph.vertex());</div><div class="line">        <span class="keyword">this</span>.edge = graph.edge();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; <span class="keyword">this</span>.vertex; v++) &#123;</div><div class="line">            <span class="comment">// reverse so that adjacency list is in same order as original</span></div><div class="line">            Stack&lt;Integer&gt; stack = <span class="keyword">new</span> Stack&lt;Integer&gt;();</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : graph.adj(v))</div><div class="line">                stack.push(w);</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : stack)</div><div class="line">                adjacent[v].add(w);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkVertex</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (vertex &lt;= <span class="number">0</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Number of vertices must be positive number!"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkEdge</span><span class="params">(<span class="keyword">int</span> edge)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (edge &lt; <span class="number">0</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Number of edges must be positive number!"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">vertex</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> vertex;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">edge</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> edge;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">	<span class="comment">// 添加一条连接v和w的边,由于是无向图所以这条边会出现两次</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addEdge</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        validateVertex(w);</div><div class="line">        adjacent[v].add(w);</div><div class="line">        adjacent[w].add(v);</div><div class="line">        edge++;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">adj</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> adjacent[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">degree</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> adjacent[v].size();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertex</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (vertex &lt; <span class="number">0</span> || vertex &gt;= <span class="keyword">this</span>.vertex)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Vertex "</span> + vertex + <span class="string">" is not between 0 and "</span> + (<span class="keyword">this</span>.vertex - <span class="number">1</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</div><div class="line">        sb.append(<span class="string">"Vertices: "</span>).append(vertex).append(<span class="string">" Edges: "</span>).append(edge).append(NEW_LINE_SEPARATOR);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            sb.append(v).append(<span class="string">": "</span>);</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : adjacent[v])</div><div class="line">                sb.append(w).append(<span class="string">" "</span>);</div><div class="line">            sb.append(NEW_LINE_SEPARATOR);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> sb.toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> FileNotFoundException </span>&#123;</div><div class="line">        InputStream inputStream =</div><div class="line">                UndirectedGraph.class.getResourceAsStream(<span class="string">"/graph_file/C4_1_UndirectedGraphs/"</span> + args[<span class="number">0</span>]);</div><div class="line">        Scanner scanner = <span class="keyword">new</span> Scanner(inputStream, <span class="string">"UTF-8"</span>);</div><div class="line">        Graph graph = <span class="keyword">new</span> UndirectedGraph(scanner);</div><div class="line">        System.out.println(graph);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的这个实现拥有以下特点: </p>
+<ul>
+<li>使用的空间和<code>V + E</code>成正比.</li>
+</ul>
+<ul>
+<li>添加一条边所需的时间为常数.</li>
+</ul>
+<ul>
+<li>遍历顶点<code>v</code>的所有邻接点所需的时间和<code>v</code>的度数成正比(处理每个邻接点所需的时间为常数).</li>
+</ul>
+<ul>
+<li>边的插入顺序决定了邻接表中顶点的出现顺序.</li>
+</ul>
+<ul>
+<li>支持平行边与自环.</li>
+</ul>
+<ul>
+<li>不支持添加或删除顶点的操作(如果想要支持这些操作需要使用一个<code>符号表</code>来代替由顶点索引构成的数组).</li>
+</ul>
+<ul>
+<li>不支持删除边的操作(如果想要支持这个操作需要使用一个<code>SET</code>来代替<code>Bag</code>来实现邻接表,这种方法也叫<code>邻接集</code>).</li>
+</ul>
+<p>每种<code>图</code>实现的性能复杂度如下表: </p>
+<table>
+<thead>
+<tr>
+<th>数据结构</th>
+<th>所需空间</th>
+<th>添加一条边v - w</th>
+<th>检查w和v是否相邻</th>
+<th>遍历v的所有邻接点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>边的数组</td>
+<td>E</td>
+<td>1</td>
+<td>E</td>
+<td>E</td>
+</tr>
+<tr>
+<td>邻接矩阵</td>
+<td>V^2</td>
+<td>1</td>
+<td>1</td>
+<td>V</td>
+</tr>
+<tr>
+<td>邻接表</td>
+<td>E+V</td>
+<td>1</td>
+<td>degree(V)</td>
+<td>degree(V)</td>
+</tr>
+<tr>
+<td>邻接集</td>
+<td>E+V</td>
+<td>logV</td>
+<td>logV</td>
+<td>logV+degree(V)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>本文中的所有完整代码可以到我的<a href="https://github.com/SylvanasSun/algs4-study/tree/master/src/main/java/chapter4_graphs/C4_1_UndirectedGraphs" target="_blank" rel="external">GitHub</a>中查看.</p>
+</blockquote>
+<h3 id="深度优先搜索"><a href="#深度优先搜索" class="headerlink" title="深度优先搜索"></a>深度优先搜索</h3><hr>
+<p>处理<code>图</code>的基本问题: <code>v 到 w是否是相连的?</code>. <code>深度优先搜索</code>就是用于解决这样问题的,它会<strong>沿着<code>图</code>的<code>边</code>寻找和<code>起点</code>连通的所有<code>顶点</code>.</strong></p>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/search-api.png" alt="搜索的基本API"></p>
+<p>如其名一样,<code>深度优先搜素</code>就是沿着<code>图</code>的<code>深度</code>来遍历<code>顶点</code>,它类似于走迷宫,会沿着一条路径一直走,直到走到尽头时再回退到上一个路口.为了防止迷路,还需要使用工具来标记已走过的路口(在我们的代码实现中使用一个布尔数组来进行标记).</p>
+<h4 id="递归实现"><a href="#递归实现" class="headerlink" title="递归实现"></a>递归实现</h4><hr>
+<p>使用递归方法来实现<code>深度优先搜索</code>会很简洁,当遇到一个<code>顶点</code>时:</p>
+<ul>
+<li>将它标记为已访问.</li>
+</ul>
+<ul>
+<li>递归地访问它的所有没有被访问过的邻接点.</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DepthFirstSearch</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] marked; <span class="comment">// 标记已访问过的顶点</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count;  <span class="comment">// 记录起点连通的顶点数</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Graph graph;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DepthFirstSearch</span><span class="params">(Graph graph, <span class="keyword">int</span> originPoint)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.graph = graph;</div><div class="line">        <span class="keyword">this</span>.count = <span class="number">0</span>;</div><div class="line">        <span class="keyword">this</span>.marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[graph.vertex()];</div><div class="line">        validateVertex(originPoint);</div><div class="line">		<span class="comment">// 从起点开始进行深度优先搜索</span></div><div class="line">        depthSearch(originPoint);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">count</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> count;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">marked</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        validateVertex(vertex);</div><div class="line">        <span class="keyword">return</span> marked[vertex];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">depthSearch</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        marked[vertex] = <span class="keyword">true</span>;</div><div class="line">        count++;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> adj : graph.adj(vertex)) &#123;</div><div class="line">			<span class="comment">// 遍历邻接点,如果未访问则递归调用</span></div><div class="line">            <span class="keyword">if</span> (!marked[adj])</div><div class="line">                depthSearch(adj);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertex</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> length = marked.length;</div><div class="line">        <span class="keyword">if</span> (vertex &lt; <span class="number">0</span> || vertex &gt;= length)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Vertex "</span> + vertex + <span class="string">" is not between 0 and "</span> + (length - <span class="number">1</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="非递归实现"><a href="#非递归实现" class="headerlink" title="非递归实现"></a>非递归实现</h4><hr>
+<p>如果是了解<code>JVM</code>中函数调用的小伙伴们应该知道,函数都会封装成一个个<code>栈帧</code>然后压入<code>虚拟机栈</code>,上述的递归实现其实就是在隐式的使用到了<code>栈</code>,要想实现非递归,我们需要显式使用<code>栈</code>这个数据结构.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NonrecursiveDFS</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] marked; </div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Iterator&lt;Integer&gt;[] adj;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NonrecursiveDFS</span><span class="params">(Graph graph, <span class="keyword">int</span> originPoint)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> vertex = graph.vertex();</div><div class="line">        <span class="keyword">this</span>.marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line"></div><div class="line">        validateVertex(originPoint);</div><div class="line"></div><div class="line">        <span class="comment">// 取出所有顶点的邻接表迭代器</span></div><div class="line">        adj = (Iterator&lt;Integer&gt;[]) <span class="keyword">new</span> Iterator[vertex];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++)</div><div class="line">            adj[v] = graph.adj(v).iterator();</div><div class="line"></div><div class="line">        dfs(originPoint);</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> originPoint)</span> </span>&#123;</div><div class="line">        Stack&lt;Integer&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</div><div class="line">		<span class="comment">// 标记起点并放入栈</span></div><div class="line">        marked[originPoint] = <span class="keyword">true</span>;</div><div class="line">        stack.push(originPoint);</div><div class="line">		</div><div class="line">        <span class="keyword">while</span> (!stack.isEmpty()) &#123;</div><div class="line">            Integer v = stack.peek();</div><div class="line">			<span class="comment">// 遍历栈顶顶点的邻接点</span></div><div class="line">            <span class="keyword">if</span> (adj[v].hasNext()) &#123;</div><div class="line">                <span class="keyword">int</span> w = adj[v].next();</div><div class="line">				<span class="comment">// 如果未被访问,进行标记并放入栈中</span></div><div class="line">                <span class="keyword">if</span> (!marked[w]) &#123;</div><div class="line">                    marked[w] = <span class="keyword">true</span>;</div><div class="line">                    stack.push(w);</div><div class="line">                &#125;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">				<span class="comment">// 当栈顶顶点的所有邻接点已经遍历完时,弹出栈</span></div><div class="line">                stack.pop();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="寻找路径"><a href="#寻找路径" class="headerlink" title="寻找路径"></a>寻找路径</h3><hr>
+<p>在<code>图</code>的应用中,找出<code>v-w</code>的可达路径也是常见的问题之一.</p>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/paths-api.png" alt="单点路径API"></p>
+<p>我们基于<code>深度优先搜索</code>实现寻找路径,并添加一个<code>edgeTo[]</code>整形数组来记录路径.例如,在由边<code>v-w</code>第一次访问任意<code>w</code>时,将<code>edgeTo[w]</code>设为<code>v</code>来记录这条路径(<code>v-w</code>是从起点到<code>w</code>的路径上最后一条已知的边).这样搜索到的路径就是一颗以起点为根的树,<code>edgeTo[]</code>是一颗由父链接表示的树.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DepthFirstPaths</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Graph graph;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] marked; </div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] edgeTo; <span class="comment">// 用于记录路径</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> originPoint;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DepthFirstPaths</span><span class="params">(Graph graph, <span class="keyword">int</span> originPoint)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> vertex = graph.vertex();</div><div class="line">        <span class="keyword">this</span>.graph = graph;</div><div class="line">        <span class="keyword">this</span>.originPoint = originPoint;</div><div class="line">        <span class="keyword">this</span>.marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.edgeTo = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        validateVertex(originPoint);</div><div class="line">        dfs(originPoint);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasPathTo</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        validateVertex(vertex);</div><div class="line">        <span class="keyword">return</span> marked[vertex];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">pathTo</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        validateVertex(vertex);</div><div class="line"></div><div class="line">        Stack&lt;Integer&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</div><div class="line">		<span class="comment">// 从指定顶点处向上遍历路径(直到起点)</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> x = vertex; x != originPoint; x = edgeTo[x])</div><div class="line">            stack.push(x);</div><div class="line">        stack.push(originPoint);</div><div class="line">        <span class="keyword">return</span> stack;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        marked[vertex] = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> adj : graph.adj(vertex)) &#123;</div><div class="line">            <span class="keyword">if</span> (!marked[adj]) &#123;</div><div class="line">                marked[adj] = <span class="keyword">true</span>;</div><div class="line">				<span class="comment">// edgeTo[w] = v,记录了父链接</span></div><div class="line">                edgeTo[adj] = vertex;</div><div class="line">                dfs(adj);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="广度优先搜索"><a href="#广度优先搜索" class="headerlink" title="广度优先搜索"></a>广度优先搜索</h3><hr>
+<p>对于寻找一条最短路径,<code>深度优先搜索</code>没有什么作为,因为它遍历整个图的顺序和找出最短路径的目标没有任何关系.这种问题就需要用到<code>广度优先搜索</code>.</p>
+<p><code>广度优先搜索</code>是沿着宽度来进行搜索的.例如,要找到<code>s</code>到<code>v</code>的最短路径,<strong>从<code>s</code>开始,在所有由一条边就可以到达的<code>顶点</code>中寻找<code>v</code>,如果找不到就继续在与<code>s</code>距离两条边的所有顶点中寻找<code>v</code>,以此类推</strong>.</p>
+<p>如果说<code>深度优先搜索</code>是一个人在走迷宫,那么<code>广度优先搜索</code>就是一群人一起朝着各个方向去走迷宫.</p>
+<p>在<code>广度优先搜索</code>中,我们使用一个<code>队列</code>来保存所有已被标记过但<code>邻接表</code>还未被检查过的<code>顶点</code>.先将<code>起点</code>放入<code>队列</code>,然后重复以下步骤直到<code>队列</code>为空:</p>
+<ul>
+<li>取出<code>队列</code>中的下一个<code>顶点</code>并标记.</li>
+</ul>
+<ul>
+<li>将它相邻的所有未被标记过的<code>顶点</code>加入队列.</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BreadthFirstPaths</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> INFINITY = Integer.MAX_VALUE;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Graph graph;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] marked; </div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] edgeTo;      </div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] distTo;      <span class="comment">// 记录路径中经过的顶点数,起点为0,需要全部初始化为无穷大</span></div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BreadthFirstPaths</span><span class="params">(Graph graph, <span class="keyword">int</span> originPoint)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.graph = graph;</div><div class="line">        <span class="keyword">int</span> vertex = graph.vertex();</div><div class="line">        marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line">        edgeTo = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        distTo = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; vertex; i++)</div><div class="line">            distTo[i] = INFINITY;</div><div class="line">        validateVertex(originPoint);</div><div class="line">        bfs(originPoint);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">	<span class="comment">// 以一组顶点为起点</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BreadthFirstPaths</span><span class="params">(Graph graph, Iterable&lt;Integer&gt; sources)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.graph = graph;</div><div class="line">        <span class="keyword">int</span> vertex = graph.vertex();</div><div class="line">        <span class="keyword">this</span>.marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.edgeTo = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.distTo = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; vertex; i++)</div><div class="line">            distTo[i] = INFINITY;</div><div class="line">        validateVertices(sources);</div><div class="line">        bfs(sources);</div><div class="line">    &#125;</div><div class="line">  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasPathTo</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        validateVertex(vertex);</div><div class="line">        <span class="keyword">return</span> marked[vertex];</div><div class="line">    &#125;</div><div class="line">   </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">distTo</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        validateVertex(vertex);</div><div class="line">        <span class="keyword">return</span> distTo[vertex];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">pathTo</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        validateVertex(vertex);</div><div class="line"></div><div class="line">        Stack&lt;Integer&gt; path = <span class="keyword">new</span> Stack&lt;&gt;();</div><div class="line">        <span class="keyword">int</span> x;</div><div class="line">		<span class="comment">// 这里使用distTo[x] != 0来判断是否为起点</span></div><div class="line">        <span class="keyword">for</span> (x = vertex; distTo[x] != <span class="number">0</span>; x = edgeTo[x])</div><div class="line">            path.push(x);</div><div class="line">        path.push(x);</div><div class="line">        <span class="keyword">return</span> path;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">bfs</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        Queue&lt;Integer&gt; queue = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</div><div class="line">        marked[vertex] = <span class="keyword">true</span>;</div><div class="line">        distTo[vertex] = <span class="number">0</span>;</div><div class="line">        queue.add(vertex);</div><div class="line"></div><div class="line">        searchAndMarkAdjacent(queue);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">bfs</span><span class="params">(Iterable&lt;Integer&gt; sources)</span> </span>&#123;</div><div class="line">        Queue&lt;Integer&gt; queue = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v : sources) &#123;</div><div class="line">            marked[v] = <span class="keyword">true</span>;</div><div class="line">            distTo[v] = <span class="number">0</span>;</div><div class="line">            queue.add(v);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        searchAndMarkAdjacent(queue);</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	<span class="comment">// 广度优先搜索</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">searchAndMarkAdjacent</span><span class="params">(Queue&lt;Integer&gt; queue)</span> </span>&#123;</div><div class="line">        <span class="keyword">while</span> (!queue.isEmpty()) &#123;</div><div class="line">            Integer v = queue.remove();</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> adj : graph.adj(v)) &#123;</div><div class="line">				<span class="comment">// 将未标记过的邻接点加入队列并进行标记等操作</span></div><div class="line">                <span class="keyword">if</span> (!marked[adj]) &#123;</div><div class="line">                    marked[adj] = <span class="keyword">true</span>;</div><div class="line">                    edgeTo[adj] = v;</div><div class="line">                    distTo[adj] = distTo[v] + <span class="number">1</span>;</div><div class="line">                    queue.add(adj);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertex</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> length = marked.length;</div><div class="line">        <span class="keyword">if</span> (vertex &lt; <span class="number">0</span> || vertex &gt;= length)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Vertex "</span> + vertex + <span class="string">" is not between 0 and "</span> + (length - <span class="number">1</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertices</span><span class="params">(Iterable&lt;Integer&gt; vertices)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (vertices == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Vertices is null."</span>);</div><div class="line"></div><div class="line">        <span class="keyword">int</span> length = marked.length;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v : vertices) &#123;</div><div class="line">            <span class="keyword">if</span> (v &lt; <span class="number">0</span> || v &gt;= length)</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Vertex "</span> + v + <span class="string">" is not between 0 and "</span> + (length - <span class="number">1</span>));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>不管是<code>深度优先搜索</code>还是<code>广度优先搜索</code>,它们都是先将<code>起点</code>存入一个<code>数据结构</code>中,然后重复以下步骤直到<code>数据结构</code>被清空: </p>
+<ul>
+<li>取其中的下一个<code>顶点</code>并标记它.</li>
+</ul>
+<ul>
+<li>将它的所有<code>相邻</code>而又未被标记的<code>顶点</code>放入<code>数据结构</code>中.</li>
+</ul>
+<p>这两种<code>算法</code>的<strong>不同之处仅在于从<code>数据结构</code>中获取下一个<code>顶点</code>的规则(对于<code>广度优先搜索</code>来说是最早加入的<code>顶点</code>,对于<code>深度优先搜索</code>来说是最晚加入的<code>顶点</code>)</strong>.</p>
+<p><code>深度优先搜索</code>的方式是不断寻找离<code>起点</code>更远的<code>顶点</code>,直到碰见死胡同时才返回近处<code>顶点</code>.</p>
+<p><code>广度优先搜索</code>的方式是先覆盖<code>起点</code>附近的<code>顶点</code>,只有当<code>邻接</code>的所有<code>顶点</code>都被访问过之后才继续前进.</p>
+<p><code>深度优先搜素</code>的路径通常长且曲折,<code>广度优先搜索</code>的路径则短而直接.但不管是使用哪种<code>算法</code>,所有与<code>起点</code>连通的<code>顶点</code>和<code>边</code>都会被访问到.</p>
+<h3 id="连通分量"><a href="#连通分量" class="headerlink" title="连通分量"></a>连通分量</h3><hr>
+<p><code>深度优先搜索</code>的一个重要应用就是寻找出一幅<code>图</code>中的所有连通分量.</p>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/cc-api.png" alt="连通分量API"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConnectedComponent</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Graph graph;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] marked;</div><div class="line"></div><div class="line">    <span class="comment">// 顶点与它们所属的连通分量进行关联的数组</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] id;</div><div class="line"></div><div class="line">    <span class="comment">// 记录每个连通分量中有多少顶点的数组</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] size;</div><div class="line"></div><div class="line">    <span class="comment">// 连通分量数</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ConnectedComponent</span><span class="params">(Graph graph)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.graph = graph;</div><div class="line">        <span class="keyword">int</span> vertex = graph.vertex();</div><div class="line">        <span class="keyword">this</span>.marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.id = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.size = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            <span class="keyword">if</span> (!marked[v]) &#123;</div><div class="line">                dfs(v);</div><div class="line">                count++; <span class="comment">// 一张连通图遍历完毕后,连通分量数 + 1</span></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">id</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        validateVertex(vertex);</div><div class="line">        <span class="keyword">return</span> id[vertex];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        validateVertex(vertex);</div><div class="line">        <span class="keyword">return</span> size[id[vertex]];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">count</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> count;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">	<span class="comment">// 两个顶点是否处于一个连通分量中</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">connected</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        validateVertex(w);</div><div class="line">        <span class="keyword">return</span> id[v] == id[w];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        marked[vertex] = <span class="keyword">true</span>;</div><div class="line">        id[vertex] = count;</div><div class="line">        size[count]++;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> adj : graph.adj(vertex)) &#123;</div><div class="line">            <span class="keyword">if</span> (!marked[adj])</div><div class="line">                dfs(adj);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="检测环与双色问题"><a href="#检测环与双色问题" class="headerlink" title="检测环与双色问题"></a>检测环与双色问题</h3><hr>
+<p><code>深度优先搜索</code>的应用远不于此,它还可以用来检测是否有环以及双色问题.</p>
+<h4 id="检测环"><a href="#检测环" class="headerlink" title="检测环"></a>检测环</h4><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cyclic</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Graph graph;</div><div class="line">	</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span>[] marked</div><div class="line">	;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] edgeTo;</div><div class="line">	<span class="comment">// 如果存在环则返回这条环路径</span></div><div class="line">    <span class="keyword">private</span> Stack&lt;Integer&gt; cyclic;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Cyclic</span><span class="params">(Graph graph)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.graph = graph;</div><div class="line">		<span class="comment">// 先检测是否有自环</span></div><div class="line">        <span class="keyword">if</span> (hasSelfLoop()) <span class="keyword">return</span>;</div><div class="line">		<span class="comment">// 再检测是否有平行边</span></div><div class="line">        <span class="keyword">if</span> (hasParallelEdges()) <span class="keyword">return</span>;</div><div class="line"></div><div class="line">        <span class="keyword">int</span> vertex = graph.vertex();</div><div class="line">        <span class="keyword">this</span>.marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.edgeTo = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            <span class="keyword">if</span> (!marked[v])</div><div class="line">                dfs(v, -<span class="number">1</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasCyclic</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> cyclic != <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">cyclic</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> cyclic;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">hasSelfLoop</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; graph.vertex(); v++) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : graph.adj(v)) &#123;</div><div class="line">				<span class="comment">// 如果v与w是同一个顶点,则代表有自环</span></div><div class="line">                <span class="keyword">if</span> (v == w) &#123;</div><div class="line">                    cyclic = <span class="keyword">new</span> Stack&lt;&gt;();</div><div class="line">                    cyclic.push(v);</div><div class="line">                    cyclic.push(v);</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">hasParallelEdges</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> vertex = graph.vertex();</div><div class="line">        <span class="keyword">boolean</span>[] marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line">		</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            <span class="comment">// check for parallel edges incident to v</span></div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : graph.adj(v)) &#123;</div><div class="line">                <span class="keyword">if</span> (marked[w]) &#123;</div><div class="line">                    cyclic = <span class="keyword">new</span> Stack&lt;&gt;();</div><div class="line">                    cyclic.push(v);</div><div class="line">                    cyclic.push(w);</div><div class="line">                    cyclic.push(v);</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">                marked[w] = <span class="keyword">true</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// reset so marked[v] = false for all v</span></div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : graph.adj(v))</div><div class="line">                marked[w] = <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> u)</span> </span>&#123;</div><div class="line">        marked[v] = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> w : graph.adj(v)) &#123;</div><div class="line">            <span class="keyword">if</span> (cyclic != <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">            <span class="keyword">if</span> (!marked[w]) &#123;</div><div class="line">                edgeTo[w] = v;</div><div class="line">                dfs(w, v);</div><div class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (w != u) &#123;</div><div class="line">                <span class="comment">// check for cycle (but disregard reverse of edge leading to v)</span></div><div class="line">                cyclic = <span class="keyword">new</span> Stack&lt;&gt;();</div><div class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> x = v; x != w; x = edgeTo[x])</div><div class="line">                    cyclic.push(x);</div><div class="line">                cyclic.push(w);</div><div class="line">                cyclic.push(v);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="检测双色"><a href="#检测双色" class="headerlink" title="检测双色"></a>检测双色</h4><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TwoColor</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Graph graph;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] marked;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] color;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> isTwoColorable = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TwoColor</span><span class="params">(Graph graph)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.graph = graph;</div><div class="line">        <span class="keyword">int</span> vertex = graph.vertex();</div><div class="line"></div><div class="line">        <span class="keyword">this</span>.marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.color = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            <span class="keyword">if</span> (!marked[v])</div><div class="line">                dfs(v);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isBipartite</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> isTwoColorable;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        marked[v] = <span class="keyword">true</span>;</div><div class="line">		</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> w : graph.adj(v)) &#123;</div><div class="line">            <span class="keyword">if</span> (!marked[w]) &#123;</div><div class="line">				<span class="comment">// 将未被访问过的邻接点w设为v的反色</span></div><div class="line">                color[w] = !color[v];</div><div class="line">                dfs(w);</div><div class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (color[w] == color[v]) &#123;</div><div class="line">				<span class="comment">// 如果w已被访问且颜色与v相同,则代表这不是一张双色图</span></div><div class="line">                isTwoColorable = <span class="keyword">false</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="符号图"><a href="#符号图" class="headerlink" title="符号图"></a>符号图</h3><hr>
+<p>在很多应用中,是使用字符串而非整数来表示<code>顶点</code>的,为了适应这种需求,需要拥有以下性质的输入格式: </p>
+<ul>
+<li>顶点名是字符串.</li>
+</ul>
+<ul>
+<li>用指定的分隔符来隔开顶点名</li>
+</ul>
+<ul>
+<li>每一行都表示一组边的集合,每一条边都连接着这一行的第一个名称表示的顶点和其他名称所表示的顶点.</li>
+</ul>
+<ul>
+<li>顶点集<code>V</code>与边集<code>E</code>都是隐式定义的.</li>
+</ul>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/routes.png" alt="符号图的输入格式"></p>
+<p>要实现<code>符号图</code>还需要借助以下数据结构: </p>
+<ul>
+<li>一个<code>符号表</code>,我这里使用的是<code>TreeMap</code>即<code>红黑树</code>,它的<code>Key</code>为<code>String</code>(顶点名),<code>Value</code>为<code>Integer</code>(顶点索引).</li>
+</ul>
+<ul>
+<li>一个<code>字符串数组</code>,它用来与<code>符号表</code>作<code>反向索引</code>,保存每个<code>顶点</code>索引所对应的<code>顶点名</code>.</li>
+</ul>
+<ul>
+<li>一个<code>Graph</code>对象,我们使用索引来生成这张<code>图</code>对象.</li>
+</ul>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/symbol-graph-api.png" alt="符号图的API"></p>
+<p><img src="http://algs4.cs.princeton.edu/41graph/images/symbol-graph.png" alt="需要用到的数据结构"></p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SymbolGraph</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> TreeMap&lt;String, Integer&gt; symbolTable; <span class="comment">// string -&gt; index</span></div><div class="line">    <span class="keyword">private</span> String[] keys; <span class="comment">// index -&gt; string</span></div><div class="line">    <span class="keyword">private</span> Graph graph;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SymbolGraph</span><span class="params">(String filename, String delimiter)</span> </span>&#123;</div><div class="line">        symbolTable = <span class="keyword">new</span> TreeMap&lt;&gt;();</div><div class="line"></div><div class="line">        <span class="comment">// 第一次读取文件</span></div><div class="line">        String filePath = <span class="string">"/graph_file/C4_1_UndirectedGraphs/"</span> + filename;</div><div class="line">        InputStream inputStream</div><div class="line">                = SymbolGraph.class.getResourceAsStream(filePath);</div><div class="line">        Scanner scanner = <span class="keyword">new</span> Scanner(inputStream, <span class="string">"UTF-8"</span>);</div><div class="line"></div><div class="line">        <span class="comment">// 初始化符号表</span></div><div class="line">        <span class="keyword">while</span> (scanner.hasNextLine()) &#123;</div><div class="line">            String[] s = scanner.nextLine().split(delimiter);</div><div class="line">            <span class="keyword">for</span> (String key : s) &#123;</div><div class="line">                <span class="keyword">if</span> (!symbolTable.containsKey(key))</div><div class="line">                    symbolTable.put(key, symbolTable.size());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        System.out.printf(<span class="string">"Done reading %s!\n"</span>, filename);</div><div class="line"></div><div class="line">        <span class="comment">// 初始化反向索引</span></div><div class="line">        keys = <span class="keyword">new</span> String[symbolTable.size()];</div><div class="line">        <span class="keyword">for</span> (String name : symbolTable.keySet())</div><div class="line">            keys[symbolTable.get(name)] = name;</div><div class="line"></div><div class="line">        <span class="comment">// 第二次读取文件,并生成图</span></div><div class="line">        graph = <span class="keyword">new</span> UndirectedGraph(symbolTable.size());</div><div class="line">        Scanner create_graph_scanner = <span class="keyword">new</span> Scanner(SymbolGraph.class.getResourceAsStream(filePath));</div><div class="line">        <span class="keyword">while</span> (create_graph_scanner.hasNextLine()) &#123;</div><div class="line">            String[] s = create_graph_scanner.nextLine().split(delimiter);</div><div class="line">			<span class="comment">// 将第一行的第一个顶点与其他顶点相连</span></div><div class="line">            <span class="keyword">int</span> v = symbolTable.get(s[<span class="number">0</span>]);</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; s.length; i++) &#123;</div><div class="line">                <span class="keyword">int</span> w = symbolTable.get(s[i]);</div><div class="line">                graph.addEdge(v, w);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> symbolTable.containsKey(s);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">indexOf</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> symbolTable.get(s);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">nameOf</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> keys[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Graph <span class="title">graph</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> graph;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><hr>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)" target="_blank" rel="external">Graph (discrete mathematics) - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Bipartite_graph" target="_blank" rel="external">Bipartite graph - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="http://algs4.cs.princeton.edu/41graph/" target="_blank" rel="external">Algorithms, 4th Edition by Robert Sedgewick and Kevin Wayne</a></li>
+</ul>
+<blockquote>
+<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanassun_xtz@163.com)</a>,转载请务必指明原文链接.</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Algorithms/" rel="tag"># Algorithms</a>
+          
+            <a href="/tags/2017/" rel="tag"># 2017</a>
+          
+            <a href="/tags/Graph/" rel="tag"># Graph</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/27/2017-06-27-DynamicProgramming/" rel="next" title="什么是动态规划?">
+                <i class="fa fa-chevron-left"></i> 什么是动态规划?
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div id="sidebar-dimmer"></div>
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="SylvanasSun" />
+          <p class="site-author-name" itemprop="name">SylvanasSun</p>
+           
+              <p class="site-description motion-element" itemprop="description">这里是SylvanasSun的个人博客,与你一起发现更大的世界。</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">28</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/SylvanasSun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/1666202315/profile?rightmod=1&wvr=6&mod=personinfo" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/sylvanas-sun/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.oschina.net/" title="oschina" target="_blank">oschina</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.csdn.net/" title="csdn" target="_blank">csdn</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://toutiao.io/" title="开发者头条" target="_blank">开发者头条</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本术语"><span class="nav-number">1.</span> <span class="nav-text">基本术语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#树"><span class="nav-number">2.</span> <span class="nav-text">树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二分图"><span class="nav-number">3.</span> <span class="nav-text">二分图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#无向图"><span class="nav-number">4.</span> <span class="nav-text">无向图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#图的表示方法"><span class="nav-number">4.1.</span> <span class="nav-text">图的表示方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现"><span class="nav-number">4.2.</span> <span class="nav-text">实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深度优先搜索"><span class="nav-number">5.</span> <span class="nav-text">深度优先搜索</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#递归实现"><span class="nav-number">5.1.</span> <span class="nav-text">递归实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#非递归实现"><span class="nav-number">5.2.</span> <span class="nav-text">非递归实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#寻找路径"><span class="nav-number">6.</span> <span class="nav-text">寻找路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#广度优先搜索"><span class="nav-number">7.</span> <span class="nav-text">广度优先搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连通分量"><span class="nav-number">8.</span> <span class="nav-text">连通分量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检测环与双色问题"><span class="nav-number">9.</span> <span class="nav-text">检测环与双色问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#检测环"><span class="nav-number">9.1.</span> <span class="nav-text">检测环</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#检测双色"><span class="nav-number">9.2.</span> <span class="nav-text">检测双色</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#符号图"><span class="nav-number">10.</span> <span class="nav-text">符号图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码实现"><span class="nav-number">10.1.</span> <span class="nav-text">代码实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">11.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SylvanasSun</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-sylvanassun-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://sylvanassun.github.io/2017/07/18/2017-07-18-Graph_UndirectedGraph/';
+          this.page.identifier = '2017/07/18/2017-07-18-Graph_UndirectedGraph/';
+          this.page.title = '图的那点事儿(1)-无向图';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-sylvanassun-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("PvA9UJ6yFKF4auJrnukN6hmW-gzGzoHsz", "wfAE2ETw2IfWPPRCprVJW8mm");AV.useAVCloudUS();</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

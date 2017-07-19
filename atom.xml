@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-07-18T03:18:03.770Z</updated>
+  <updated>2017-07-19T10:47:21.410Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -14,6 +14,87 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>电影&lt;&lt;社交网络&gt;&gt;中的&quot;FaceMash&quot;算法</title>
+    <link href="https://sylvanassun.github.io/2017/07/19/2017-07-19-FaceMash/"/>
+    <id>https://sylvanassun.github.io/2017/07/19/2017-07-19-FaceMash/</id>
+    <published>2017-07-19T10:00:00.000Z</published>
+    <updated>2017-07-19T10:47:21.410Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="https://img3.doubanio.com/view/photo/raw/public/p679478005.jpg" alt=""></p>
+<blockquote>
+<p>最近在看<a href="https://movie.douban.com/subject/3205624/" target="_blank" rel="external">&lt;&lt;社交网络&gt;&gt;</a>时,发现了一个用于投票排名的算法,自己折腾实现了一下.</p>
+</blockquote>
+<p>在影片中,卷西饰演的扎克伯格在被妹子甩了之后(其实是他自己直男癌),一气之下黑了附近女生宿舍的照片数据库打算做一个<code>FaceMash</code>(通过投票的方式来选出漂亮的女生,同时它也是<code>Facebook</code>的前身,后来这个网站由于流量太大,搞崩了哈佛大学的网络而被强行关闭了),并使用了他的好基友爱德华多用于计算国际象棋排名的算法.</p>
+<p><strong>这是一部很好看的电影,如果没有看过我强烈推荐去看一看.</strong></p>
+<h3 id="公式"><a href="#公式" class="headerlink" title="公式"></a>公式</h3><hr>
+<p><img src="http://wx4.sinaimg.cn/large/63503acbly1fhpbwf3qy2j20vx0hx74u.jpg" alt=""></p>
+<p>这个算法是用来计算<code>期望胜率</code>的,但影片中其实写的是错误的,正确的公式应该为: </p>
+<p>$$E_a = \frac{1} {1+10^(R_b - R_a) / 400}$$</p>
+<ul>
+<li>$E_a$就是<code>a</code>的期望胜率.</li>
+</ul>
+<ul>
+<li>$R_b,R_a$是<code>a</code>与<code>b</code>的<code>Rank</code>分数.</li>
+</ul>
+<ul>
+<li>当$R_a,R_b$都相同时,它们的<code>期望胜率</code>都为<code>0.5</code>,即$E_a = \frac{1} {1+10^0} = 0.5$.</li>
+</ul>
+<p>电影中只给出了计算<code>期望胜率</code>的算法,但我们还需要一个计算新的<code>Rank</code>分数的算法,公式如下: </p>
+<p>$$R_n = R_o + K(W - E)$$</p>
+<ul>
+<li>$R_n$代表新的<code>Rank</code>,$R_o$自然就是旧的<code>Rank</code>了.</li>
+</ul>
+<ul>
+<li><code>K</code>为一个定值,我把它设为<code>10</code>.</li>
+</ul>
+<ul>
+<li><code>W</code>是<code>胜负值</code>,胜者为<code>1</code>,败者为<code>0</code>;<code>E</code>就是我们上面计算的<code>期望胜率</code>.</li>
+</ul>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><hr>
+<p>有了这两个核心公式,我们就可以开始实现这个算法了,但在代码实现之前,我们先验证一下公式: </p>
+<p>我们假设有两个女孩<code>A</code>与<code>B</code>,她们的基础<code>Rank</code>都为<code>1400</code>,通过上述的推论我们已经得知,<strong><code>当A</code>,<code>B</code>的分值相同时,她们的期望胜率都为0.5</strong>.</p>
+<p>如果,我选择了<code>A</code>,则<code>A</code>的胜负值变为<code>1</code>,<code>B</code>的胜负值为<code>0</code>,然后我们套用公式2可以得出: </p>
+<ul>
+<li>$R_a = 1400 + 10 * (1 - 0.5) = 1405$</li>
+</ul>
+<ul>
+<li>$R_b = 1400 + 10 * (0 - 0.5) = 1395$</li>
+</ul>
+<p>由于她们的分数不再相同,所以套用公式1计算现在的<code>期望胜率</code>: </p>
+<ul>
+<li>$R_a = \frac{1} {1 + 10^(1395 - 1405) / 400} \approx 0.51439 $</li>
+</ul>
+<ul>
+<li>$R_b = \frac{1} {1 + 10^(1405 - 1395) / 400} \approx 0.48561$</li>
+</ul>
+<p>下面是我用<code>C</code>写的一个小程序,它初始化了两个”女孩”,然后根据输入来判断哪个胜出,并动态计算<code>Rank</code>与<code>期望胜率</code>.</p>
+<p><img src="http://wx1.sinaimg.cn/mw690/63503acbly1fhpcccyw1bj20di0gcdg7.jpg" alt=""></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *name;</div><div class="line">    <span class="keyword">int</span> rank;</div><div class="line">    <span class="keyword">double</span> expect_rate;</div><div class="line">&#125; girl;</div><div class="line"></div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> K = <span class="number">10</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">read_girl</span><span class="params">(girl g)</span> </span>&#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"Girl name: %s, rank: %d, expect_rate: %.5f\n"</span>,g.name,g.rank,g.expect_rate);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">compute_expect_rate</span><span class="params">(girl *a,girl *b)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> a_rank = a-&gt;rank;</div><div class="line">    <span class="keyword">int</span> b_rank = b-&gt;rank;</div><div class="line">    <span class="comment">// expect rate formula</span></div><div class="line">    <span class="comment">// Ea = 1 / (1 + 10 ^ ((Rb-Ra) / 400))</span></div><div class="line">    <span class="keyword">double</span> a_rank_differ = (<span class="keyword">double</span>) (b_rank - a_rank) / <span class="number">400</span>;</div><div class="line">    <span class="keyword">double</span> a_rank_rate = <span class="built_in">pow</span>(<span class="number">10</span>,a_rank_differ);</div><div class="line">    a-&gt;expect_rate = <span class="number">1</span> / (<span class="number">1</span> + a_rank_rate);</div><div class="line">    <span class="comment">// Eb = 1 / (1 + 10 ^ ((Ra-Rb) / 400))</span></div><div class="line">    <span class="keyword">double</span> b_rank_differ = (<span class="keyword">double</span>) (a_rank - b_rank) / <span class="number">400</span>;</div><div class="line">    <span class="keyword">double</span> b_rank_rate = <span class="built_in">pow</span>(<span class="number">10</span>,b_rank_differ);</div><div class="line">    b-&gt;expect_rate = <span class="number">1</span> / (<span class="number">1</span> + b_rank_rate);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// new rank formula: Rn = Ro + K(W - E)</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">compute_rank</span><span class="params">(girl *a,girl *b,<span class="keyword">int</span> a_win_rate,<span class="keyword">int</span> b_win_rate)</span> </span>&#123;</div><div class="line">    a-&gt;rank = a-&gt;rank + K * (a_win_rate - a-&gt;expect_rate);</div><div class="line">    b-&gt;rank = b-&gt;rank + K * (b_win_rate - b-&gt;expect_rate);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span> *argv[])</span> </span>&#123;</div><div class="line">    <span class="keyword">char</span> a_girl_name[<span class="number">20</span>];</div><div class="line">    <span class="keyword">char</span> b_girl_name[<span class="number">20</span>];</div><div class="line"></div><div class="line">    girl a = &#123;.name = <span class="string">"A Gril"</span>,.rank = <span class="number">1400</span>&#125;;</div><div class="line">    girl b = &#123;.name = <span class="string">"B Gril"</span>,.rank = <span class="number">1400</span>&#125;;</div><div class="line"></div><div class="line">    compute_expect_rate(&amp;a,&amp;b);</div><div class="line"></div><div class="line">    read_girl(a);</div><div class="line">    read_girl(b);</div><div class="line"></div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        <span class="keyword">char</span> choice[<span class="number">2</span>];</div><div class="line">        <span class="built_in">printf</span>(<span class="string">"Choice A or B?\n"</span>);</div><div class="line">        <span class="built_in">scanf</span>(<span class="string">"%s"</span>,choice);</div><div class="line">        <span class="keyword">if</span> (choice[<span class="number">0</span>] == <span class="string">'A'</span>) &#123;</div><div class="line">            compute_rank(&amp;a,&amp;b,<span class="number">1</span>,<span class="number">0</span>);</div><div class="line">            compute_expect_rate(&amp;a,&amp;b);</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (choice[<span class="number">0</span>] == <span class="string">'B'</span>) &#123;</div><div class="line">            compute_rank(&amp;a,&amp;b,<span class="number">0</span>,<span class="number">1</span>);</div><div class="line">            compute_expect_rate(&amp;a,&amp;b);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="built_in">printf</span>(<span class="string">"Invalid choice!\n"</span>);</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        read_girl(a);</div><div class="line">        read_girl(b);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanassun_xtz@163.com)</a>,转载请务必指明原文链接.</p>
+</blockquote>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;https://img3.doubanio.com/view/photo/raw/public/p679478005.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;最近在看&lt;a href=&quot;https://movie.douban.c
+    
+    </summary>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/categories/Algorithms/"/>
+    
+      <category term="Other" scheme="https://sylvanassun.github.io/categories/Algorithms/Other/"/>
+    
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+  </entry>
   
   <entry>
     <title>图的那点事儿(1)-无向图</title>
@@ -2300,260 +2381,6 @@ Index: /usr/openjdk/jdk/src/share/classes/java/util/CurrencyData.properties把20
       <category term="Java" scheme="https://sylvanassun.github.io/tags/Java/"/>
     
       <category term="JVM" scheme="https://sylvanassun.github.io/tags/JVM/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Spring Boot 部署测试与应用监控</title>
-    <link href="https://sylvanassun.github.io/2016/08/05/2016-08-5-Spring-monitor/"/>
-    <id>https://sylvanassun.github.io/2016/08/05/2016-08-5-Spring-monitor/</id>
-    <published>2016-08-05T10:00:00.000Z</published>
-    <updated>2017-07-11T06:54:40.779Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="Spring-Boot部署"><a href="#Spring-Boot部署" class="headerlink" title="Spring Boot部署"></a>Spring Boot部署</h3><hr>
-<h4 id="Jar包形式"><a href="#Jar包形式" class="headerlink" title="Jar包形式"></a>Jar包形式</h4><hr>
-<p>&nbsp;&nbsp;如果在创建Spring Boot项目的时候选择的是jar包形式,则只需要使用maven将项目打成jar包即可.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn pakage</div></pre></td></tr></table></figure>
-<p>&nbsp;&nbsp;Spring Boot项目在打成jar后可以直接运行.</p>
-<h4 id="War包形式"><a href="#War包形式" class="headerlink" title="War包形式"></a>War包形式</h4><hr>
-<p>&nbsp;&nbsp;如果在创建Spring Boot项目的时候选择的是war包形式,则打包的方式与jar一样.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn pakage</div></pre></td></tr></table></figure>
-<p>&nbsp;&nbsp;之后将生成的war文件放在任意Servlet容器上运行即可.</p>
-<p>&nbsp;&nbsp;如果在创建Spring Boot项目的时候选择的是jar,在部署时又想以war包形式部署,则需要以下配置.</p>
-<ol>
-<li><p>修改pom.xml文件的打包方式</p>
-<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6nkz6y4ntj20bm038mxv.jpg" alt=""></p>
-</li>
-<li><p>添加以下依赖覆盖默认内嵌的Tomcat.</p>
-<p><img src="http://ww3.sinaimg.cn/mw690/63503acbjw1f6nkz77e95j20fy03w758.jpg" alt=""></p>
-</li>
-<li><p>创建ServletInitializer.</p>
-<p><img src="http://ww4.sinaimg.cn/mw690/63503acbjw1f6nkz7gwh7j20o104z75l.jpg" alt=""></p>
-</li>
-</ol>
-<h4 id="注册为Linux服务"><a href="#注册为Linux服务" class="headerlink" title="注册为Linux服务"></a>注册为Linux服务</h4><hr>
-<p>&nbsp;&nbsp;将软件注册为服务,可以通过命令开启、关闭、开机自启动等功能.</p>
-<p>&nbsp;&nbsp;如想注册为Linux服务,则先需要修改spring-boot-maven-plugin的配置:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">   &lt;build&gt;</div><div class="line">	&lt;plugins&gt;</div><div class="line">		&lt;plugin&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</div><div class="line">			&lt;configuration&gt;</div><div class="line">				&lt;executable&gt;true&lt;/executable&gt;</div><div class="line">			&lt;/configuration&gt;</div><div class="line">		&lt;/plugin&gt;</div><div class="line">	&lt;/plugins&gt;</div><div class="line">&lt;/build&gt;</div></pre></td></tr></table></figure>
-<p>&nbsp;&nbsp;主流的Linux大都使用init.d或systemd来注册服务.</p>
-<ul>
-<li><p>init.d方式</p>
-<ol>
-<li><p>sudo ln -s /var/apps/spring-boot-demo.jar /etc/init.d/sdemo,其中sdemo就是服务名.</p>
-</li>
-<li><p>常用操作命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">service sdemo start 启动服务.</div><div class="line">service sdemo stop 停止服务.</div><div class="line">service sdemo status 服务状态.</div><div class="line">chkconfig sdemo on 开机启动.</div></pre></td></tr></table></figure>
-</li>
-<li><p>项目日志存放于/var/log/sdemo.log中.</p>
-</li>
-</ol>
-</li>
-<li><p>systemd方式</p>
-<ol>
-<li><p>在/etc/systemd/system/目录下新建文件sdemo.service.并写入以下内容:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[Unit]</div><div class="line">Description=spring-boot-demo</div><div class="line">After=syslog.target</div><div class="line"></div><div class="line">[Service]</div><div class="line">ExecStart= /usr/bin/java -jar /var/apps/spring-boot-demo.jar</div><div class="line"></div><div class="line">[Install]</div><div class="line">WantedBy=multi-user.target</div><div class="line"></div><div class="line">#其中Description和ExecStart是可更改的.ExecStart是指定java运行需要运行的jar包.</div></pre></td></tr></table></figure>
-</li>
-</ol>
-</li>
-</ul>
-<ol>
-<li>常用操作命令<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">systemctl start sdemo 启动服务.</div><div class="line">systemctl stop sdemo 停止服务.</div><div class="line">systemctl status sdemo 服务状态.</div><div class="line">systemctl enable sdemo 开机启动.</div><div class="line">journalctl -u sdemo 查看项目日志.</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3 id="热部署"><a href="#热部署" class="headerlink" title="热部署"></a>热部署</h3><hr>
-<p>&nbsp;&nbsp;热部署即就是在应用正在运行的时候升级软件，却不需要重新启动应用.</p>
-<p>&nbsp;&nbsp;在Spring Boot项目中添加<strong>spring-boot-devtools</strong>依赖即可实现页面和类的热部署.</p>
-<h4 id="模板引擎热部署"><a href="#模板引擎热部署" class="headerlink" title="模板引擎热部署"></a>模板引擎热部署</h4><hr>
-<p>&nbsp;&nbsp;Spring Boot默认模板引擎开启缓存,如果我们修改了页面后再刷新页面将得不到修改后的内容,我们可以在application.properties中关闭模板引擎的缓存.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#Thymeleaf</div><div class="line">spring.thymeleaf.cache=false</div><div class="line">#FreeMarker</div><div class="line">spring.freemarker.cache=false</div><div class="line">#Groovy</div><div class="line">spring.groovy.template.cache=false</div><div class="line">#Velocity</div><div class="line">spring.velocity.cache=false</div></pre></td></tr></table></figure>
-<h3 id="基于Docker部署"><a href="#基于Docker部署" class="headerlink" title="基于Docker部署"></a>基于Docker部署</h3><hr>
-<p>&nbsp;&nbsp;目前主流的PaaS平台都支持发布Docker镜像.而Docker镜像是使用Dockerfile文件来编译镜像的.</p>
-<h4 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h4><hr>
-<ol>
-<li><p>FROM指令</p>
-<p>FROM指令指明了当前镜像继承的基镜像.编译当前镜像时会自动下载基镜像.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FROM java:8</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>MAINTAINER指令</p>
-<p>MAINTAINER指令指明了当前镜像的作者</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MAINTAINER sun</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>RUN指令</p>
-<p>RUN指令可以在当前镜像上执行Linux命令并形成一个新的层.RUN指令是编译时(build)的动作.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">RUN /bin/bash -c &quot;echo helloworld&quot;</div></pre></td></tr></table></figure>
-</li>
-<li><p>CMD指令</p>
-<p>CMD指令指明镜像启动时的默认行为.一个Dockerfile里只能有一个CMD指令.CMD指令设定的命令可以在运行镜像时使用参数覆盖.它是运行时(run)的动作.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CMD echo &quot;hello&quot;</div><div class="line">可被 docker run -d image_name echo &quot;world&quot; 覆盖.</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>EXPOSE指令</p>
-<p>EXPOSE指令指明了镜像运行时的容器必须监听指定的端口.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">EXPOSE 8080</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>EVN指令</p>
-<p>EVN指令用于设置环境变量.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ENV myName=sun</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>ADD指令</p>
-<p>ADD指令用于从当前工作目录复制文件到镜像目录.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ADD hello.sh /dir/</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>ENTRYPOINT指令</p>
-<p>ENTRYPOINT指令可以让容器像一个可执行程序一样运行,这样镜像运行时可以像软件一样接收参数执行,ENTRYPOINT是运行时(run)的动作.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ENTRYPOINT [&quot;/bin/echo&quot;]</div><div class="line">我们可以镜像传递参数:</div><div class="line">docker run -d image_name &quot;hello world&quot;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h4 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h4><hr>
-<ol>
-<li>首先将打好包的demo上传到Linux服务器.</li>
-<li><p>在项目同级目录下新建一个Dockerfile文件,如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">FROM java:8</div><div class="line"></div><div class="line">MAINTAINER=sun</div><div class="line"></div><div class="line">ADD spring-boot-demo.jar app.jar</div><div class="line"></div><div class="line">EXPOSE 8080</div><div class="line"></div><div class="line">ENTRYPOINT [&quot;java&quot;,&quot;-jar&quot;,&quot;/app.jar&quot;]</div></pre></td></tr></table></figure>
-</li>
-<li><p>编译镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">在/var/apps/sdemo目录下执行以下命令</div><div class="line">docker build -t sun/sdemo .</div><div class="line">使用sun/sdemo作为镜像名称,sun为前缀.  </div><div class="line">.是用来指明Dockerfile路径的,这里因为在当前目录下所以使用“.”.</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li>运行镜像<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -d -p 8080:8080 --name sdemo sun/sdemo</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3 id="Spring-Boot集成测试"><a href="#Spring-Boot集成测试" class="headerlink" title="Spring Boot集成测试"></a>Spring Boot集成测试</h3><hr>
-<p>&nbsp;&nbsp;Spring Boot的测试与Spring MVC类似,它提供了一个<code>@SpringApplicationConfiguration</code>替代<code>@ContextConfiguration</code>来指定配置类.</p>
-<h4 id="Example-1"><a href="#Example-1" class="headerlink" title="Example"></a>Example</h4><hr>
-<ol>
-<li><p>Entity</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Entity</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Id</span></div><div class="line">    <span class="meta">@GeneratedValue</span></div><div class="line">    <span class="keyword">private</span> Long id;</div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>Dao</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PersonRepositroy</span> <span class="keyword">extends</span> <span class="title">JpaRepository</span>&lt;<span class="title">Person</span>,<span class="title">Long</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>Controller</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RestController</span></div><div class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/person"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonController</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    PersonRepositroy personRepositroy;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(method = RequestMethod.GET,produces = &#123;MediaType.APPLICATION_JSON_VALUE&#125;)</div><div class="line">    <span class="function"><span class="keyword">public</span> List&lt;Person&gt; <span class="title">findAll</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> personRepositroy.findAll();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<ol>
-<li><p>Test</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</div><div class="line"><span class="comment">//@ContextConfiguration(classes = &#123;SpringBootTestApplication.class&#125;)</span></div><div class="line"><span class="meta">@SpringApplicationConfiguration</span>(classes = SpringBootTestApplication.class)</div><div class="line"><span class="meta">@WebAppConfiguration</span></div><div class="line"><span class="meta">@Transactional</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonApplicationTest</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    PersonRepositroy personRepositroy;</div><div class="line"></div><div class="line">    MockMvc mockMvc;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    WebApplicationContext webApplicationContext;</div><div class="line"></div><div class="line">    String expectedJson;</div><div class="line"></div><div class="line">     <span class="comment">/**</span></div><div class="line">       * 初始化</div><div class="line">       */</div><div class="line">     <span class="meta">@Before</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">()</span> <span class="keyword">throws</span> JsonProcessingException </span>&#123;</div><div class="line">         Person p1 = <span class="keyword">new</span> Person(<span class="string">"sun"</span>);</div><div class="line">         Person p2 = <span class="keyword">new</span> Person(<span class="string">"sylvanas"</span>);</div><div class="line">         personRepositroy.save(p1);</div><div class="line">         personRepositroy.save(p2);</div><div class="line">         <span class="comment">// 获得期待返回的JSON字符串.</span></div><div class="line">         expectedJson = Obj2Json(personRepositroy.findAll());</div><div class="line">         <span class="comment">// 初始化MockMvc.</span></div><div class="line">         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     <span class="function"><span class="keyword">protected</span> String <span class="title">Obj2Json</span><span class="params">(Object obj)</span> <span class="keyword">throws</span> JsonProcessingException </span>&#123;</div><div class="line">         ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper();</div><div class="line">         <span class="keyword">return</span> objectMapper.writeValueAsString(obj);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     <span class="meta">@Test</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testPersonController</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">         String url = <span class="string">"/person"</span>;</div><div class="line">         <span class="comment">// 对/person发送请求,获得请求的执行结果.</span></div><div class="line">         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(url)</div><div class="line">                 .accept(MediaType.APPLICATION_JSON_VALUE))</div><div class="line">                 .andReturn();</div><div class="line">         <span class="comment">// 获得执行结果的状态</span></div><div class="line">         <span class="keyword">int</span> status = result.getResponse().getStatus();</div><div class="line">         <span class="comment">// 获得执行结果的内容</span></div><div class="line">         String content = result.getResponse().getContentAsString();</div><div class="line">         <span class="comment">// 断言</span></div><div class="line">         Assert.assertEquals(<span class="string">"错误:正确的返回值为200"</span>, <span class="number">200</span>, status);</div><div class="line">         Assert.assertEquals(<span class="string">"错误:返回值和预期返回值不一致"</span>, expectedJson, content);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3 id="Spring-Boot应用监控"><a href="#Spring-Boot应用监控" class="headerlink" title="Spring Boot应用监控"></a>Spring Boot应用监控</h3><hr>
-<p>&nbsp;&nbsp;Spring Boot提供了运行时的应用监控和管理的功能.我们可以通过HTTP、JMX、SSH来进行应用的监控.</p>
-<h4 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h4><hr>
-<p>&nbsp;&nbsp;使用HTTP实现对应用的监控需要添加以下依赖:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>&nbsp;&nbsp;<strong>端点:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Endpoint</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>actuator</td>
-<td>所有EndPoint的列表,需要加入spring HATEOAS支持</td>
-</tr>
-<tr>
-<td>autoconfig</td>
-<td>当前应用的所有自动配置</td>
-</tr>
-<tr>
-<td>beans</td>
-<td>当前应用的所有Bean信息</td>
-</tr>
-<tr>
-<td>configprops</td>
-<td>当前应用中所有的配置信息</td>
-</tr>
-<tr>
-<td>dump</td>
-<td>显示当前应用线程状态信息</td>
-</tr>
-<tr>
-<td>env</td>
-<td>显示当前应用的环境信息</td>
-</tr>
-<tr>
-<td>health</td>
-<td>显示当前应用的健康情况</td>
-</tr>
-<tr>
-<td>info</td>
-<td>显示当前应用信息</td>
-</tr>
-<tr>
-<td>metrics</td>
-<td>显示当前应用的各项指标信息</td>
-</tr>
-<tr>
-<td>mappings</td>
-<td>显示所有的@RequestMapping映射的路径</td>
-</tr>
-<tr>
-<td>shutdown</td>
-<td>关闭当前应用(默认此项是关闭的)</td>
-</tr>
-<tr>
-<td>trace</td>
-<td>默认最新的http请求</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;&nbsp;使用http访问应用监控只需要在url中加上/端点名即可.</p>
-<ul>
-<li>例如: <a href="http://localhost:8080/actuator" target="_blank" rel="external">http://localhost:8080/actuator</a></li>
-</ul>
-<p>&nbsp;&nbsp;端点的开启关闭可以在application.properties中配置.</p>
-<p>&nbsp;&nbsp;如果想自定义端点,则需要一个继承AbstractEndpoint的实现类,并注册成Bean即可.</p>
-<p>&nbsp;&nbsp;如果想自定义HealthIndicator,则需要一个实现HealthIndicator接口的类,并注册成Bean即可.</p>
-<h3 id="JMX"><a href="#JMX" class="headerlink" title="JMX"></a>JMX</h3><hr>
-<p>&nbsp;&nbsp;可以使用Java内置的jconsole来实现JMX监控.</p>
-<h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><hr>
-<p>&nbsp;&nbsp;Spring Boot借助CraSH (<a href="http://www.crashub.org" target="_blank" rel="external">http://www.crashub.org</a>), 实现通过SSH或者TELNET监控和管理应用.我们只需要引入依赖spring-boot-starter-remote-shell即可.</p>
-<p>&nbsp;&nbsp;Spring Boot在spring-boot-starter-remote-shell的commands包下定制了命令,它使用的是Groovy语言来编写的.Groovy语言是由Spring主导的运行于JVM的动态语言.</p>
-<h4 id="自定义登录用户"><a href="#自定义登录用户" class="headerlink" title="自定义登录用户"></a>自定义登录用户</h4><hr>
-<p>&nbsp;&nbsp;Spring Boot支持在application.properties中自定义用户的账号密码.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">shell.auth.simple.user.name=sun</div><div class="line">shell.auth.simple.user.password=sun</div></pre></td></tr></table></figure></p>
-<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><blockquote>
-<p>资料参考于 JavaEE开发的颠覆者: Spring Boot实战</p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;Spring-Boot部署&quot;&gt;&lt;a href=&quot;#Spring-Boot部署&quot; class=&quot;headerlink&quot; title=&quot;Spring Boot部署&quot;&gt;&lt;/a&gt;Spring Boot部署&lt;/h3&gt;&lt;hr&gt;
-&lt;h4 id=&quot;Jar包形式&quot;&gt;&lt;a href=
-    
-    </summary>
-    
-      <category term="后端" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/"/>
-    
-      <category term="Java" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/Java/"/>
-    
-      <category term="Spring Boot" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/Java/Spring-Boot/"/>
-    
-    
-      <category term="Java" scheme="https://sylvanassun.github.io/tags/Java/"/>
-    
-      <category term="Spring Boot" scheme="https://sylvanassun.github.io/tags/Spring-Boot/"/>
-    
-      <category term="Spring" scheme="https://sylvanassun.github.io/tags/Spring/"/>
     
   </entry>
   

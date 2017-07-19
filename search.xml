@@ -3,14 +3,14 @@
   <entry>
     <title><![CDATA[电影中的"FaceMash"算法]]></title>
     <url>%2F2017%2F07%2F19%2F2017-07-19-FaceMash%2F</url>
-    <content type="text"><![CDATA[最近在看&lt;&lt;社交网络&gt;&gt;时,发现了一个用于投票排名的算法,自己折腾实现了一下. 在影片中,卷西饰演的扎克伯格在被妹子甩了之后(其实是他自己直男癌),一气之下黑了附近女生宿舍的照片数据库打算做一个FaceMash(通过投票的方式来选出漂亮的女生,同时它也是Facebook的前身,后来这个网站由于流量太大,搞崩了哈佛大学的网络而被强行关闭了),并使用了他的好基友爱德华多用于计算国际象棋排名的算法. 这是一部很好看的电影,如果没有看过我强烈推荐去看一看. 公式 这个算法是用来计算期望胜率的,但影片中其实写的是错误的,正确的公式应该为: $$E_a = \frac{1} {1+10^(R_b - R_a) / 400}$$ $E_a$就是a的期望胜率. $R_b,R_a$是a与b的Rank分数. 当$R_a,R_b$都相同时,它们的期望胜率都为0.5,即$E_a = \frac{1} {1+10^0} = 0.5$. 电影中只给出了计算期望胜率的算法,但我们还需要一个计算新的Rank分数的算法,公式如下: $$R_n = R_o + K(W - E)$$ $R_n$代表新的Rank,$R_o$自然就是旧的Rank了. K为一个定值,我把它设为10. W是胜负值,胜者为1,败者为0;E就是我们上面计算的期望胜率. 实现 有了这两个核心公式,我们就可以开始实现这个算法了,但在代码实现之前,我们先验证一下公式: 我们假设有两个女孩A与B,她们的基础Rank都为1400,通过上述的推论我们已经得知,当A,B的分值相同时,她们的期望胜率都为0.5. 如果,我选择了A,则A的胜负值变为1,B的胜负值为0,然后我们套用公式2可以得出: $R_a = 1400 + 10 * (1 - 0.5) = 1405$ $R_b = 1400 + 10 * (0 - 0.5) = 1395$ 由于她们的分数不再相同,所以套用公式1计算现在的期望胜率: $R_a = \frac{1} {1 + 10^(1395 - 1405) / 400} \approx 0.51439 $ $R_b = \frac{1} {1 + 10^(1405 - 1395) / 400} \approx 0.48561$ 下面是我用C写的一个小程序,它初始化了两个”女孩”,然后根据输入来判断哪个胜出,并动态计算Rank与期望胜率. 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465#include &lt;stdio.h&gt;#include &lt;math.h&gt;typedef struct &#123; const char *name; int rank; double expect_rate;&#125; girl;const int K = 10;void read_girl(girl g) &#123; printf("Girl name: %s, rank: %d, expect_rate: %.5f\n",g.name,g.rank,g.expect_rate);&#125;void compute_expect_rate(girl *a,girl *b) &#123; int a_rank = a-&gt;rank; int b_rank = b-&gt;rank; // expect rate formula // Ea = 1 / (1 + 10 ^ ((Rb-Ra) / 400)) double a_rank_differ = (double) (b_rank - a_rank) / 400; double a_rank_rate = pow(10,a_rank_differ); a-&gt;expect_rate = 1 / (1 + a_rank_rate); // Eb = 1 / (1 + 10 ^ ((Ra-Rb) / 400)) double b_rank_differ = (double) (a_rank - b_rank) / 400; double b_rank_rate = pow(10,b_rank_differ); b-&gt;expect_rate = 1 / (1 + b_rank_rate);&#125;// new rank formula: Rn = Ro + K(W - E)void compute_rank(girl *a,girl *b,int a_win_rate,int b_win_rate) &#123; a-&gt;rank = a-&gt;rank + K * (a_win_rate - a-&gt;expect_rate); b-&gt;rank = b-&gt;rank + K * (b_win_rate - b-&gt;expect_rate);&#125;int main(int argc,char *argv[]) &#123; char a_girl_name[20]; char b_girl_name[20]; girl a = &#123;.name = "A Gril",.rank = 1400&#125;; girl b = &#123;.name = "B Gril",.rank = 1400&#125;; compute_expect_rate(&amp;a,&amp;b); read_girl(a); read_girl(b); while (1) &#123; char choice[2]; printf("Choice A or B?\n"); scanf("%s",choice); if (choice[0] == 'A') &#123; compute_rank(&amp;a,&amp;b,1,0); compute_expect_rate(&amp;a,&amp;b); &#125; else if (choice[0] == 'B') &#123; compute_rank(&amp;a,&amp;b,0,1); compute_expect_rate(&amp;a,&amp;b); &#125; else &#123; printf("Invalid choice!\n"); break; &#125; read_girl(a); read_girl(b); &#125;&#125; 本文作者为SylvanasSun(sylvanassun_xtz@163.com),转载请务必指明原文链接.]]></content>
+    <content type="text"><![CDATA[最近在看&lt;&lt;社交网络&gt;&gt;时,发现了一个用于投票排名的算法,自己折腾实现了一下. 在影片中,卷西饰演的扎克伯格在被妹子甩了之后(其实是他自己直男癌),一气之下黑了附近女生宿舍的照片数据库打算做一个FaceMash(通过投票的方式来选出漂亮的女生,同时它也是Facebook的前身,后来这个网站由于流量太大,搞崩了哈佛大学的网络而被强行关闭了),并使用了他的好基友爱德华多用于计算国际象棋排名的算法. 这是一部很好看的电影,如果没有看过我强烈推荐去看一看. 公式 这个算法是用来计算期望胜率的,但影片中其实写的是错误的,正确的公式应该为: $$E_a = \frac{1} {1 + 10 ^ ((R_b - R_a) / 400)}$$ $E_a$就是a的期望胜率. $R_b,R_a$是b与a的Rank分数. 当$R_a,R_b$都相同时,它们的期望胜率都为0.5,即$E_a = \frac{1} {1+10^0} = 0.5$. 电影中只给出了计算期望胜率的算法,但我们还需要一个计算新的Rank分数的算法,公式如下: $$R_n = R_o + K(W - E)$$ $R_n$代表新的Rank,$R_o$自然就是旧的Rank了. K为一个定值,我把它设为10. W是胜负值,胜者为1,败者为0;E就是我们上面计算的期望胜率. 实现 有了这两个核心公式,我们就可以开始实现这个算法了,但在代码实现之前,我们先验证一下公式: 假设有两个女孩A与B,她们的基础Rank都为1400,通过上述的推论我们已经得知,当A,B的分值相同时,她们的期望胜率都为0.5. 如果,我选择了A,则A的胜负值变为1,B的胜负值为0,然后我们套用公式2可以得出: $R_a = 1400 + 10 * (1 - 0.5) = 1405$ $R_b = 1400 + 10 * (0 - 0.5) = 1395$ 由于她们的分数不再相同,所以套用公式1计算现在的期望胜率: $R_a = \frac{1} {1 + 10 ^ ((1395 - 1405) / 400)} \approx 0.51439 $ $R_b = \frac{1} {1 + 10 ^ ((1405 - 1395) / 400)} \approx 0.48561$ 下面是我用C写的一个小程序,它初始化了两个”女孩”,然后根据输入来判断哪个胜出,并动态计算Rank与期望胜率. 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465#include &lt;stdio.h&gt;#include &lt;math.h&gt;typedef struct &#123; const char *name; int rank; double expect_rate;&#125; girl;const int K = 10;void read_girl(girl g) &#123; printf("Girl name: %s, rank: %d, expect_rate: %.5f\n",g.name,g.rank,g.expect_rate);&#125;void compute_expect_rate(girl *a,girl *b) &#123; int a_rank = a-&gt;rank; int b_rank = b-&gt;rank; // expect rate formula // Ea = 1 / (1 + 10 ^ ((Rb-Ra) / 400)) double a_rank_differ = (double) (b_rank - a_rank) / 400; double a_rank_rate = pow(10,a_rank_differ); a-&gt;expect_rate = 1 / (1 + a_rank_rate); // Eb = 1 / (1 + 10 ^ ((Ra-Rb) / 400)) double b_rank_differ = (double) (a_rank - b_rank) / 400; double b_rank_rate = pow(10,b_rank_differ); b-&gt;expect_rate = 1 / (1 + b_rank_rate);&#125;// new rank formula: Rn = Ro + K(W - E)void compute_rank(girl *a,girl *b,int a_win_rate,int b_win_rate) &#123; a-&gt;rank = a-&gt;rank + K * (a_win_rate - a-&gt;expect_rate); b-&gt;rank = b-&gt;rank + K * (b_win_rate - b-&gt;expect_rate);&#125;int main(int argc,char *argv[]) &#123; char a_girl_name[20]; char b_girl_name[20]; girl a = &#123;.name = "A Gril",.rank = 1400&#125;; girl b = &#123;.name = "B Gril",.rank = 1400&#125;; compute_expect_rate(&amp;a,&amp;b); read_girl(a); read_girl(b); while (1) &#123; char choice[2]; printf("Choice A or B?\n"); scanf("%s",choice); if (choice[0] == 'A') &#123; compute_rank(&amp;a,&amp;b,1,0); compute_expect_rate(&amp;a,&amp;b); &#125; else if (choice[0] == 'B') &#123; compute_rank(&amp;a,&amp;b,0,1); compute_expect_rate(&amp;a,&amp;b); &#125; else &#123; printf("Invalid choice!\n"); break; &#125; read_girl(a); read_girl(b); &#125;&#125; 本文作者为SylvanasSun(sylvanassun_xtz@163.com),转载请务必指明原文链接.]]></content>
       <categories>
         <category>Algorithms</category>
         <category>Other</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
       </tags>
   </entry>
   <entry>
@@ -22,8 +22,8 @@
         <category>Graph</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>Graph</tag>
       </tags>
   </entry>
@@ -36,8 +36,8 @@
         <category>动态规划</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>动态规划</tag>
       </tags>
   </entry>
@@ -51,9 +51,9 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
         <tag>数据结构</tag>
+        <tag>2017</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -66,9 +66,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
+        <tag>Algorithms</tag>
         <tag>2017</tag>
         <tag>排序算法</tag>
-        <tag>Algorithms</tag>
       </tags>
   </entry>
   <entry>
@@ -80,9 +80,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
+        <tag>Algorithms</tag>
         <tag>2017</tag>
         <tag>排序算法</tag>
-        <tag>Algorithms</tag>
       </tags>
   </entry>
   <entry>
@@ -94,9 +94,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
+        <tag>Algorithms</tag>
         <tag>2017</tag>
         <tag>排序算法</tag>
-        <tag>Algorithms</tag>
       </tags>
   </entry>
   <entry>
@@ -139,10 +139,10 @@
         <category>HashTable</category>
       </categories>
       <tags>
-        <tag>2017</tag>
-        <tag>Algorithms</tag>
         <tag>HashTable</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
+        <tag>2017</tag>
       </tags>
   </entry>
   <entry>
@@ -155,9 +155,9 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
         <tag>数据结构</tag>
+        <tag>2017</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -171,9 +171,9 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
         <tag>数据结构</tag>
+        <tag>2017</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -187,9 +187,9 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
         <tag>数据结构</tag>
+        <tag>2017</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -203,9 +203,9 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
         <tag>数据结构</tag>
+        <tag>2017</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -218,9 +218,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
+        <tag>Algorithms</tag>
         <tag>2017</tag>
         <tag>排序算法</tag>
-        <tag>Algorithms</tag>
       </tags>
   </entry>
   <entry>
@@ -233,8 +233,8 @@
         <category>LinkedTable</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>数据结构</tag>
+        <tag>2017</tag>
         <tag>LinkedTable</tag>
       </tags>
   </entry>
@@ -248,8 +248,8 @@
         <category>HashTable</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>HashTable</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
       </tags>
   </entry>
@@ -306,8 +306,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring Boot</tag>
         <tag>Spring</tag>
+        <tag>Spring Boot</tag>
       </tags>
   </entry>
   <entry>
@@ -321,8 +321,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring Boot</tag>
         <tag>Spring</tag>
+        <tag>Spring Boot</tag>
       </tags>
   </entry>
   <entry>
@@ -336,8 +336,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring Boot</tag>
         <tag>Spring</tag>
+        <tag>Spring Boot</tag>
       </tags>
   </entry>
   <entry>
@@ -351,8 +351,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring Boot</tag>
         <tag>Spring</tag>
+        <tag>Spring Boot</tag>
       </tags>
   </entry>
   <entry>
@@ -366,8 +366,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring Boot</tag>
         <tag>Spring</tag>
+        <tag>Spring Boot</tag>
       </tags>
   </entry>
   <entry>
@@ -381,8 +381,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring Boot</tag>
         <tag>Spring</tag>
+        <tag>Spring Boot</tag>
       </tags>
   </entry>
   <entry>
@@ -396,8 +396,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring Boot</tag>
         <tag>Spring</tag>
+        <tag>Spring Boot</tag>
       </tags>
   </entry>
   <entry>

@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-07-19T10:47:21.410Z</updated>
+  <updated>2017-07-19T10:58:41.477Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://sylvanassun.github.io/2017/07/19/2017-07-19-FaceMash/"/>
     <id>https://sylvanassun.github.io/2017/07/19/2017-07-19-FaceMash/</id>
     <published>2017-07-19T10:00:00.000Z</published>
-    <updated>2017-07-19T10:47:21.410Z</updated>
+    <updated>2017-07-19T10:58:41.477Z</updated>
     
     <content type="html"><![CDATA[<p><img src="https://img3.doubanio.com/view/photo/raw/public/p679478005.jpg" alt=""></p>
 <blockquote>
@@ -31,12 +31,12 @@
 <h3 id="公式"><a href="#公式" class="headerlink" title="公式"></a>公式</h3><hr>
 <p><img src="http://wx4.sinaimg.cn/large/63503acbly1fhpbwf3qy2j20vx0hx74u.jpg" alt=""></p>
 <p>这个算法是用来计算<code>期望胜率</code>的,但影片中其实写的是错误的,正确的公式应该为: </p>
-<p>$$E_a = \frac{1} {1+10^(R_b - R_a) / 400}$$</p>
+<p>$$E_a = \frac{1} {1 + 10 ^ ((R_b - R_a) / 400)}$$</p>
 <ul>
 <li>$E_a$就是<code>a</code>的期望胜率.</li>
 </ul>
 <ul>
-<li>$R_b,R_a$是<code>a</code>与<code>b</code>的<code>Rank</code>分数.</li>
+<li>$R_b,R_a$是<code>b</code>与<code>a</code>的<code>Rank</code>分数.</li>
 </ul>
 <ul>
 <li>当$R_a,R_b$都相同时,它们的<code>期望胜率</code>都为<code>0.5</code>,即$E_a = \frac{1} {1+10^0} = 0.5$.</li>
@@ -54,7 +54,7 @@
 </ul>
 <h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><hr>
 <p>有了这两个核心公式,我们就可以开始实现这个算法了,但在代码实现之前,我们先验证一下公式: </p>
-<p>我们假设有两个女孩<code>A</code>与<code>B</code>,她们的基础<code>Rank</code>都为<code>1400</code>,通过上述的推论我们已经得知,<strong><code>当A</code>,<code>B</code>的分值相同时,她们的期望胜率都为0.5</strong>.</p>
+<p>假设有两个女孩<code>A</code>与<code>B</code>,她们的基础<code>Rank</code>都为<code>1400</code>,通过上述的推论我们已经得知,<strong><code>当A</code>,<code>B</code>的分值相同时,她们的期望胜率都为0.5</strong>.</p>
 <p>如果,我选择了<code>A</code>,则<code>A</code>的胜负值变为<code>1</code>,<code>B</code>的胜负值为<code>0</code>,然后我们套用公式2可以得出: </p>
 <ul>
 <li>$R_a = 1400 + 10 * (1 - 0.5) = 1405$</li>
@@ -64,10 +64,10 @@
 </ul>
 <p>由于她们的分数不再相同,所以套用公式1计算现在的<code>期望胜率</code>: </p>
 <ul>
-<li>$R_a = \frac{1} {1 + 10^(1395 - 1405) / 400} \approx 0.51439 $</li>
+<li>$R_a = \frac{1} {1 + 10 ^ ((1395 - 1405) / 400)} \approx 0.51439 $</li>
 </ul>
 <ul>
-<li>$R_b = \frac{1} {1 + 10^(1405 - 1395) / 400} \approx 0.48561$</li>
+<li>$R_b = \frac{1} {1 + 10 ^ ((1405 - 1395) / 400)} \approx 0.48561$</li>
 </ul>
 <p>下面是我用<code>C</code>写的一个小程序,它初始化了两个”女孩”,然后根据输入来判断哪个胜出,并动态计算<code>Rank</code>与<code>期望胜率</code>.</p>
 <p><img src="http://wx1.sinaimg.cn/mw690/63503acbly1fhpcccyw1bj20di0gcdg7.jpg" alt=""></p>
@@ -90,9 +90,9 @@
       <category term="Other" scheme="https://sylvanassun.github.io/categories/Algorithms/Other/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -377,9 +377,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -454,9 +454,9 @@
       <category term="动态规划" scheme="https://sylvanassun.github.io/categories/Algorithms/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="动态规划" scheme="https://sylvanassun.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
@@ -551,11 +551,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -609,11 +609,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -665,11 +665,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -734,11 +734,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -1062,13 +1062,13 @@
       <category term="HashTable" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/HashTable/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
-    
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -1140,11 +1140,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -1361,11 +1361,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -1471,11 +1471,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -1627,11 +1627,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -1946,11 +1946,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -2025,9 +2025,9 @@
       <category term="LinkedTable" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/LinkedTable/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="LinkedTable" scheme="https://sylvanassun.github.io/tags/LinkedTable/"/>
     
@@ -2088,9 +2088,9 @@
       <category term="HashTable" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/HashTable/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     

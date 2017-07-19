@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-07-19T10:58:41.477Z</updated>
+  <updated>2017-07-19T11:02:26.668Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://sylvanassun.github.io/2017/07/19/2017-07-19-FaceMash/"/>
     <id>https://sylvanassun.github.io/2017/07/19/2017-07-19-FaceMash/</id>
     <published>2017-07-19T10:00:00.000Z</published>
-    <updated>2017-07-19T10:58:41.477Z</updated>
+    <updated>2017-07-19T11:02:26.668Z</updated>
     
     <content type="html"><![CDATA[<p><img src="https://img3.doubanio.com/view/photo/raw/public/p679478005.jpg" alt=""></p>
 <blockquote>
@@ -31,7 +31,7 @@
 <h3 id="公式"><a href="#公式" class="headerlink" title="公式"></a>公式</h3><hr>
 <p><img src="http://wx4.sinaimg.cn/large/63503acbly1fhpbwf3qy2j20vx0hx74u.jpg" alt=""></p>
 <p>这个算法是用来计算<code>期望胜率</code>的,但影片中其实写的是错误的,正确的公式应该为: </p>
-<p>$$E_a = \frac{1} {1 + 10 ^ ((R_b - R_a) / 400)}$$</p>
+<p>$$E_a = \frac{1} {1 + 10 ^ {(R_b - R_a) / 400}}$$</p>
 <ul>
 <li>$E_a$就是<code>a</code>的期望胜率.</li>
 </ul>
@@ -64,10 +64,10 @@
 </ul>
 <p>由于她们的分数不再相同,所以套用公式1计算现在的<code>期望胜率</code>: </p>
 <ul>
-<li>$R_a = \frac{1} {1 + 10 ^ ((1395 - 1405) / 400)} \approx 0.51439 $</li>
+<li>$R_a = \frac{1} {1 + 10 ^ {(1395 - 1405) / 400}} \approx 0.51439 $</li>
 </ul>
 <ul>
-<li>$R_b = \frac{1} {1 + 10 ^ ((1405 - 1395) / 400)} \approx 0.48561$</li>
+<li>$R_b = \frac{1} {1 + 10 ^ {(1405 - 1395) / 400}} \approx 0.48561$</li>
 </ul>
 <p>下面是我用<code>C</code>写的一个小程序,它初始化了两个”女孩”,然后根据输入来判断哪个胜出,并动态计算<code>Rank</code>与<code>期望胜率</code>.</p>
 <p><img src="http://wx1.sinaimg.cn/mw690/63503acbly1fhpcccyw1bj20di0gcdg7.jpg" alt=""></p>
@@ -611,9 +611,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -667,9 +667,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -736,9 +736,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -1948,9 +1948,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   

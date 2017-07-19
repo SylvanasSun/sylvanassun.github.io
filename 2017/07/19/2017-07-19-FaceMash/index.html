@@ -105,7 +105,7 @@
 <meta property="og:image" content="https://img3.doubanio.com/view/photo/raw/public/p679478005.jpg">
 <meta property="og:image" content="http://wx4.sinaimg.cn/large/63503acbly1fhpbwf3qy2j20vx0hx74u.jpg">
 <meta property="og:image" content="http://wx1.sinaimg.cn/mw690/63503acbly1fhpcccyw1bj20di0gcdg7.jpg">
-<meta property="og:updated_time" content="2017-07-19T10:58:41.477Z">
+<meta property="og:updated_time" content="2017-07-19T11:02:26.668Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="电影&lt;&lt;社交网络&gt;&gt;中的&quot;FaceMash&quot;算法">
 <meta name="twitter:description" content="最近在看&amp;lt;&amp;lt;社交网络&amp;gt;&amp;gt;时,发现了一个用于投票排名的算法,自己折腾实现了一下.  在影片中,卷西饰演的扎克伯格在被妹子甩了之后(其实是他自己直男癌),一气之下黑了附近女生宿舍的照片数据库打算做一个FaceMash(通过投票的方式来选出漂亮的女生,同时它也是Facebook的前身,后来这个网站由于流量太大,搞崩了哈佛大学的网络而被强行关闭了),并使用了他的好基友爱德华多用">
@@ -444,7 +444,7 @@
 <h3 id="公式"><a href="#公式" class="headerlink" title="公式"></a>公式</h3><hr>
 <p><img src="http://wx4.sinaimg.cn/large/63503acbly1fhpbwf3qy2j20vx0hx74u.jpg" alt=""></p>
 <p>这个算法是用来计算<code>期望胜率</code>的,但影片中其实写的是错误的,正确的公式应该为: </p>
-<p>$$E_a = \frac{1} {1 + 10 ^ ((R_b - R_a) / 400)}$$</p>
+<p>$$E_a = \frac{1} {1 + 10 ^ {(R_b - R_a) / 400}}$$</p>
 <ul>
 <li>$E_a$就是<code>a</code>的期望胜率.</li>
 </ul>
@@ -477,10 +477,10 @@
 </ul>
 <p>由于她们的分数不再相同,所以套用公式1计算现在的<code>期望胜率</code>: </p>
 <ul>
-<li>$R_a = \frac{1} {1 + 10 ^ ((1395 - 1405) / 400)} \approx 0.51439 $</li>
+<li>$R_a = \frac{1} {1 + 10 ^ {(1395 - 1405) / 400}} \approx 0.51439 $</li>
 </ul>
 <ul>
-<li>$R_b = \frac{1} {1 + 10 ^ ((1405 - 1395) / 400)} \approx 0.48561$</li>
+<li>$R_b = \frac{1} {1 + 10 ^ {(1405 - 1395) / 400}} \approx 0.48561$</li>
 </ul>
 <p>下面是我用<code>C</code>写的一个小程序,它初始化了两个”女孩”,然后根据输入来判断哪个胜出,并动态计算<code>Rank</code>与<code>期望胜率</code>.</p>
 <p><img src="http://wx1.sinaimg.cn/mw690/63503acbly1fhpcccyw1bj20di0gcdg7.jpg" alt=""></p>

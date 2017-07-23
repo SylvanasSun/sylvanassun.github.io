@@ -1,0 +1,1474 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Algorithms,2017,Graph," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SylvanasSun Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="本文作者为: SylvanasSun.转载请务必将下面这段话置于文章开头处(保留超链接).本文转发自SylvanasSun Blog,原文链接: https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/  有向图的性质 有向图与无向图不同,它的边是单向的,每条边所连接的两个顶点都是一个有序对,它们的邻接性是">
+<meta name="keywords" content="Algorithms,2017,Graph">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图的那点事儿(2)-有向图">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/index.html">
+<meta property="og:site_name" content="SylvanasSun Blog">
+<meta property="og:description" content="本文作者为: SylvanasSun.转载请务必将下面这段话置于文章开头处(保留超链接).本文转发自SylvanasSun Blog,原文链接: https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/  有向图的性质 有向图与无向图不同,它的边是单向的,每条边所连接的两个顶点都是一个有序对,它们的邻接性是">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/42digraph/images/digraph-anatomy.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/42digraph/images/digraph-api.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/42digraph/images/depth-first-orders.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/42digraph/images/topological-sort.png">
+<meta property="og:image" content="http://algs4.cs.princeton.edu/42digraph/images/transitive-closure.png">
+<meta property="og:updated_time" content="2017-07-23T03:11:45.936Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="图的那点事儿(2)-有向图">
+<meta name="twitter:description" content="本文作者为: SylvanasSun.转载请务必将下面这段话置于文章开头处(保留超链接).本文转发自SylvanasSun Blog,原文链接: https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/  有向图的性质 有向图与无向图不同,它的边是单向的,每条边所连接的两个顶点都是一个有序对,它们的邻接性是">
+<meta name="twitter:image" content="http://algs4.cs.princeton.edu/42digraph/images/digraph-anatomy.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/"/>
+
+
+
+
+
+  <title>图的那点事儿(2)-有向图 | SylvanasSun Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SylvanasSun Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SylvanasSun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SylvanasSun Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">图的那点事儿(2)-有向图</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-23T11:00:00+08:00">
+                2017-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithms/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithms</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithms/Graph/" itemprop="url" rel="index">
+                    <span itemprop="name">Graph</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/23/2017-07-23-Graph_DirectedGraphs/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/07/23/2017-07-23-Graph_DirectedGraphs/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/07/23/2017-07-23-Graph_DirectedGraphs/" class="leancloud_visitors" data-flag-title="图的那点事儿(2)-有向图">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本文作者为: <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun</a>.转载请务必将下面这段话置于文章开头处(保留超链接).<br>本文转发自<a href="https://sylvanassun.github.io/">SylvanasSun Blog</a>,原文链接: <a href="https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/">https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/</a></p>
+</blockquote>
+<h3 id="有向图的性质"><a href="#有向图的性质" class="headerlink" title="有向图的性质"></a>有向图的性质</h3><hr>
+<p><code>有向图</code>与<code>无向图</code>不同,<strong>它的<code>边</code>是单向的,每条边所连接的两个顶点都是一个有序对,它们的邻接性是单向的.</strong></p>
+<p>在<code>有向图</code>中,一条<code>有向边</code><strong>由第一个<code>顶点</code>指出并指向第二个<code>顶点</code></strong>,<strong>一个<code>顶点</code>的<code>出度</code>为由该<code>顶点</code>指出的<code>边</code>的总数;一个<code>顶点</code>的<code>入度</code>为指向该<code>顶点</code>的边的总数</strong>.</p>
+<p><img src="http://algs4.cs.princeton.edu/42digraph/images/digraph-anatomy.png" alt="有向图的解析"></p>
+<p><code>v-&gt;w</code>表示一条由<code>v</code>指向<code>w</code>的边,在一幅<code>有向图</code>中,两个<code>顶点</code>的关系可能有以下四种(特殊图除外): </p>
+<ol>
+<li>没有<code>边</code>相连.</li>
+</ol>
+<ol>
+<li>存在一条从<code>v</code>到<code>w</code>的<code>边</code>: <code>v-&gt;w</code>.</li>
+</ol>
+<ol>
+<li>存在一条从<code>w</code>到<code>v</code>的<code>边</code>: <code>w-&gt;v</code>.</li>
+</ol>
+<ol>
+<li>既存在<code>v-&gt;w</code>,也存在<code>w-&gt;v</code>,也就是一条<code>双向边</code>.</li>
+</ol>
+<p>当存在从<code>v</code>到<code>w</code>的<code>有向路径</code>时,称<code>顶点w</code>能够由<code>顶点v</code>达到.但在<code>有向图</code>中,由<code>v</code>能够到达<code>w</code>并不意味着由<code>w</code>也能到达<code>v</code>(但每个<code>顶点</code>都是能够到达它自己的).</p>
+<h3 id="有向图的实现"><a href="#有向图的实现" class="headerlink" title="有向图的实现"></a>有向图的实现</h3><hr>
+<p><code>有向图</code>的实现与<code>无向图</code>差不多,只不过在<code>边</code>的方向上有所不同.(本文中的所有完整代码可以在我的<a href="https://github.com/SylvanasSun/algs4-study/tree/master/src/main/java/chapter4_graphs/C4_2_DirectedGraphs" target="_blank" rel="external">GitHub</a>中查看)</p>
+<p><img src="http://algs4.cs.princeton.edu/42digraph/images/digraph-api.png" alt="有向图的API"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Digraph</span> <span class="keyword">implements</span> <span class="title">Graph</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String NEWLINE = System.getProperty(<span class="string">"line.separator"</span>);</div><div class="line"></div><div class="line">    <span class="comment">// number of vertices in this digraph</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> vertex;</div><div class="line"></div><div class="line">    <span class="comment">// number of edges in this digraph</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> edge;</div><div class="line"></div><div class="line">    <span class="comment">// adj[v] = adjacency list for vertex v</span></div><div class="line">    <span class="keyword">private</span> Bag&lt;Integer&gt;[] adj;</div><div class="line"></div><div class="line">    <span class="comment">// indegree[v] = indegree of vertex v</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] indegree;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Digraph</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        validateVertex(vertex);</div><div class="line"></div><div class="line">        <span class="keyword">this</span>.vertex = vertex;</div><div class="line">        <span class="keyword">this</span>.edge = <span class="number">0</span>;</div><div class="line">        <span class="keyword">this</span>.indegree = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.adj = (Bag&lt;Integer&gt;[]) <span class="keyword">new</span> Bag[vertex];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; vertex; i++)</div><div class="line">            adj[i] = <span class="keyword">new</span> Bag&lt;Integer&gt;();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Digraph</span><span class="params">(Scanner scanner)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (scanner == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Scanner must be not null."</span>);</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">int</span> vertex = scanner.nextInt();</div><div class="line">            validateVertex(vertex);</div><div class="line">            <span class="keyword">this</span>.vertex = vertex;</div><div class="line">            <span class="keyword">this</span>.indegree = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">            <span class="keyword">this</span>.adj = (Bag&lt;Integer&gt;[]) <span class="keyword">new</span> Bag[vertex];</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; vertex; i++)</div><div class="line">                adj[i] = <span class="keyword">new</span> Bag&lt;Integer&gt;();</div><div class="line"></div><div class="line">            <span class="keyword">int</span> edge = scanner.nextInt();</div><div class="line">            validateEdge(edge);</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; edge; i++) &#123;</div><div class="line">                <span class="keyword">int</span> v = scanner.nextInt();</div><div class="line">                <span class="keyword">int</span> w = scanner.nextInt();</div><div class="line">                addEdge(v, w);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (NoSuchElementException e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Invalid input format in Digraph constructor"</span>, e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Digraph</span><span class="params">(Digraph digraph)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>(digraph.vertex);</div><div class="line">        <span class="keyword">this</span>.edge = digraph.edge;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++)</div><div class="line">            <span class="keyword">this</span>.indegree[v] = digraph.indegree(v);</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            Stack&lt;Integer&gt; reverse = <span class="keyword">new</span> Stack&lt;&gt;();</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : digraph.adj(v))</div><div class="line">                reverse.push(w);</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : reverse)</div><div class="line">                <span class="keyword">this</span>.adj[v].add(w);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">vertex</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> vertex;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">edge</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> edge;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 注意这里与无向图不同,只在v的邻接表中添加了w</div><div class="line">     */</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addEdge</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        validateVertex(w);</div><div class="line">        adj[v].add(w);</div><div class="line">		<span class="comment">// w的入度+ 1</span></div><div class="line">        indegree[w]++;</div><div class="line">        edge++;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">adj</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> adj[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">indegree</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> indegree[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">	 * v的出度就是它邻接表中的顶点数</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">outdegree</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> adj[v].size();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="meta">@Deprecated</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">degree</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> adj[v].size();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 它返回该有向图的一个副本,但所有边的方向都会被反转.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> Digraph <span class="title">reverse</span><span class="params">()</span> </span>&#123;</div><div class="line">        Digraph reverse = <span class="keyword">new</span> Digraph(vertex);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : adj[v]) &#123;</div><div class="line">                reverse.addEdge(w, v);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> reverse;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</div><div class="line">        sb.append(String.format(<span class="string">"Vertexes: %s, Edges: %s"</span>, vertex, edge));</div><div class="line">        sb.append(NEWLINE);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            sb.append(String.format(<span class="string">"vertex %d, "</span>, v));</div><div class="line">            sb.append(String.format(<span class="string">"indegree: %d, outdegree: %d"</span>, indegree(v), outdegree(v)));</div><div class="line">            sb.append(NEWLINE);</div><div class="line">            sb.append(<span class="string">"adjacent point: "</span>);</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w : adj[v])</div><div class="line">                sb.append(w).append(<span class="string">" "</span>);</div><div class="line"></div><div class="line">            sb.append(NEWLINE);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> sb.toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateEdge</span><span class="params">(<span class="keyword">int</span> edge)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (edge &lt; <span class="number">0</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Number of edges in a Digraph must be nonnegative."</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertex</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (vertex &lt; <span class="number">0</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Number of vertex in a Digraph must be nonnegative."</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="可达性"><a href="#可达性" class="headerlink" title="可达性"></a>可达性</h3><hr>
+<p>对于”是否存在一条从集合中的任意<code>顶点</code>到达给定<code>顶点v</code>的有向路径?”等类似问题,可以使用<code>深度优先搜索</code>或<code>广度优先搜索</code>(与<code>无向图</code>的实现一致,只不过传入的<code>图</code>的类型不同),<code>有向图</code>生成的搜索轨迹甚至要比<code>无向图</code>还要简单.</p>
+<p>对于<code>可达性分析</code>的一个典型应用就是内存管理系统.例如,<code>JVM</code>使用<code>多点可达性分析</code>的方法来判断一个<code>对象</code>是否可以进行回收: 所有<code>对象</code>组成一幅<code>有向图</code>,其中有多个<code>Root顶点</code>(它是由<code>JVM</code>自己决定的)作为<code>起点</code>,如果一个<code>对象</code>从<code>Root顶点</code>不可达,那么这个<code>对象</code>就可以进行回收了.</p>
+<h3 id="环"><a href="#环" class="headerlink" title="环"></a>环</h3><hr>
+<p>在与<code>有向图</code>相关的实际应用中,<code>有向环</code>特别的重要.我们需要知道一幅<code>有向图</code>中是否包含<code>有向环</code>.在任务调度问题或其他许多问题中会不允许存在<code>有向环</code>,所以对于<code>环</code>的检测是很重要的.</p>
+<p>使用<code>深度优先搜索</code>解决这个问题并不困难,递归调用隐式使用的栈表示的正是”当前”正在遍历的<code>有向路径</code>,一旦找到了一条<code>边v-&gt;w</code>且<code>w</code>已经存在于栈中,就等于找到了一个<code>环</code>(栈表示的是一条由<code>w</code>到<code>v</code>的<code>有向路径</code>,而<code>v-&gt;w</code>正好补全了这个<code>环</code>).</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div></pre></td><td class="code"><pre><div class="line">public class DirectedCycle &#123;</div><div class="line"></div><div class="line">    private final Digraph digraph;</div><div class="line"></div><div class="line">    // marked[v] = has vertex v been marked?</div><div class="line">    private final boolean[] marked;</div><div class="line"></div><div class="line">    // edgeTo[v] = previous vertex on path to v</div><div class="line">    private final int[] edgeTo;</div><div class="line"></div><div class="line">    // onStack[v] = is vertex on the stack?</div><div class="line">    private final boolean[] onStack;</div><div class="line"></div><div class="line">    // directed cycle (or null if no such cycle)</div><div class="line">    private Stack&lt;Integer&gt; cycle;</div><div class="line"></div><div class="line">    public DirectedCycle(Digraph digraph) &#123;</div><div class="line">        this.digraph = digraph;</div><div class="line">        int vertex = digraph.vertex();</div><div class="line">        this.marked = new boolean[vertex];</div><div class="line">        this.edgeTo = new int[vertex];</div><div class="line">        this.onStack = new boolean[vertex];</div><div class="line"></div><div class="line">        for (int v = 0; v &lt; vertex; v++) &#123;</div><div class="line">			// 已经找到环时就不再需要继续搜索了</div><div class="line">            if (!marked[v] &amp;&amp; cycle == null)</div><div class="line">                dfs(v);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean hasCycle() &#123;</div><div class="line">        return cycle != null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Iterable&lt;Integer&gt; cycle() &#123;</div><div class="line">        return cycle;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void dfs(int vertex) &#123;</div><div class="line">        marked[vertex] = true;</div><div class="line">        onStack[vertex] = true; // 用于模拟递归调用栈</div><div class="line"></div><div class="line">        for (int w : digraph.adj(vertex)) &#123;</div><div class="line">            if (cycle != null)</div><div class="line">                return;</div><div class="line">            else if (!marked[w]) &#123;</div><div class="line">                edgeTo[w] = vertex;</div><div class="line">                dfs(w);</div><div class="line">            &#125; else if (onStack[w]) &#123;</div><div class="line">				// 当w已被标记且在栈中时: 找到环</div><div class="line">                cycle = new Stack&lt;&gt;();</div><div class="line">                for (int x = vertex; x != w; x = edgeTo[x])</div><div class="line">                    cycle.push(x);</div><div class="line">                cycle.push(w);</div><div class="line">                cycle.push(vertex);</div><div class="line">                assert check();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">		// 这条路径已经到头,从栈中弹出</div><div class="line">        onStack[vertex] = false;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // certify that digraph has a directed cycle if it reports one</div><div class="line">    private boolean check() &#123;</div><div class="line">        if (hasCycle()) &#123;</div><div class="line">            // verify cycle</div><div class="line">            int first = -1, last = -1;</div><div class="line">            for (int v : cycle()) &#123;</div><div class="line">                if (first == -1) first = v;</div><div class="line">                last = v;</div><div class="line">            &#125;</div><div class="line">            if (first != last) &#123;</div><div class="line">                System.err.printf(&quot;cycle begins with %d and ends with %d\n&quot;, first, last);</div><div class="line">                return false;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="拓扑排序"><a href="#拓扑排序" class="headerlink" title="拓扑排序"></a>拓扑排序</h3><hr>
+<p><code>拓扑排序</code>等价于计算优先级限制下的调度问题的,所谓优先级限制的调度问题即是在给定一组需要完成的任务与关于任务完成的先后次序的优先级限制,需要在满足限制条件的前提下来安排任务.</p>
+<p><code>拓扑排序</code>需要的是一幅<code>有向无环图</code>,如果这幅<code>图</code>中含有<code>环</code>,那么它肯定不是<code>拓扑有序</code>的(一个带有环的调度问题是无解的).</p>
+<p>在学习<code>拓扑排序</code>之前,需要先知道<code>顶点</code>的排序.</p>
+<h4 id="顶点排序"><a href="#顶点排序" class="headerlink" title="顶点排序"></a>顶点排序</h4><hr>
+<p>使用<code>深度优先搜索</code>来记录<code>顶点排序</code>是一个很好的选择(正好只会访问每个<code>顶点</code>一次),我们借助一些<code>数据结构</code>来保存<code>顶点排序</code>的顺序: </p>
+<ul>
+<li>前序: 在递归调用之前将<code>顶点</code>加入队列.</li>
+</ul>
+<ul>
+<li>后序: 在递归调用之后将<code>顶点</code>加入队列.</li>
+</ul>
+<ul>
+<li>逆后序: 在递归调用之后将<code>顶点</code>压入栈.</li>
+</ul>
+<p><img src="http://algs4.cs.princeton.edu/42digraph/images/depth-first-orders.png" alt="顶点排序的轨迹"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DepthFirstOrder</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Graph graph;</div><div class="line"></div><div class="line">    <span class="comment">// marked[v] = has v been marked in dfs?</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] marked;</div><div class="line"></div><div class="line">    <span class="comment">// pre[v]    = preorder  number of v</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] pre;</div><div class="line"></div><div class="line">    <span class="comment">// post[v]   = postorder number of v</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] post;</div><div class="line"></div><div class="line">    <span class="comment">// vertices in preorder</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Queue&lt;Integer&gt; preorder;</div><div class="line"></div><div class="line">    <span class="comment">// vertices in postorder</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Queue&lt;Integer&gt; postorder;</div><div class="line"></div><div class="line">    <span class="comment">// counter or preorder numbering</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> preCounter;</div><div class="line"></div><div class="line">    <span class="comment">// counter for postorder numbering</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> postCounter;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DepthFirstOrder</span><span class="params">(Graph graph)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.graph = graph;</div><div class="line">        <span class="keyword">int</span> vertex = graph.vertex();</div><div class="line">        <span class="keyword">this</span>.pre = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.post = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.preorder = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</div><div class="line">        <span class="keyword">this</span>.postorder = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</div><div class="line">        <span class="keyword">this</span>.marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++)</div><div class="line">            <span class="keyword">if</span> (!marked[v]) dfs(v);</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">assert</span> <span class="title">check</span><span class="params">()</span></span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">pre</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> pre[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">post</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> post[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">post</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> postorder;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">pre</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> preorder;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">	<span class="comment">// 逆后序,遍历后序队列并压入栈中</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">reversePost</span><span class="params">()</span> </span>&#123;</div><div class="line">        Stack&lt;Integer&gt; reverse = <span class="keyword">new</span> Stack&lt;Integer&gt;();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v : postorder)</div><div class="line">            reverse.push(v);</div><div class="line">        <span class="keyword">return</span> reverse;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        marked[vertex] = <span class="keyword">true</span>;</div><div class="line">		<span class="comment">// 前序</span></div><div class="line">        pre[vertex] = preCounter++;</div><div class="line">        preorder.add(vertex);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> w : graph.adj(vertex)) &#123;</div><div class="line">            <span class="keyword">if</span> (!marked[w])</div><div class="line">                dfs(w);</div><div class="line">        &#125;</div><div class="line">		<span class="comment">// 后序</span></div><div class="line">        post[vertex] = postCounter++;</div><div class="line">        postorder.add(vertex);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// check that pre() and post() are consistent with pre(v) and post(v)</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">check</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// check that post(v) is consistent with post()</span></div><div class="line">        <span class="keyword">int</span> r = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v : post()) &#123;</div><div class="line">            <span class="keyword">if</span> (post(v) != r) &#123;</div><div class="line">                System.out.println(<span class="string">"post(v) and post() inconsistent"</span>);</div><div class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">            &#125;</div><div class="line">            r++;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// check that pre(v) is consistent with pre()</span></div><div class="line">        r = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v : pre()) &#123;</div><div class="line">            <span class="keyword">if</span> (pre(v) != r) &#123;</div><div class="line">                System.out.println(<span class="string">"pre(v) and pre() inconsistent"</span>);</div><div class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">            &#125;</div><div class="line">            r++;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// throw an IllegalArgumentException unless &#123;@code 0 &lt;= v &lt; V&#125;</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertex</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> V = marked.length;</div><div class="line">        <span class="keyword">if</span> (v &lt; <span class="number">0</span> || v &gt;= V)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"vertex "</span> + v + <span class="string">" is not between 0 and "</span> + (V - <span class="number">1</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="拓扑排序的实现"><a href="#拓扑排序的实现" class="headerlink" title="拓扑排序的实现"></a>拓扑排序的实现</h4><hr>
+<p>所谓<code>拓扑排序</code>就是<code>无环有向图</code>的<code>逆后序</code>,现在已经知道了如何检测<code>环</code>与<code>顶点排序</code>,那么实现<code>拓扑排序</code>就很简单了.</p>
+<p><img src="http://algs4.cs.princeton.edu/42digraph/images/topological-sort.png" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Topological</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// topological order</span></div><div class="line">    <span class="keyword">private</span> Iterable&lt;Integer&gt; order;</div><div class="line"></div><div class="line">    <span class="comment">// rank[v] = position of vertex v in topological order</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] rank;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Topological</span><span class="params">(Digraph digraph)</span> </span>&#123;</div><div class="line">        DirectedCycle directedCycle = <span class="keyword">new</span> DirectedCycle(digraph);</div><div class="line">		<span class="comment">// 只有这幅图没有环时,才进行计算拓扑排序</span></div><div class="line">        <span class="keyword">if</span> (!directedCycle.hasCycle()) &#123;</div><div class="line">            DepthFirstOrder depthFirstOrder = <span class="keyword">new</span> DepthFirstOrder(digraph);</div><div class="line">			<span class="comment">// 拓扑排序即是逆后序</span></div><div class="line">            order = depthFirstOrder.reversePost();</div><div class="line">            rank = <span class="keyword">new</span> <span class="keyword">int</span>[digraph.vertex()];</div><div class="line">            <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> v : order)</div><div class="line">                rank[v] = i++;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">order</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> order;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasOrder</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> order != <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">rank</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">if</span> (hasOrder()) <span class="keyword">return</span> rank[v];</div><div class="line">        <span class="keyword">else</span> <span class="keyword">return</span> -<span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// throw an IllegalArgumentException unless &#123;@code 0 &lt;= v &lt; V&#125;</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertex</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> V = rank.length;</div><div class="line">        <span class="keyword">if</span> (v &lt; <span class="number">0</span> || v &gt;= V)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"vertex "</span> + v + <span class="string">" is not between 0 and "</span> + (V - <span class="number">1</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="强连通性"><a href="#强连通性" class="headerlink" title="强连通性"></a>强连通性</h3><hr>
+<p>在一幅<code>无向图</code>中,如果有一条路径连接顶点<code>v</code>和<code>w</code>,则它们就是<code>连通</code>的(既可以从<code>w</code>到达<code>v</code>,也可以从<code>v</code>到达<code>w</code>).但在<code>有向图</code>中,如果从顶点<code>v</code>有一条有向路径到达<code>w</code>,则<code>w</code>是从<code>v</code>可达的,但从<code>w</code>到达<code>v</code>的路径可能存在也可能不存在.</p>
+<p><strong><code>强连通性</code>就是两个顶点<code>v</code>和<code>w</code>是互相可达的.</strong><code>有向图</code>中的<code>强连通性</code>具有以下性质: </p>
+<ul>
+<li>自反性: 任意<code>顶点v</code>和自己都是<code>强连通性</code>的(<code>有向图</code>中顶点都是自己可达的).</li>
+</ul>
+<ul>
+<li>对称性: 如果<code>v</code>和<code>w</code>是强连通的,那么<code>w</code>和<code>v</code>也是强连通的.</li>
+</ul>
+<ul>
+<li>传递性: 如果<code>v</code>和<code>w</code>是强连通的且<code>w</code>和<code>x</code>也是强连通的,那么<code>v</code>和<code>x</code>也是强连通的.</li>
+</ul>
+<p><code>强连通性</code>将所有<code>顶点</code>分为了一些等价类,每个等价类都是由相互为强连通的<code>顶点</code>的最大子集组成的.这些子集称为<code>强连通分量</code>,它的定义是基于顶点的,而非边.</p>
+<p>一个含有<code>V</code>个顶点的<code>有向图</code>含有<code>1 ~ V</code>个<code>强连通分量</code>.一个<code>强连通图</code>只含有一个<code>强连通分量</code>,而一个<code>有向无环图</code>中则含有<code>V</code>个<code>强连通分量</code>.</p>
+<h4 id="Kosaraju算法"><a href="#Kosaraju算法" class="headerlink" title="Kosaraju算法"></a>Kosaraju算法</h4><hr>
+<p><a href="https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm" target="_blank" rel="external">Kosaraju</a>算法是用于枚举图中每个<code>强连通分量</code>内的所有顶点,它主要有以下步骤: </p>
+<ul>
+<li>在给定一幅<code>有向图</code>$G$中,取得它的反向图$G^R$.</li>
+</ul>
+<ul>
+<li>利用<code>深度优先搜索</code>得到$G^R$的逆后序排列.</li>
+</ul>
+<ul>
+<li>按照上述逆后序的序列进行<code>深度优先搜索</code></li>
+</ul>
+<ul>
+<li>同一个<code>深度优先搜索</code>递归子程序中访问的所有<code>顶点</code>都在同一个<code>强连通分量</code>内.</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KosarajuSharirSCC</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Digraph digraph;</div><div class="line"></div><div class="line">    <span class="comment">// marked[v] = has vertex v been visited?</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] marked;</div><div class="line"></div><div class="line">    <span class="comment">// id[v] = id of strong component containing v</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] id;</div><div class="line"></div><div class="line">    <span class="comment">// number of strongly-connected components</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">KosarajuSharirSCC</span><span class="params">(Digraph digraph)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.digraph = digraph;</div><div class="line">        <span class="keyword">int</span> vertex = digraph.vertex();</div><div class="line"></div><div class="line">        <span class="comment">// compute reverse postorder of reverse graph</span></div><div class="line">        DepthFirstOrder depthFirstOrder = <span class="keyword">new</span> DepthFirstOrder(digraph.reverse());</div><div class="line"></div><div class="line">        <span class="comment">// run DFS on G, using reverse postorder to guide calculation</span></div><div class="line">        marked = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line">        id = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v : depthFirstOrder.reversePost()) &#123;</div><div class="line">            <span class="keyword">if</span> (!marked[v]) &#123;</div><div class="line">                dfs(v);</div><div class="line">                count++;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// check that id[] gives strong components</span></div><div class="line">        <span class="function"><span class="keyword">assert</span> <span class="title">check</span><span class="params">(digraph)</span></span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        marked[v] = <span class="keyword">true</span>;</div><div class="line">        id[v] = count;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> w : digraph.adj(v)) &#123;</div><div class="line">            <span class="keyword">if</span> (!marked[w])</div><div class="line">                dfs(w);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">count</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> count;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">stronglyConnected</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        validateVertex(w);</div><div class="line">        <span class="keyword">return</span> id[v] == id[w];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">id</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> id[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// does the id[] array contain the strongly connected components?</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">check</span><span class="params">(Digraph G)</span> </span>&#123;</div><div class="line">        TransitiveClosure tc = <span class="keyword">new</span> TransitiveClosure(G);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; G.vertex(); v++) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> w = <span class="number">0</span>; w &lt; G.vertex(); w++) &#123;</div><div class="line">                <span class="keyword">if</span> (stronglyConnected(v, w) != (tc.reachable(v, w) &amp;&amp; tc.reachable(w, v)))</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// throw an IllegalArgumentException unless &#123;@code 0 &lt;= v &lt; V&#125;</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertex</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> V = marked.length;</div><div class="line">        <span class="keyword">if</span> (v &lt; <span class="number">0</span> || v &gt;= V)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"vertex "</span> + v + <span class="string">" is not between 0 and "</span> + (V - <span class="number">1</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="传递闭包"><a href="#传递闭包" class="headerlink" title="传递闭包"></a>传递闭包</h3><hr>
+<p><img src="http://algs4.cs.princeton.edu/42digraph/images/transitive-closure.png" alt=""></p>
+<p>在一幅有向图<code>G</code>中,<code>传递闭包</code>是由相同的一组<code>顶点</code>组成的另一幅<code>有向图</code>,在<code>传递闭包</code>中存在一条从<code>v</code>指向<code>w</code>的边且仅当在<code>G</code>中<code>w</code>是从<code>v</code>可达的.</p>
+<p>由于<code>有向图</code>的性质,每个<code>顶点</code>对于自己都是可达的,所以<code>传递闭包</code>会含有<code>V</code>个自环.</p>
+<p>通常将<code>传递闭包</code>表示为一个布尔值矩阵,其中<code>v</code>行<code>w</code>列的值为<code>true</code>代表当且仅当<code>w</code>是从<code>v</code>可达的.</p>
+<p><code>传递闭包</code>不适合于处理<code>大型有向图</code>,因为构造函数所需的空间与$V^2$成正比,所需的时间和$V(V+E)$成正比.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TransitiveClosure</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> DirectedDFS[] tc;  <span class="comment">// tc[v] = reachable from v</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TransitiveClosure</span><span class="params">(Digraph G)</span> </span>&#123;</div><div class="line">        tc = <span class="keyword">new</span> DirectedDFS[G.vertex()];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; G.vertex(); v++)</div><div class="line">            tc[v] = <span class="keyword">new</span> DirectedDFS(G, v);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">reachable</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        validateVertex(w);</div><div class="line">        <span class="keyword">return</span> tc[v].marked(w);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// throw an IllegalArgumentException unless &#123;@code 0 &lt;= v &lt; V&#125;</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertex</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> V = tc.length;</div><div class="line">        <span class="keyword">if</span> (v &lt; <span class="number">0</span> || v &gt;= V)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"vertex "</span> + v + <span class="string">" is not between 0 and "</span> + (V - <span class="number">1</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><hr>
+<ul>
+<li><a href="http://algs4.cs.princeton.edu/42digraph/" target="_blank" rel="external">Algorithms, 4th Edition by Robert Sedgewick and Kevin Wayne</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm" target="_blank" rel="external">Kosaraju’s algorithm - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Transitive_closure" target="_blank" rel="external">Transitive closure - Wikipedia</a></li>
+</ul>
+<h3 id="图的那点事儿"><a href="#图的那点事儿" class="headerlink" title="图的那点事儿"></a>图的那点事儿</h3><hr>
+<ul>
+<li><a href="https://sylvanassun.github.io/2017/07/18/2017-07-18-Graph_UndirectedGraph/">图的那点事儿(1)-无向图</a></li>
+</ul>
+<ul>
+<li><a href="https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/">图的那点事儿(2)-有向图</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Algorithms/" rel="tag"># Algorithms</a>
+          
+            <a href="/tags/2017/" rel="tag"># 2017</a>
+          
+            <a href="/tags/Graph/" rel="tag"># Graph</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/19/2017-07-19-FaceMash/" rel="next" title="电影<<社交网络>>中的"FaceMash"算法">
+                <i class="fa fa-chevron-left"></i> 电影<<社交网络>>中的"FaceMash"算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!--MOB SHARE BEGIN-->
+ <div class="-mob-share-ui-button -mob-share-open">分享</div>
+ <div class="-mob-share-ui" style="display: none">
+     <ul class="-mob-share-list">
+         <li class="-mob-share-weibo"><p>新浪微博</p></li>
+         <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+         <li class="-mob-share-qzone"><p>QQ空间</p></li>
+         <li class="-mob-share-qq"><p>QQ好友</p></li>
+         <li class="-mob-share-weixin"><p>微信</p></li>
+         <li class="-mob-share-douban"><p>豆瓣</p></li>
+         <li class="-mob-share-renren"><p>人人网</p></li>
+         <li class="-mob-share-kaixin"><p>开心网</p></li>
+         <li class="-mob-share-facebook"><p>Facebook</p></li>
+         <li class="-mob-share-twitter"><p>Twitter</p></li>
+         <li class="-mob-share-pocket"><p>Pocket</p></li>
+         <li class="-mob-share-google"><p>Google+</p></li>
+         <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+         <li class="-mob-share-mingdao"><p>明道</p></li>
+         <li class="-mob-share-pengyou"><p>朋友网</p></li>
+         <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+         <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+         <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+     </ul>
+    <div class="-mob-share-close">取消</div>
+ </div>
+ <div class="-mob-share-ui-bg"></div>
+ <script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=1f85dd74c1b48"></script>
+ <!--MOB SHARE END-->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div id="sidebar-dimmer"></div>
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="SylvanasSun" />
+          <p class="site-author-name" itemprop="name">SylvanasSun</p>
+           
+              <p class="site-description motion-element" itemprop="description">这里是SylvanasSun的个人博客,与你一起发现更大的世界。</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/SylvanasSun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/1666202315/profile?rightmod=1&wvr=6&mod=personinfo" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/sylvanas-sun/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.oschina.net/" title="oschina" target="_blank">oschina</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.csdn.net/" title="csdn" target="_blank">csdn</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://toutiao.io/" title="开发者头条" target="_blank">开发者头条</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#有向图的性质"><span class="nav-number">1.</span> <span class="nav-text">有向图的性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有向图的实现"><span class="nav-number">2.</span> <span class="nav-text">有向图的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可达性"><span class="nav-number">3.</span> <span class="nav-text">可达性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#环"><span class="nav-number">4.</span> <span class="nav-text">环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拓扑排序"><span class="nav-number">5.</span> <span class="nav-text">拓扑排序</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#顶点排序"><span class="nav-number">5.1.</span> <span class="nav-text">顶点排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拓扑排序的实现"><span class="nav-number">5.2.</span> <span class="nav-text">拓扑排序的实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#强连通性"><span class="nav-number">6.</span> <span class="nav-text">强连通性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Kosaraju算法"><span class="nav-number">6.1.</span> <span class="nav-text">Kosaraju算法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传递闭包"><span class="nav-number">7.</span> <span class="nav-text">传递闭包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">8.</span> <span class="nav-text">参考文献</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#图的那点事儿"><span class="nav-number">9.</span> <span class="nav-text">图的那点事儿</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SylvanasSun</span>
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-sylvanassun-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/';
+          this.page.identifier = '2017/07/23/2017-07-23-Graph_DirectedGraphs/';
+          this.page.title = '图的那点事儿(2)-有向图';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-sylvanassun-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("PvA9UJ6yFKF4auJrnukN6hmW-gzGzoHsz", "wfAE2ETw2IfWPPRCprVJW8mm");AV.useAVCloudUS();</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

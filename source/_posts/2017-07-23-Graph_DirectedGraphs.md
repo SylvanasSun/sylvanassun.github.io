@@ -242,7 +242,7 @@ public class Digraph implements Graph {
 
 使用`深度优先搜索`解决这个问题并不困难,递归调用隐式使用的栈表示的正是"当前"正在遍历的`有向路径`,一旦找到了一条`边v->w`且`w`已经存在于栈中,就等于找到了一个`环`(栈表示的是一条由`w`到`v`的`有向路径`,而`v->w`正好补全了这个`环`).
 
-```java.
+```java
 public class DirectedCycle {
 
     private final Digraph digraph;

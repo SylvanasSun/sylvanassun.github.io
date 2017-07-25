@@ -1066,6 +1066,9 @@ public class SymbolGraph {
  - [图的那点事儿(2)-有向图][7]
 
 
+ - [图的那点事儿(3)-加权无向图][8]
+
+
 [1]: https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
 [2]: https://en.wikipedia.org/wiki/Bipartite_graph
 [3]: http://algs4.cs.princeton.edu/41graph/
@@ -1073,3 +1076,4 @@ public class SymbolGraph {
 [5]: https://github.com/SylvanasSun
 [6]: https://sylvanassun.github.io/2017/07/18/2017-07-18-Graph_UndirectedGraph/
 [7]: https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/
+[8]: https://sylvanassun.github.io/2017/07/25/2017-07-25-Graph_WeightedUndirectedGraph/

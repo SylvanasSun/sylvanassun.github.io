@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-07-25T10:06:20.453Z</updated>
+  <updated>2017-07-29T08:08:06.970Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -14,6 +14,184 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>图的那点事儿(4)-加权有向图</title>
+    <link href="https://sylvanassun.github.io/2017/07/27/2017-07-27-Graph_WeightedDigraph/"/>
+    <id>https://sylvanassun.github.io/2017/07/27/2017-07-27-Graph_WeightedDigraph/</id>
+    <published>2017-07-27T04:00:00.000Z</published>
+    <updated>2017-07-29T08:08:06.970Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>本文作者为: <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun</a>.转载请务必将下面这段话置于文章开头处(保留超链接).<br>本文转发自<a href="https:/sylvanassun.github.io" target="_blank" rel="external">SylvanasSun Blog</a>,原文链接: <a href="https://sylvanassun.github.io/2017/07/27/2017-07-27-Graph_WeightedDigraph">https://sylvanassun.github.io/2017/07/27/2017-07-27-Graph_WeightedDigraph</a></p>
+</blockquote>
+<h3 id="加权有向图"><a href="#加权有向图" class="headerlink" title="加权有向图"></a>加权有向图</h3><hr>
+<p><code>有向图</code>的实现比<code>无向图</code>更加简单,要实现<code>加权有向图</code>只需要在上一章讲到的<code>加权无向图</code>的实现修改一下即可.</p>
+<h4 id="DirectedEdge"><a href="#DirectedEdge" class="headerlink" title="DirectedEdge"></a>DirectedEdge</h4><hr>
+<p>由于<code>有向图</code>的边都是带有方向的,所以下面这个实现提供了<code>from()</code>与<code>to()</code>函数,用于获取代表<code>v-&gt;w</code>的两个<code>顶点</code>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DirectedEdge</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> v;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> w;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">double</span> weight;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DirectedEdge</span><span class="params">(<span class="keyword">int</span> v, <span class="keyword">int</span> w, <span class="keyword">double</span> weight)</span> </span>&#123;</div><div class="line">        validateVertexes(v, w);</div><div class="line">        <span class="keyword">if</span> (Double.isNaN(weight)) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Weight "</span> + weight + <span class="string">" is  NaN!"</span>);</div><div class="line"></div><div class="line">        <span class="keyword">this</span>.v = v;</div><div class="line">        <span class="keyword">this</span>.w = w;</div><div class="line">        <span class="keyword">this</span>.weight = weight;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">from</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> v;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">to</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> w;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">weight</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> weight;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> v + <span class="string">"-&gt;"</span> + w + <span class="string">" "</span> + String.format(<span class="string">"%5.2f"</span>, weight);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertexes</span><span class="params">(<span class="keyword">int</span>... vertexes)</span> </span>&#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; vertexes.length; i++) &#123;</div><div class="line">            <span class="keyword">if</span> (vertexes[i] &lt; <span class="number">0</span>)</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Vertex "</span> + vertexes[i] + <span class="string">" must be positive number!"</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="EdgeWeightedDigraph"><a href="#EdgeWeightedDigraph" class="headerlink" title="EdgeWeightedDigraph"></a>EdgeWeightedDigraph</h4><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EdgeWeightedDigraph</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String NEWLINE = System.getProperty(<span class="string">"line.separator"</span>);</div><div class="line"></div><div class="line">    <span class="comment">// number of vertices in this digraph</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> vertex;</div><div class="line"></div><div class="line">    <span class="comment">// number of edges in this digraph</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> edge;</div><div class="line"></div><div class="line">    <span class="comment">// adj[v] = adjacency list for vertex v</span></div><div class="line">    <span class="keyword">private</span> Bag&lt;DirectedEdge&gt;[] adj;</div><div class="line"></div><div class="line">    <span class="comment">// indegree[v] = indegree of vertex v</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] indegree;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">EdgeWeightedDigraph</span><span class="params">(<span class="keyword">int</span> vertex)</span> </span>&#123;</div><div class="line">        String message = String.format(<span class="string">"Vertex %d must be positive number!"</span>, vertex);</div><div class="line">        validatePositiveNumber(message, vertex);</div><div class="line"></div><div class="line">        <span class="keyword">this</span>.vertex = vertex;</div><div class="line">        <span class="keyword">this</span>.edge = <span class="number">0</span>;</div><div class="line">        <span class="keyword">this</span>.indegree = <span class="keyword">new</span> <span class="keyword">int</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.adj = (Bag&lt;DirectedEdge&gt;[]) <span class="keyword">new</span> Bag[vertex];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++)</div><div class="line">            adj[v] = <span class="keyword">new</span> Bag&lt;&gt;();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">EdgeWeightedDigraph</span><span class="params">(Scanner scanner)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>(scanner.nextInt());</div><div class="line">        <span class="keyword">int</span> edge = scanner.nextInt();</div><div class="line">        String message = String.format(<span class="string">"Edge %d must be positive number!"</span>, edge);</div><div class="line">        validatePositiveNumber(message, edge);</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; edge; i++) &#123;</div><div class="line">            <span class="keyword">int</span> v = scanner.nextInt();</div><div class="line">            <span class="keyword">int</span> w = scanner.nextInt();</div><div class="line">            validateVertex(v);</div><div class="line">            validateVertex(w);</div><div class="line">            <span class="keyword">double</span> weight = scanner.nextDouble();</div><div class="line">            addEdge(<span class="keyword">new</span> DirectedEdge(v, w, weight));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">vertex</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> vertex;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">edge</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> edge;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addEdge</span><span class="params">(DirectedEdge e)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> v = e.from();</div><div class="line">        <span class="keyword">int</span> w = e.to();</div><div class="line">        validateVertex(v);</div><div class="line">        validateVertex(w);</div><div class="line">        adj[v].add(e);</div><div class="line">        indegree[w]++;</div><div class="line">        edge++;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;DirectedEdge&gt; <span class="title">adj</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> adj[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">outdegree</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> adj[v].size();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">indegree</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> indegree[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 在有向图中每条边只会出现一次</span></div><div class="line">	<span class="comment">// 遍历边集不需要在无向图里那样为了消除重复边而进行复杂的判断</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;DirectedEdge&gt; <span class="title">edges</span><span class="params">()</span> </span>&#123;</div><div class="line">        Bag&lt;DirectedEdge&gt; list = <span class="keyword">new</span> Bag&lt;DirectedEdge&gt;();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            <span class="keyword">for</span> (DirectedEdge e : adj(v)) &#123;</div><div class="line">                list.add(e);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> list;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        StringBuilder s = <span class="keyword">new</span> StringBuilder();</div><div class="line">        s.append(vertex + <span class="string">" "</span> + edge + NEWLINE);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++) &#123;</div><div class="line">            s.append(v + <span class="string">": "</span>);</div><div class="line">            <span class="keyword">for</span> (DirectedEdge e : adj[v]) &#123;</div><div class="line">                s.append(e + <span class="string">"  "</span>);</div><div class="line">            &#125;</div><div class="line">            s.append(NEWLINE);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> s.toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validatePositiveNumber</span><span class="params">(String message, <span class="keyword">int</span>... numbers)</span> </span>&#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numbers.length; i++) &#123;</div><div class="line">            <span class="keyword">if</span> (numbers[i] &lt; <span class="number">0</span>)</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(message);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>加权有向图</code>的实现与<code>加权无向图</code>区别不大,而且因为<code>有向图</code>中的边只会出现一次,实现代码要比<code>无向图</code>更简单.</p>
+<p><a href="https://github.com/SylvanasSun/algs4-study/tree/master/src/main/java/chapter4_graphs/C4_4_ShortestPaths" target="_blank" rel="external">本文中的所有完整代码请到我的GitHub中查看</a></p>
+<h3 id="最短路径"><a href="#最短路径" class="headerlink" title="最短路径"></a>最短路径</h3><hr>
+<p>“找到一个<code>顶点</code>到达另一个<code>顶点</code>之间的<code>最短路径</code>“是<code>图论</code>研究中的经典算法问题.在<code>加权有向图</code>中,每条<code>有向路径</code>都有一个与之对应的<code>路径权重</code>(路径中所有边的<code>权重</code>之和),要找到一条<code>最短路径</code>其实就是找到<code>路径权重</code>最小的那条路径.</p>
+<p><img src="http://algs4.cs.princeton.edu/44sp/images/shortest-path.png" alt="加权有向图中的最短路径"></p>
+<h4 id="单点最短路径"><a href="#单点最短路径" class="headerlink" title="单点最短路径"></a>单点最短路径</h4><hr>
+<p>“从<code>s</code>到目的地<code>v</code>是否存在一条<code>有向路径</code>,如果有,找出最短的那条路径”.类似这样的问题就是<code>单点最短路径</code>问题,它是我们主要研究的问题.</p>
+<p><code>单点最短路径</code>的结果是一棵<code>最短路径树</code>,它是<code>图</code>的一幅<code>子图</code>,<strong>包含了从起点到所有可达顶点的<code>最短路径</code>.</strong></p>
+<p>从起点到一个顶点可能存在两条长度相等的路径,如果出现这种情况,可以删除其中一条路径的最后一条边,直到从起点到每个顶点都只有一条路径相连.</p>
+<h4 id="最短路径的数据结构"><a href="#最短路径的数据结构" class="headerlink" title="最短路径的数据结构"></a>最短路径的数据结构</h4><hr>
+<p><img src="http://algs4.cs.princeton.edu/44sp/images/spt.png" alt=""></p>
+<p>要实现<code>最短路径</code>的算法还需要借助以下数据结构: </p>
+<ul>
+<li>edgeTo[]: 一个<code>由顶点索引</code>的<code>DirectedEdge</code>对象的父链接数组,其中<code>edgeTo[v]</code>的值为树中连接<code>v</code>和它的父节点的边.</li>
+</ul>
+<ul>
+<li>distTo[]: 一个<code>由顶点索引</code>的<code>double</code>数组,其中<code>distTo[v]</code>代表从<code>起点</code>到<code>v</code>的已知最短路径的长度.</li>
+</ul>
+<ul>
+<li>初始化时,<code>edgeTo[s]</code>的值为<code>null</code>(<code>s</code>为起点),<code>distTo[s]</code>的值为<code>0.0</code>,从<code>s</code>到不可达的顶点距离为<code>Double.POSITIVE_INFINITY</code>.</li>
+</ul>
+<h4 id="让边松弛"><a href="#让边松弛" class="headerlink" title="让边松弛"></a>让边松弛</h4><hr>
+<p><code>最短路径</code>算法都基于<code>松弛(Relaxation)</code>操作,<strong>它在遇到新的边时,通过更新这些信息就可以得到新的最短路径.</strong></p>
+<p>假设对边<code>v-&gt;w</code>进行松弛操作,意味着要先检查从<code>s</code>到<code>w</code>的<code>最短路径</code>是否是先从<code>s</code>到<code>v</code>,然后再由<code>v</code>到<code>w</code>(也就是说<code>v-&gt;w</code>是更短的一条路径),如果是,那么就进行更新.由<code>v</code>到达<code>w</code>的<code>最短路径</code>是<code>distTo[v]</code>与<code>e.weight()</code>之和,如果这个值大于<code>distTo[w]</code>,称这条边松弛失败,并将它忽略.</p>
+<p>松弛操作就像用一根橡皮筋沿着连续两个<code>顶点</code>的路径紧紧展开,放松一条边就像将这条橡皮筋转移到另一条更短的路径上,从而缓解橡皮筋的压力.</p>
+<p><img src="http://algs4.cs.princeton.edu/44sp/images/relaxation-edge.png" alt="松弛操作的两种情况(失败与成功)"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 松弛一条边</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">relax</span><span class="params">(DirectedEdge e)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> v = e.from(), w = e.to();</div><div class="line">	<span class="comment">// 如果s-&gt;v-&gt;w的路径更小则进行更新</span></div><div class="line">    <span class="keyword">if</span> (distTo[w] &gt; distTo[v] + e.weight()) &#123;</div><div class="line">        distTo[w] = distTo[v] + e.weight();</div><div class="line">        edgeTo[w] = e;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 松弛一个顶点的所有邻接边</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">relax</span><span class="params">(EdgeWeightedDigraph G, <span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span> (DirectedEdge e : G.adj(v)) &#123;</div><div class="line">        <span class="keyword">int</span> w = e.to();</div><div class="line">        <span class="keyword">if</span> (distTo[w] &gt; distTo[v] + e.weight()) &#123;</div><div class="line">            distTo[w] = distTo[v] + e.weight();</div><div class="line">            edgeTo[w] = e;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Dijkstra算法"><a href="#Dijkstra算法" class="headerlink" title="Dijkstra算法"></a>Dijkstra算法</h3><hr>
+<p><code>Dijkstra算法</code>类似于<code>Prim算法</code>,它将<code>distTo[s]</code>初始化为<code>0.0</code>,<code>distTo[]</code>中的其他元素初始化为<code>Double.POSITIVE_INFINITY</code>.然后将<code>distTo[]</code>中最小的<code>非树顶点</code>放松并加入树中,一直重复直到所有的顶点都在树中或者所有的<code>非树顶点</code>的<code>distTo[]</code>值均为<code>Double.POSITIVE_INFINITY</code>.</p>
+<p><code>Dijkstra算法</code>与<code>Prim算法</code>都是用添加边的方式构造一棵树:</p>
+<ul>
+<li><code>Prim算法</code>每次添加的是距离<code>树</code>最近的<code>非树顶点</code>.</li>
+</ul>
+<ul>
+<li><code>Dijkstra算法</code>每次添加的都是<strong>离<code>起点</code>最近的<code>非树顶点</code></strong>.</li>
+</ul>
+<p>从上述的步骤我们就能看出,<code>Dijkstra算法</code>需要一个优先队列(也可以用<code>斐波那契堆</code>)来保存需要被放松的<code>顶点</code>并确认下一个被放松的<code>顶点</code>(也就是取出最小的).</p>
+<p>如此简单的<code>Dijkstra算法</code>也有其缺点,那就是它<strong>只适用于解决<code>权重非负</code>的<code>图</code>.</strong></p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Dijkstra_Animation.gif" alt="Dijkstra算法的运行轨迹"></p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/DijkstraDemo.gif" alt=""></p>
+<h4 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h4><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DijkstraSP</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// distTo[v] = distance of  shortest s -&gt; v path</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">double</span>[] distTo;</div><div class="line"></div><div class="line">    <span class="comment">// edgeTo[v] = last edge on shortest s - &gt; v path</span></div><div class="line">    <span class="keyword">private</span> DirectedEdge[] edgeTo;</div><div class="line"></div><div class="line">    <span class="comment">// priority queue of vertices</span></div><div class="line">    <span class="keyword">private</span> IndexMinPQ&lt;Double&gt; pq;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DijkstraSP</span><span class="params">(EdgeWeightedDigraph digraph, <span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">        validateNegativeWeight(digraph);</div><div class="line"></div><div class="line">        <span class="keyword">int</span> vertex = digraph.vertex();</div><div class="line">        <span class="keyword">this</span>.distTo = <span class="keyword">new</span> <span class="keyword">double</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.edgeTo = <span class="keyword">new</span> DirectedEdge[vertex];</div><div class="line"></div><div class="line">        validateVertex(s);</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++)</div><div class="line">            distTo[v] = Double.POSITIVE_INFINITY;</div><div class="line">        distTo[s] = <span class="number">0.0</span>;</div><div class="line"></div><div class="line">        <span class="comment">// 将起点放入索引优先队列,并不断地进行松弛</span></div><div class="line">        pq = <span class="keyword">new</span> IndexMinPQ&lt;&gt;(vertex);</div><div class="line">        pq.insert(s, distTo[s]);</div><div class="line">        <span class="keyword">while</span> (!pq.isEmpty()) &#123;</div><div class="line">            <span class="keyword">int</span> v = pq.delMin();</div><div class="line">			<span class="comment">// 对权值最小的非树顶点的所有邻接边集进行松弛操作</span></div><div class="line">            <span class="keyword">for</span> (DirectedEdge e : digraph.adj(v))</div><div class="line">                relax(e);</div><div class="line">        &#125;</div><div class="line">		</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// relax edge e and update pq if changed</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">relax</span><span class="params">(DirectedEdge e)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> v = e.from(), w = e.to();</div><div class="line">		<span class="comment">// s -&gt; v -&gt; w的权重</span></div><div class="line">        <span class="keyword">double</span> weight = distTo[v] + e.weight();</div><div class="line">        <span class="keyword">if</span> (distTo[w] &gt; weight) &#123;</div><div class="line">            distTo[w] = weight;</div><div class="line">            edgeTo[w] = e;</div><div class="line">            <span class="keyword">if</span> (pq.contains(w))</div><div class="line">                pq.decreaseKey(w, weight);</div><div class="line">            <span class="keyword">else</span></div><div class="line">                pq.insert(w, weight);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateNegativeWeight</span><span class="params">(EdgeWeightedDigraph digraph)</span> </span>&#123;</div><div class="line">        <span class="keyword">for</span> (DirectedEdge e : digraph.edges()) &#123;</div><div class="line">            <span class="keyword">if</span> (e.weight() &lt; <span class="number">0</span>)</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Edge "</span> + e + <span class="string">" has negative weight."</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">distTo</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> distTo[v];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasPathTo</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">return</span> distTo[v] &lt; Double.POSITIVE_INFINITY;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterable&lt;DirectedEdge&gt; <span class="title">pathTo</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        validateVertex(v);</div><div class="line">        <span class="keyword">if</span> (!hasPathTo(v)) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        Stack&lt;DirectedEdge&gt; path = <span class="keyword">new</span> Stack&lt;DirectedEdge&gt;();</div><div class="line">        <span class="keyword">for</span> (DirectedEdge e = edgeTo[v]; e != <span class="keyword">null</span>; e = edgeTo[e.from()]) &#123;</div><div class="line">            path.push(e);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> path;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validateVertex</span><span class="params">(<span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> V = distTo.length;</div><div class="line">        <span class="keyword">if</span> (v &lt; <span class="number">0</span> || v &gt;= V)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"vertex "</span> + v + <span class="string">" is not between 0 and "</span> + (V - <span class="number">1</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述的代码也可以用于处理<code>加权无向图</code>,但需要修改传入的对象类型.不管是<code>无向图</code>还是<code>有向图</code>它们对于<code>最短路径</code>问题是等价的.</p>
+<h3 id="无环加权有向图中的最短路径算法"><a href="#无环加权有向图中的最短路径算法" class="headerlink" title="无环加权有向图中的最短路径算法"></a>无环加权有向图中的最短路径算法</h3><hr>
+<p>如果是处理<code>无环图</code>的情况下,还会有一种比<code>Dijkstra算法</code>更快、更简单的算法.它的特点如下:</p>
+<ul>
+<li>能够处理<code>负权重</code>的边.</li>
+</ul>
+<ul>
+<li>能够在线性时间内解决单点最短路径问题.</li>
+</ul>
+<ul>
+<li><p>在已知是一张<code>无环图</code>的情况下,它是找出<code>最短路径</code>效率最高的方法.</p>
+<ul>
+<li>实现比<code>Dijkstra算法</code>更简单.</li>
+</ul>
+</li>
+</ul>
+<p>只需要将所有<code>顶点</code><strong>按照<code>拓扑排序</code>的顺序</strong>来<code>松弛边</code>,就可以得到这个简单高效的算法.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AcyclicSP</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// distTo[v] = distance  of shortest s-&gt;v path</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">double</span>[] distTo;</div><div class="line"></div><div class="line">    <span class="comment">// edgeTo[v] = last edge on shortest s-&gt;v path</span></div><div class="line">    <span class="keyword">private</span> DirectedEdge[] edgeTo;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AcyclicSP</span><span class="params">(EdgeWeightedDigraph digraph, <span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> vertex = digraph.vertex();</div><div class="line">        distTo = <span class="keyword">new</span> <span class="keyword">double</span>[vertex];</div><div class="line">        edgeTo = <span class="keyword">new</span> DirectedEdge[vertex];</div><div class="line"></div><div class="line">        validateVertex(s);</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++)</div><div class="line">            distTo[v] = Double.POSITIVE_INFINITY;</div><div class="line">        distTo[s] = <span class="number">0.0</span>;</div><div class="line"></div><div class="line">        </div><div class="line">        Topological topological = <span class="keyword">new</span> Topological(digraph);</div><div class="line">        <span class="keyword">if</span> (!topological.hasOrder())</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Digraph is not acyclic."</span>);</div><div class="line">		<span class="comment">// 按照拓扑排序的顺序进行放松操作</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v : topological.order()) &#123;</div><div class="line">            <span class="keyword">for</span> (DirectedEdge e : digraph.adj(v))</div><div class="line">                relax(e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">relax</span><span class="params">(DirectedEdge e)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> v = e.from(), w = e.to();</div><div class="line">        <span class="keyword">double</span> weight = distTo[v] + e.weight();</div><div class="line">        <span class="keyword">if</span> (distTo[w] &gt; weight) &#123;</div><div class="line">            distTo[w] = weight;</div><div class="line">            edgeTo[w] = e;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="最长路径"><a href="#最长路径" class="headerlink" title="最长路径"></a>最长路径</h4><hr>
+<p>要想找出一条<code>最长路径</code>,只需要把<code>distTo[]</code>的初始化变为<code>Double.NEGATIVE_INFINITY</code>,并更改<code>relax()</code>函数中的不等式的方向.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">  <span class="function"><span class="keyword">public</span> <span class="title">AcyclicLP</span><span class="params">(EdgeWeightedDigraph G, <span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">      distTo = <span class="keyword">new</span> <span class="keyword">double</span>[G.vertex()];</div><div class="line">      edgeTo = <span class="keyword">new</span> DirectedEdge[G.vertex()];</div><div class="line"></div><div class="line">      validateVertex(s);</div><div class="line"></div><div class="line"><span class="comment">// 全部初始化为负无穷</span></div><div class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; G.vertex(); v++)</div><div class="line">          distTo[v] = Double.NEGATIVE_INFINITY;</div><div class="line">      distTo[s] = <span class="number">0.0</span>;</div><div class="line"></div><div class="line">      Topological topological = <span class="keyword">new</span> Topological(G);</div><div class="line">      <span class="keyword">if</span> (!topological.hasOrder())</div><div class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Digraph is not acyclic."</span>);</div><div class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> v : topological.order()) &#123;</div><div class="line">          <span class="keyword">for</span> (DirectedEdge e : G.adj(v))</div><div class="line">              relax(e);</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">relax</span><span class="params">(DirectedEdge e)</span> </span>&#123;</div><div class="line">      <span class="keyword">int</span> v = e.from(), w = e.to();</div><div class="line"><span class="comment">// 改变不等式的方向</span></div><div class="line">      <span class="keyword">if</span> (distTo[w] &lt; distTo[v] + e.weight()) &#123;</div><div class="line">          distTo[w] = distTo[v] + e.weight();</div><div class="line">          edgeTo[w] = e;</div><div class="line">      &#125;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<h3 id="Bellman-Ford算法"><a href="#Bellman-Ford算法" class="headerlink" title="Bellman-Ford算法"></a>Bellman-Ford算法</h3><hr>
+<p>我们已经知道了处理<code>权重</code>非负图的<code>Dijkstra算法</code>与处理<code>无环图</code>的算法,但如果遇见既含有环,<code>权重</code>也是负数的<code>加权有向图</code>该怎么办?</p>
+<p><code>Bellman-Ford算法</code>就是用于处理<code>有环</code>且含有<code>负权重</code>的<code>加权有向图</code>的,它的原理是对图进行<code>V-1</code>次松弛操作,得到所有可能的最短路径.</p>
+<p>要实现<code>Bellman-Ford算法</code>还需要以下数据结构: </p>
+<ul>
+<li>队列: 用于保存即将被松弛的顶点.</li>
+</ul>
+<ul>
+<li>布尔值数组: 用来标记该顶点是否已经存在于队列中,以防止重复插入.</li>
+</ul>
+<p>我们将起点放入队列中,然后进入一个循环,每次循环都会从队列中取出一个顶点并对其进行松弛.为了保证算法在<code>V</code>轮后能够终止,需要能够动态地检测是否存在<code>负权重环</code>,如果找到了这个环则结束运行(也可以用一个变量动态记录轮数).</p>
+<h4 id="负权重环的检测"><a href="#负权重环的检测" class="headerlink" title="负权重环的检测"></a>负权重环的检测</h4><hr>
+<p>如果存在了一个从起点可达的<code>负权重环</code>,那么队列就永远不可能为空,为了从这个无尽的循环中解脱出来,算法需要能够动态地检测<code>负权重环</code>.</p>
+<p><code>Bellman-Ford算法</code>也使用了<code>edgeTo[]</code>来存放<code>最短路径树</code>中的每一条边,我们根据<code>edgeTo[]</code>来复制一幅图并在该图中检测环.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">findNegativeCycle</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="keyword">int</span> V = edgeTo.length;</div><div class="line"><span class="comment">// 根据edgeTo[]来创建一幅加权有向图</span></div><div class="line">      EdgeWeightedDigraph spt = <span class="keyword">new</span> EdgeWeightedDigraph(V);</div><div class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; V; v++)</div><div class="line">          <span class="keyword">if</span> (edgeTo[v] != <span class="keyword">null</span>)</div><div class="line">              spt.addEdge(edgeTo[v]);</div><div class="line"><span class="comment">// 判断该图有没有环</span></div><div class="line">      EdgeWeightedDirectedCycle finder = <span class="keyword">new</span> EdgeWeightedDirectedCycle(spt);</div><div class="line">      cycle = finder.cycle();</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<h4 id="实现代码-1"><a href="#实现代码-1" class="headerlink" title="实现代码"></a>实现代码</h4><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BellmanFordSP</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">double</span>[] distTo;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> DirectedEdge[] edgeTo;</div><div class="line"></div><div class="line">    <span class="comment">// 用于标记顶点是否在队列中</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span>[] onQueue;</div><div class="line"></div><div class="line">    <span class="comment">// 存放下次进行松弛操作的顶点的队列</span></div><div class="line">    <span class="keyword">private</span> Queue&lt;Integer&gt; queue;</div><div class="line"></div><div class="line">    <span class="comment">// 计算松弛操作的轮数</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> cost;</div><div class="line"></div><div class="line">    <span class="comment">// 负权重环</span></div><div class="line">    <span class="keyword">private</span> Iterable&lt;DirectedEdge&gt; cycle;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BellmanFordSP</span><span class="params">(EdgeWeightedDigraph digraph, <span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> vertex = digraph.vertex();</div><div class="line">        <span class="keyword">this</span>.distTo = <span class="keyword">new</span> <span class="keyword">double</span>[vertex];</div><div class="line">        <span class="keyword">this</span>.edgeTo = <span class="keyword">new</span> DirectedEdge[vertex];</div><div class="line">        <span class="keyword">this</span>.onQueue = <span class="keyword">new</span> <span class="keyword">boolean</span>[vertex];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; vertex; v++)</div><div class="line">            distTo[v] = Double.POSITIVE_INFINITY;</div><div class="line">        distTo[s] = <span class="number">0.0</span>;</div><div class="line"></div><div class="line">        <span class="comment">// Bellman-Ford algorithm</span></div><div class="line">        queue = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</div><div class="line">        queue.add(s); <span class="comment">// 将起点放入队列</span></div><div class="line">        onQueue[s] = <span class="keyword">true</span>; <span class="comment">// 标记起点已在队列中</span></div><div class="line">		<span class="comment">// 当队列为空时或者发现负权重环时结束循环</span></div><div class="line">        <span class="keyword">while</span> (!queue.isEmpty() &amp;&amp; !hasNegativeCycle()) &#123;</div><div class="line">            <span class="keyword">int</span> v = queue.poll();</div><div class="line">            onQueue[v] = <span class="keyword">false</span>;</div><div class="line">            relax(digraph, v);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">relax</span><span class="params">(EdgeWeightedDigraph G, <span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">        <span class="keyword">for</span> (DirectedEdge e : G.adj(v)) &#123;</div><div class="line">            <span class="keyword">int</span> w = e.to();</div><div class="line">            <span class="keyword">double</span> weight = distTo[v] + e.weight();</div><div class="line">            <span class="keyword">if</span> (distTo[w] &gt; weight) &#123;</div><div class="line">                distTo[w] = weight;</div><div class="line">                edgeTo[w] = e;</div><div class="line">				<span class="comment">// 将不在队列中的顶点w加到队列</span></div><div class="line">                <span class="keyword">if</span> (!onQueue[w]) &#123;</div><div class="line">                    queue.add(w);</div><div class="line">                    onQueue[w] = <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">			<span class="comment">// 动态检测负权重环,</span></div><div class="line">            <span class="keyword">if</span> (cost++ % G.vertex() == <span class="number">0</span>) &#123;</div><div class="line">                findNegativeCycle();</div><div class="line">                <span class="keyword">if</span> (hasNegativeCycle()) <span class="keyword">return</span>;  <span class="comment">// found a negative cycle</span></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><hr>
+<p>解决<code>最短路径</code>问题一直都是<code>图论</code>的经典问题,本文中介绍的算法适用于不同的环境,在应用中应该根据不同的环境选择不同的算法.</p>
+<table>
+<thead>
+<tr>
+<th>算法</th>
+<th>局限性</th>
+<th>路径长度的比较次数(增长的数量级)</th>
+<th>空间复杂度</th>
+<th>优势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dijkstra</td>
+<td>只能处理正权重</td>
+<td>ElogV</td>
+<td>V</td>
+<td>最坏情况下仍有较好的性能</td>
+</tr>
+<tr>
+<td>拓扑排序</td>
+<td>只适用于无环图</td>
+<td>E+V</td>
+<td>V</td>
+<td>实现简单,是无环图情况下的最优算法</td>
+</tr>
+<tr>
+<td>Bellman-Ford</td>
+<td>不能存在负权重环</td>
+<td>E+V,最坏情况为VE</td>
+<td>V</td>
+<td>适用广泛</td>
+</tr>
+</tbody>
+</table>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><hr>
+<ul>
+<li><a href="http://algs4.cs.princeton.edu/44sp/" target="_blank" rel="external">Algorithms, 4th Edition by Robert Sedgewick and Kevin Wayne</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm" target="_blank" rel="external">Dijkstra’s algorithm - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm" target="_blank" rel="external">Bellman–Ford algorithm - Wikipedia</a></li>
+</ul>
+<h3 id="图的那点事儿"><a href="#图的那点事儿" class="headerlink" title="图的那点事儿"></a>图的那点事儿</h3><hr>
+<ul>
+<li><a href="https://sylvanassun.github.io/2017/07/18/2017-07-18-Graph_UndirectedGraph/">图的那点事儿(1)-无向图</a></li>
+</ul>
+<ul>
+<li><a href="https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/">图的那点事儿(2)-有向图</a></li>
+</ul>
+<ul>
+<li><a href="https://sylvanassun.github.io/2017/07/25/2017-07-25-Graph_WeightedUndirectedGraph/">图的那点事儿(3)-加权无向图</a></li>
+</ul>
+<ul>
+<li><a href="https://sylvanassun.github.io/2017/07/27/2017-07-27-Graph_WeightedDigraph">图的那点事儿(4)-加权有向图</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;本文作者为: &lt;a href=&quot;https://github.com/SylvanasSun&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;SylvanasSun&lt;/a&gt;.转载请务必将下面这段话置于文章开头处(保留超链接).&lt;br
+    
+    </summary>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/categories/Algorithms/"/>
+    
+      <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
+    
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
+    
+  </entry>
   
   <entry>
     <title>图的那点事儿(3)-加权无向图</title>
@@ -996,9 +1174,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -1052,9 +1230,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -1121,9 +1299,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -2333,9 +2511,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -2478,115 +2656,6 @@
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>探秘HotSpot虚拟机中的对象</title>
-    <link href="https://sylvanassun.github.io/2016/09/05/2016-09-5-HotSpotObject/"/>
-    <id>https://sylvanassun.github.io/2016/09/05/2016-09-5-HotSpotObject/</id>
-    <published>2016-09-05T10:00:00.000Z</published>
-    <updated>2017-07-11T06:55:50.027Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h3><hr>
-<p>&nbsp;&nbsp;在Java程序运行过程中无时无刻都有对象被创建出来.在语言层面上,创建对象通常仅仅是一个new关键字而已,而在虚拟机中,创建一个对象不像只需要new一下那么简单了.</p>
-<p>&nbsp;&nbsp;以下为虚拟机中对象创建的过程(仅限于普通Java对象,不包括数组和Class对象等).</p>
-<ol>
-<li><p>虚拟机遇到一条new指令时,首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用,并且检查这个符号引用代表的类是否已被加载、解析和初始化过.如果没有,那必须先执行相应的类加载过程.</p>
-</li>
-<li><p>在类加载检查通过后,接下来虚拟机将为新生对象分配内存.对象所需内存的大小在类加载完成后便可完全确定,为对象分配空间的任务等同于把一块确定大小的内存从Java堆中划分出来.</p>
-<ul>
-<li><p>如果Java堆中内存是绝对规整的,所有用过的内存都放在一边,中间放着一个指针作为分界点的指示器,那所分配内存就仅仅是把那个指针向空闲空间那边挪动一段与对象大小相等的距离,这种分配方式称为”指针碰撞(Bump the Pointer)”.在使用Serial、ParNew等待Compact过程的收集器时,系统采用的分配算法为指针碰撞.</p>
-</li>
-<li><p>如果Java堆中内存并不是规整的,已使用的内存和空闲的内存相互交错,那就没有办法简单地进行指针碰撞了,虚拟机就必须维护一个列表,记录上哪些内存块是可用的,在分配的时候从列表中找到一块足够大的空间划分给对象实例,并更新列表上的记录,这种分配方式称为”空闲列表(Free List)”.在使用CMS这种基于Mark-Sweep算法的收集器,通常采用空闲列表.</p>
-</li>
-<li><p>由于创建对象是一件非常频繁的事情,所以除了划分可用空间之外,虚拟机还要考虑线程安全的问题,可能出现正在给对象A分配内存,指针还没来得及修改,对象B又同时使用了原来的指针来分配内存的情况.解决这个问题有两种方案,一种是对分配内存空间的动作进行同步处理(虚拟机采用CAS配上失败重试的方式保证更新操作的原子性);另一种是把内存分配的动作按照线程划分在不同的空间之中进行,即每个线程在Java堆中预先分配一小块内存,称为本地线程分配缓冲(Thread Local Allocation Buffer TLAB).哪个线程要分配内存,就在哪个线程的TLAB上分配,只有TLAB用完并分配新的TLAB时,才需要同步锁定.虚拟机是否使用TLAB,可以通过-XX:+/-UseTLAB参数来设置.</p>
-</li>
-</ul>
-</li>
-<li><p>在内存分配完成后,虚拟机需要将分配到的内存空间都初始化为零值(不包括对象头),如果使用TLAB,这一工作也可以提前至TLAB分配时进行.这一步操作保证了对象的实例字段在Java代码中可以不赋初始值就直接使用,程序能访问到这些字段的数据类型所对应的零值.</p>
-</li>
-<li><p>最后一步,虚拟机要对对象进行必要的设置,例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的GC分代年龄等信息.这些信息存放在对象的对象头(Object Header)之中.根据虚拟机当前的运作状态的不同,如是否启动偏向锁等,对象头会有不同的设置方式.</p>
-</li>
-<li><p>以上工作全部完成后,从虚拟机的角度来看,一个新的对象已经产生了,但从Java程序的视角来看,对象的创建才刚刚开始(init方法还没有执行,所有字段都还为零值).一般来说(由字节码中是否跟随invokespecial指令所决定),执行new指令之后会接着执行init()方法,把对象按照程序员的意愿进行初始化,这样一个真正可用的对象才算完全产生出来.</p>
-</li>
-</ol>
-<h3 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h3><hr>
-<p>&nbsp;&nbsp;在HotSpot虚拟机中,对象在内存中存储的布局可以分为三块区域:对象头(Object Header)、实例数据(Instance Data)和对齐填充(Padding).</p>
-<h4 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h4><p>&nbsp;&nbsp;对象头包括两部分信息,第一部分用于存储对象自身的运行时数据(例如哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等),这部分数据的长度在32位和64位的虚拟机(未开启压缩指针)中分别为32bit和64bit,官方称其为”Mark Word”.这些运行时数据很多,其实已经超过了32位、64位Bitmap结构所能记录的限度.考虑到虚拟机的空间效率,Mark Word被设计成一个非固定的数据结构以便在极小的空间内存储尽量多的信息,它会根据对象的状态复用自己的存储空间.例如,在32位的HotSpot虚拟机中,如果对象处于未被锁定的状态下,那么Mark Word的32bit空间中的25bit用于存储对象哈希码,4bit用于存储对象分代年龄,2bit用于存储锁标志位,1bit固定为0,而在其他状态(轻量级锁定、重量级锁定、GC标记、可偏向)下对象的存储内容参见下表.</p>
-<table>
-<thead>
-<tr>
-<th>存储内容</th>
-<th>标志位</th>
-<th>状态</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>对象哈希码、对象分代年龄</td>
-<td>01</td>
-<td>未锁定</td>
-</tr>
-<tr>
-<td>指向锁记录的指针</td>
-<td>00</td>
-<td>轻量级锁定</td>
-</tr>
-<tr>
-<td>指向重量级锁的指针</td>
-<td>10</td>
-<td>膨胀(重量级锁定)</td>
-</tr>
-<tr>
-<td>空,不需要记录信息</td>
-<td>11</td>
-<td>GC标记</td>
-</tr>
-<tr>
-<td>偏向线程ID、偏向时间戳、对象分代年龄</td>
-<td>01</td>
-<td>可偏向</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;&nbsp;对象头的另一部分为类型指针,即对象指向它的类元数据的指针,虚拟机通过这个指针来确定这个对象是哪个类的实例.并不是所有的虚拟机实现都必须在对象数据上保留类型指针,也可以认为,查找对象的元数据信息并不一定要经过对象本身.如果对象是一个Java数组,那在对象头中还必须有一块用于记录数组长度的数据,因为虚拟机可以通过普通Java对象的元数据信息确定Java对象的大小,但是从数组的元数据中无法确定数组的大小.</p>
-<h4 id="实例数据"><a href="#实例数据" class="headerlink" title="实例数据"></a>实例数据</h4><p>&nbsp;&nbsp;实例数据是对象真正存储的有效信息,也是在程序代码中所定义的各种类型的字段内容.无论是从父类继承下来的,还是子类中定义的,都需要记录起来.</p>
-<p>&nbsp;&nbsp;实例数据的存储顺序会受到虚拟机分配策略参数(FieldsAllocationStyle)和字段在Java源码中定义顺序的影响.HotSpot虚拟机默认的分配策略为longs/doubles、ints、shorts/chars、bytes/booleans、oops(Ordinary Object Pointers),从以上分配策略中可以看出,相同宽度的字段总是被分配到一起.在满足这个前提条件的情况下,父类中定义的变量会出现在子类之前.如果CompactFields参数值为true(默认为true),那么子类中较窄的变量也可能会插入到父类变量的空隙之中.</p>
-<h4 id="对齐填充"><a href="#对齐填充" class="headerlink" title="对齐填充"></a>对齐填充</h4><p>&nbsp;&nbsp;对齐填充并不是必然存在的,它也没有特别的含义,只是用于当作占位符而已.</p>
-<p>&nbsp;&nbsp;因为HotSpot虚拟机的自动内存管理系统要求对象起始地址必须是8字节的整数值,即是对象的大小必须是8字节的整数倍.而对象头部分正好是8字节的倍数(1倍或2倍),所以,当对象实例数据部分没有对齐时,就需要通过对齐填充来补全.</p>
-<h3 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h3><hr>
-<p>&nbsp;&nbsp;Java程序需要通过栈上的reference数据来操作堆上的具体对象.由于reference类型在Java虚拟机规范中只规定了一个指向对象的引用,所以对象访问方式也是取决于虚拟机实现而定的.</p>
-<p>&nbsp;&nbsp;目前主流的访问方式为句柄和直接指针两种.</p>
-<h4 id="句柄"><a href="#句柄" class="headerlink" title="句柄"></a>句柄</h4><p><img src="http://ww1.sinaimg.cn/mw690/63503acbjw1f7l9o8a5qpj20tw0fhmyc.jpg" alt="通过句柄访问对象"></p>
-<p>&nbsp;&nbsp;使用句柄访问对象,Java堆中将会划分出一块内存作为句柄池,reference中存储的就是对象的句柄地址,而句柄中包含了对象实例数据与类型数据各自的具体地址信息.</p>
-<p>&nbsp;&nbsp;使用句柄来访问的最大好处就是reference中存储的是稳定的句柄地址,在对象被移动时(垃圾收集时移动对象是非常普遍的行为)只会改变句柄中的实例数据指针,而reference本身不需要修改.</p>
-<h4 id="直接指针"><a href="#直接指针" class="headerlink" title="直接指针"></a>直接指针</h4><p><img src="http://ww2.sinaimg.cn/mw690/63503acbjw1f7l9o8m90vj20tw0fhq3w.jpg" alt="通过直接指针访问对象"></p>
-<p>&nbsp;&nbsp;使用直接指针访问对象,Java堆对象的布局中就必须考虑如何放置访问类型数据的相关信息,而reference中存储的直接就是对象地址.</p>
-<p>&nbsp;&nbsp;使用直接指针访问方式的最大好处就是速度更快,它节省了一次指针定位的时间开销,由于对象的访问在Java中非常频繁,积少成多后也是一项非常可观的执行成本.HotSpot虚拟机就是使用直接指针方式进行对象访问的.</p>
-<h3 id="End"><a href="#End" class="headerlink" title="End"></a>End</h3><hr>
-<blockquote>
-<p>资料参考于 &lt;&lt;深入理解 Java虚拟机 第二版&gt;&gt;.</p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;对象的创建&quot;&gt;&lt;a href=&quot;#对象的创建&quot; class=&quot;headerlink&quot; title=&quot;对象的创建&quot;&gt;&lt;/a&gt;对象的创建&lt;/h3&gt;&lt;hr&gt;
-&lt;p&gt;&amp;nbsp;&amp;nbsp;在Java程序运行过程中无时无刻都有对象被创建出来.在语言层面上,创建对象通常仅仅
-    
-    </summary>
-    
-      <category term="后端" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/"/>
-    
-      <category term="Java" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/Java/"/>
-    
-      <category term="JVM" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/Java/JVM/"/>
-    
-    
-      <category term="Java" scheme="https://sylvanassun.github.io/tags/Java/"/>
-    
-      <category term="JVM" scheme="https://sylvanassun.github.io/tags/JVM/"/>
     
   </entry>
   

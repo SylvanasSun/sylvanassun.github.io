@@ -688,6 +688,9 @@ public class KruskalMST {
 
  - [图的那点事儿(3)-加权无向图][10]
 
+
+ - [图的那点事儿(4)-加权有向图][11]
+
 [1]: https://github.com/SylvanasSun
 [2]: https://sylvanassun.github.io
 [3]: https://github.com/SylvanasSun/algs4-study/tree/master/src/main/java/chapter4_graphs/C4_3_MinimumSpanningTrees
@@ -698,3 +701,4 @@ public class KruskalMST {
 [8]: https://sylvanassun.github.io/2017/07/18/2017-07-18-Graph_UndirectedGraph/
 [9]: https://sylvanassun.github.io/2017/07/23/2017-07-23-Graph_DirectedGraphs/
 [10]: https://sylvanassun.github.io/2017/07/25/2017-07-25-Graph_WeightedUndirectedGraph/
+[11]: https://sylvanassun.github.io/2017/07/27/2017-07-27-Graph_WeightedDigraph

@@ -734,6 +734,9 @@ public class TransitiveClosure {
  - [图的那点事儿(3)-加权无向图][9]
 
 
+ - [图的那点事儿(4)-加权有向图][10]
+
+
 [1]: https://github.com/SylvanasSun
 [2]: http://algs4.cs.princeton.edu/42digraph/
 [3]: https://github.com/SylvanasSun/algs4-study/tree/master/src/main/java/chapter4_graphs/C4_2_DirectedGraphs
@@ -743,3 +746,4 @@ public class TransitiveClosure {
 [7]: https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm
 [8]: https://en.wikipedia.org/wiki/Transitive_closure
 [9]: https://sylvanassun.github.io/2017/07/25/2017-07-25-Graph_WeightedUndirectedGraph/
+[10]: https://sylvanassun.github.io/2017/07/27/2017-07-27-Graph_WeightedDigraph

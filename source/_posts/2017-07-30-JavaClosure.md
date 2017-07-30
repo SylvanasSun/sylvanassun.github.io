@@ -1,12 +1,16 @@
---- 
-title: Java中的闭包之争
-date: 2017-07-30 18:00
-author: "Sylvanas Sun"
-catalog: true
-categories: [“后端”,"Java"]
-tags: ["Java","2017"]
-notebook: Blog Note
 ---
+title:         Java中的闭包之争
+date:       2017-07-30 18:00
+author:     "Sylvanas Sun"
+catalog:    true
+categories: 
+    - 后端
+    - Java
+tags:
+    - Java
+    - 2017
+---
+
 
 
 > 闭包一直都是`Java`社区中争论不断的话题,很多语言例如`JavaScript`,`Ruby`,`Python`等都支持闭包这个语言特性,闭包功能强大且灵活,`Java`并没有显式地支持它,但其实`Java`中也存在着所谓的"闭包".

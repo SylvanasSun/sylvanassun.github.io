@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-07-30T13:15:23.847Z</updated>
+  <updated>2017-08-06T11:35:27.647Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -14,6 +14,151 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>揭秘HTTPS的&quot;秘密&quot;</title>
+    <link href="https://sylvanassun.github.io/2017/08/06/2017-08-06-DigestHttps/"/>
+    <id>https://sylvanassun.github.io/2017/08/06/2017-08-06-DigestHttps/</id>
+    <published>2017-08-06T10:00:00.000Z</published>
+    <updated>2017-08-06T11:35:27.647Z</updated>
+    
+    <content type="html"><![CDATA[<p>在说<code>https</code>之前,我们先了解一下<code>http</code>,以及为什么要使用<code>https</code>.</p>
+<p><code>http(Hyper Text Transfer  Protocol)</code>超文本传输协议是一种用于分布式、协作式和超媒体信息系统的应用层协议,它是<code>TCP/IP</code>的上层协议,同时它也是万维网(万维网不等同于互联网,它只是基于互联网的一个服务)的数据通信的基础.</p>
+<p><code>http</code>协议是客户端浏览器与其他程序或<code>Web</code>服务器之间交互的应用层通讯协议.但它也有一个致命的缺点:<strong><code>http</code>协议是明文传输协议</strong>,在传输信息的过程中并没有进行任何加密,通信的双方也没有任何的认证,这是非常不安全的,如果在通信过程中被中间人进行劫持、监听、篡改,会造成个人隐私泄露等严重的安全问题.</p>
+<p>举一个现实中的例子来说,假设小李要给小张寄信,如果信件在运输的过程中没有任何安全保护,那么很可能会被邮递员(也就是中间人)窃取其中的内容,甚至于修改内容.</p>
+<p><code>https</code>就是用于解决这样的安全问题的,它的全称为<code>Hypertext Transfer Protocol Secure</code>,它在<code>http</code>的基础上添加了<code>SSL(安全套接字层)</code>层来保证传输数据的安全问题.</p>
+<p><img src="http://wx2.sinaimg.cn/mw690/63503acbly1fia1cscjslj20lb0a7443.jpg" alt=""></p>
+<blockquote>
+<p>本文作者为: <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun</a>.转载请务必将下面这段话置于文章开头处(保留超链接).<br>本文转发自<a href="https://sylvanassun.github.io">SylvanasSun Blog</a>,原文链接: <a href="https://sylvanassun.github.io/2017/08/06/2017-08-06-DigestHttps/">https://sylvanassun.github.io/2017/08/06/2017-08-06-DigestHttps/</a></p>
+</blockquote>
+<p><code>https</code>提供了端对端的加密,而且不仅对数据进行了加密,还对数据完整性提供了保护.不过在讲解<code>https</code>的加密方式之前,我们需要先了解一下加密算法.</p>
+<h3 id="对称加密"><a href="#对称加密" class="headerlink" title="对称加密"></a>对称加密</h3><hr>
+<p>对称加密的基本思想是: 通信双方使用同一个密钥(或者是两个可以简单地互相推算的密钥)来对明文进行加密与解密.</p>
+<p>常见的对称加密算法有DES、3DES、AES、Blowfish、IDEA、RC5、RC6.</p>
+<p><img src="http://wx3.sinaimg.cn/mw690/63503acbly1fia3vwjvcdj20j208ydg4.jpg" alt=""></p>
+<p>对称加密看起来很美好,但是密钥要怎么发送过去呢?如果直接发送过去,被中间人截获了密钥岂不是白费工夫.</p>
+<h3 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h3><hr>
+<p>非对称加密也叫公开密钥加密,它使用了两个密钥,一个为公钥,一个为私钥,当一个用作于加密的时候,另一个则用作解密.</p>
+<p>这两个密钥就算被其他人知道了其中一个也不能凭借它计算出另一个密钥,所以可以公开其中一个密钥(也就是公钥),不公开的密钥为私钥.</p>
+<p><img src="http://wx2.sinaimg.cn/mw690/63503acbly1fia4nut76kj20l50cht97.jpg" alt=""></p>
+<p>如果服务器想发送消息给客户端,只需要用客户端的公钥加密,然后客户端用它自己的私钥进行解密.</p>
+<p>常见的非对称加密算法有RSA、DSA、ECDSA、 DH、ECDHE.</p>
+<p>我们以<code>DH</code>算法为例,了解一下非对称加密的魅力.</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Diffie-Hellman-Schl%C3%BCsselaustausch.svg/800px-Diffie-Hellman-Schl%C3%BCsselaustausch.svg.png" alt=""></p>
+<ol>
+<li><p><code>Alice</code>要与<code>Bob</code>进行通信,他们协定了一组可以公开的质数$p=23$,$g=5$.</p>
+</li>
+<li><p><code>Alice</code>选择了一个不公开的秘密数$a=6$,并计算$A= g^a mod p$并发送给<code>Bob</code>.</p>
+<pre><code>- $A = 5^6 mod 23 = 8$
+</code></pre></li>
+<li><p><code>Bob</code>选择了一个不公开的秘密数$b=15$,并计算$B = g^b mod p$并发送给<code>Alice</code></p>
+<pre><code>- $B = 5^15 mod 23 = 19$
+</code></pre></li>
+<li><p><code>Alice</code> 计算$s = B^a mod p$</p>
+<pre><code>- $s = 19^6 mod 23 = 2$
+</code></pre></li>
+<li><p><code>Bob</code>计算$s = A^b mod p$</p>
+<pre><code>- $s = 8^15 mod 23 = 2$
+</code></pre></li>
+</ol>
+<ol>
+<li><code>Alice</code>与<code>Bob</code>得到了同样的值,因此$g^{ab} mod p = g^{ba} mod p$</li>
+</ol>
+<h3 id="对称加密-非对称加密"><a href="#对称加密-非对称加密" class="headerlink" title="对称加密+非对称加密"></a>对称加密+非对称加密</h3><hr>
+<p>尽管非对称加密如此奇妙,但它加解密的效率比对称加密要慢多了.那我们就将对称加密与非对称加密结合起来,取其精华,去其槽粕.</p>
+<p>方法很简单,其中一方先自己生成一个对称加密密钥,然后通过非对称加密的方式来发送这个密钥,这样双方之后的通信就可以用对称加密这种高效率的算法进行加解密了.</p>
+<h3 id="Certificate-Authority"><a href="#Certificate-Authority" class="headerlink" title="Certificate Authority"></a>Certificate Authority</h3><hr>
+<p>对称加密与非对称加密结合使用的方法虽然能够保证了通信过程的安全,但也引发了如下问题: </p>
+<ul>
+<li>客户端要如何获取到服务器的公钥?</li>
+</ul>
+<ul>
+<li>如果公钥在发送过程被中间人拦截,然后中间人发送自己的公钥给客户端,客户端该如何确认?</li>
+</ul>
+<p>解决方法依是通过一个权威的<code>CA(Certificate Authority)</code>证书中心,它来负责颁发证书,这个证书包含了如下等内容: </p>
+<ul>
+<li>证书的发布机构.</li>
+</ul>
+<ul>
+<li>证书的有效期</li>
+</ul>
+<ul>
+<li>公钥</li>
+</ul>
+<ul>
+<li>证书所有人</li>
+</ul>
+<ul>
+<li>数字签名</li>
+</ul>
+<p>数字签名是用来验证数据完整性的,首先将公钥与个人信息用一个<code>Hash</code>算法生成一个消息摘要,<code>Hash</code>算法是不可逆的,且只要内容发生变化,那生成的消息摘要将会截然不同.然后<code>CA</code>再用它的私钥对消息摘要加密,最终形成数字签名.</p>
+<p>当客户端接收到证书时,只需要用同样的<code>Hash</code>算法再次生成一个消息摘要,然后用<code>CA</code>的公钥对证书进行解密,之后再对比两个消息摘要就能知道数据有没有被篡改过了.</p>
+<p>那么<code>CA</code>的公钥又要从哪里来呢?这似乎陷入了一个鸡生蛋,蛋生鸡的悖论,其实<code>CA</code>也有证书来证明自己,而且<code>CA</code>证书的信用体系就像一棵树的结构,上层节点是信用高的<code>CA</code>同时它也会对底层的<code>CA</code>做信用背书,操作系统中已经内置了一些根证书,所以相当于你已经自动信任了它们(需要注意误安装一些非法或不安全的证书).</p>
+<h3 id="Https的交互过程"><a href="#Https的交互过程" class="headerlink" title="Https的交互过程"></a>Https的交互过程</h3><hr>
+<p><img src="http://wx2.sinaimg.cn/mw690/63503acbly1fia7yy31rdj20in0o7wfy.jpg" alt=""></p>
+<ol>
+<li>浏览器对服务器发送了一次请求.</li>
+</ol>
+<ol>
+<li>服务器发送证书.</li>
+</ol>
+<ol>
+<li>浏览器读取证书中的所有人,有效期等信息并进行校验.</li>
+</ol>
+<ol>
+<li>浏览器查找操作系统中内置的已经信任的根证书,并对服务器发来的证书进行验证.</li>
+</ol>
+<ol>
+<li>如果找不到,浏览器报错,服务器发来的证书是不可信任的.</li>
+</ol>
+<ol>
+<li>如果找到,浏览器会从操作系统中取出<code>CA</code>的公钥,然后对服务器发来的证书中的数字签名进行解密.</li>
+</ol>
+<ol>
+<li>浏览器使用相同的<code>Hash</code>算法计算出消息摘要,然后对数字签名中的消息摘要进行校对.</li>
+</ol>
+<ol>
+<li>如果结果一致,证书合法.</li>
+</ol>
+<ol>
+<li>之后浏览器就可以生成对称加密的密钥然后用非对称加密的方式发送给服务器,之后的通信就都是安全的了.</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><hr>
+<p>现在国内外的大型网站基本都已经全站启用了<code>Https</code>,虽然相对于<code>Http</code>多了许多用于加密的流程,但为了数据的安全这点牺牲是必要的,<code>Https</code>也将是未来互联网的发展趋势.</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><hr>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/HTTPS" target="_blank" rel="external">HTTPS - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Public-key_cryptography" target="_blank" rel="external">Public-key cryptography - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange" target="_blank" rel="external">Diffie–Hellman key exchange - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzAxOTc0NzExNg==&amp;mid=2665513779&amp;idx=1&amp;sn=a1de58690ad4f95111e013254a026ca2&amp;chksm=80d67b70b7a1f26697fa1626b3e9830dbdf4857d7a9528d22662f2e43af149265c4fd1b60024#rd" target="_blank" rel="external">一个故事讲完https</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在说&lt;code&gt;https&lt;/code&gt;之前,我们先了解一下&lt;code&gt;http&lt;/code&gt;,以及为什么要使用&lt;code&gt;https&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;http(Hyper Text Transfer  Protocol)&lt;/code&gt;超文本传输协
+    
+    </summary>
+    
+      <category term="网络" scheme="https://sylvanassun.github.io/categories/%E7%BD%91%E7%BB%9C/"/>
+    
+      <category term="http" scheme="https://sylvanassun.github.io/categories/%E7%BD%91%E7%BB%9C/http/"/>
+    
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="网络" scheme="https://sylvanassun.github.io/tags/%E7%BD%91%E7%BB%9C/"/>
+    
+      <category term="http" scheme="https://sylvanassun.github.io/tags/http/"/>
+    
+  </entry>
   
   <entry>
     <title>Java中的闭包之争</title>
@@ -269,9 +414,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -509,9 +654,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -650,9 +795,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -733,9 +878,9 @@
       <category term="Other" scheme="https://sylvanassun.github.io/categories/Algorithms/Other/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -1033,9 +1178,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -1110,9 +1255,9 @@
       <category term="动态规划" scheme="https://sylvanassun.github.io/categories/Algorithms/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="动态规划" scheme="https://sylvanassun.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
@@ -1207,11 +1352,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -1265,11 +1410,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -1321,11 +1466,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -1390,11 +1535,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -1718,13 +1863,13 @@
       <category term="HashTable" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/HashTable/"/>
     
     
-      <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+      <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
   </entry>
   
@@ -1796,11 +1941,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2017,11 +2162,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2127,11 +2272,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2283,11 +2428,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2602,90 +2747,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
-  </entry>
-  
-  <entry>
-    <title>使用链表做为Stack、Queue中的数据表示结构的基本思路</title>
-    <link href="https://sylvanassun.github.io/2017/03/06/2017-3-06-LinkedStack&amp;Queue/"/>
-    <id>https://sylvanassun.github.io/2017/03/06/2017-3-06-LinkedStack&amp;Queue/</id>
-    <published>2017-03-06T10:00:00.000Z</published>
-    <updated>2017-07-11T06:58:27.152Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="什么是链表"><a href="#什么是链表" class="headerlink" title="什么是链表?"></a>什么是链表?</h3><hr>
-<p>链表是一种常见的基础数据结构(数组也是基础数据结构),它是一种递归的数据结构,由一系列节点(Node)组成,节点含有一个存储数据的数据域和一个指向下一个节点地址位置的引用.</p>
-<p>链表是线性表的一种,但是它的物理存储结构是非连续、 非顺序的,元素的逻辑顺序是通过节点之间的链接确定的.</p>
-<h3 id="数据结构与数据类型的区别"><a href="#数据结构与数据类型的区别" class="headerlink" title="数据结构与数据类型的区别"></a>数据结构与数据类型的区别</h3><hr>
-<ul>
-<li><p><font color="red">数据类型</font>是一组数据和一组对这些值进行操作的集合.</p>
-</li>
-<li><p><font color="red">数据结构</font>强调的是数据的存储和组织方式.</p>
-</li>
-</ul>
-<p>常见的数据结构有:数组、栈、队列、链表、树、图、堆、散列表.</p>
-<h3 id="链表是否可以替代数组"><a href="#链表是否可以替代数组" class="headerlink" title="链表是否可以替代数组?"></a>链表是否可以替代数组?</h3><hr>
-<p>由于创建数组需要预先知道数组的大小,所以想要动态的扩容需要不断地创建新数组,而链表则可以充分利用内存空间,实现较为灵活的动态扩展.</p>
-<p>使用链表替代数组有优点也有缺点:</p>
-<p><strong>优点</strong></p>
-<ol>
-<li>在链表中进行插入操作或是删除操作都更加方便快速.</li>
-</ol>
-<ol>
-<li>链表所需的空间总是和集合的大小成正比.</li>
-</ol>
-<ol>
-<li>链表操作所需的时间总是和集合的大小无关.</li>
-</ol>
-<p><strong>缺点</strong></p>
-<ol>
-<li>无法像数组一样可以通过索引来进行随机访问.</li>
-</ol>
-<ol>
-<li>由于每一个元素节点都是一个对象,所以需要的空间开销比较大.</li>
-</ol>
-<h3 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h3><hr>
-<p><img src="/img/note-img/2017-3-06-LinkedStack&amp;Queue/LinkedStack.png" alt=""></p>
-<p>栈是一种基于后进先出(LIFO)的数据结构,其中的元素除了头尾之外,每个元素都有一个前驱和一个后继.</p>
-<p>使用链表来表示栈内部的数据时,栈顶就是链表的头部,当push元素时将元素添加在表头,当pop元素时将元素从表头删除.</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 使用链表实现的可迭代的下压栈(后进先出)</div><div class="line"> * &lt;p&gt;</div><div class="line"> * Created by SylvanasSun on 2017/3/6.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stack</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">Iterable</span>&lt;<span class="title">T</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> Node first; <span class="comment">//栈顶(链表头部)</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> N; <span class="comment">//元素个数</span></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 用于表示链表中的节点</div><div class="line">     */</div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</div><div class="line">        T item;</div><div class="line">        Node next;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 判断Stack是否为空</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> true代表Stack为空, false为未空</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> first == <span class="keyword">null</span>; <span class="comment">//也可以用N==0来判断</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 返回Stack中的元素数量</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> 元素数量</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> N;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 将元素t添加到栈顶</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> t 添加的元素</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(T t)</span> </span>&#123;</div><div class="line">        Node oldFirst = first;</div><div class="line">        first = <span class="keyword">new</span> Node();</div><div class="line">        first.item = t;</div><div class="line">        first.next = oldFirst;</div><div class="line">        N++;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 将栈顶的元素弹出</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> 栈顶节点的item</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">pop</span><span class="params">()</span> </span>&#123;</div><div class="line">        T item = first.item;</div><div class="line">        first = first.next;</div><div class="line">        N--;</div><div class="line">        <span class="keyword">return</span> item;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterator&lt;T&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ListIterator();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 迭代器,维护了一个实例变量current来记录链表的当前结点.</div><div class="line">     * 这段代码可以在Stack和Queue之间复用,因为它们内部数据的数据结构是相同的,</div><div class="line">     * 只是访问顺序分别为后进先出和先进先出而已.</div><div class="line">     */</div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ListIterator</span> <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">T</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">private</span> Node current = first;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> current != <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> T <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">            T item = current.item;</div><div class="line">            current = current.next;</div><div class="line">            <span class="keyword">return</span> item;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><hr>
-<p><img src="/img/note-img/2017-3-06-LinkedStack&amp;Queue/LinkedQueue.png" alt=""></p>
-<p>队列是一种基于先进先出(FIFO)的数据结构,元素的处理顺序就是它们被添加到队列中的顺序.</p>
-<p>可以使用实例变量first指向队列的队头,实例变量last指向队列的队尾,当将一个元素入列时,就将这个元素添加到队尾,当要将一个元素出列时,就删除队头的节点.</p>
-<h4 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 使用链表实现的Queue,它与Stack的区别在于链表的访问顺序.</div><div class="line"> * Queue的访问顺序是先进先出的.</div><div class="line"> * &lt;p&gt;</div><div class="line"> * Created by SylvanasSun on 2017/3/6.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Queue</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">Iterable</span>&lt;<span class="title">T</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> Node first; <span class="comment">//链表头部,即队头</span></div><div class="line">    <span class="keyword">private</span> Node last; <span class="comment">//链表尾部,即队尾</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> N; <span class="comment">//size</span></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 用于表示链表中的节点</div><div class="line">     */</div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</div><div class="line">        T item;</div><div class="line">        Node next;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 判断Queue是否为空</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> true代表Stack为空, false为未空</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> first == <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 返回Queue中的元素数量</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> 元素数量</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> N;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 入队,向队尾添加新的元素</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> item 添加的元素</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">enqueue</span><span class="params">(T item)</span> </span>&#123;</div><div class="line">        Node oldLast = last;</div><div class="line">        last = <span class="keyword">new</span> Node();</div><div class="line">        last.item = item;</div><div class="line">        last.next = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line">         * 如果队列为空,队头指向队尾(队列中只有一个元素),</div><div class="line">         * 否则将旧的队尾的next指向新的队尾</div><div class="line">         */</div><div class="line">        <span class="keyword">if</span> (isEmpty()) first = last;</div><div class="line">        <span class="keyword">else</span> oldLast.next = last;</div><div class="line">        N++;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 出队,将队头节点弹出队列</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> 队头节点的item</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">dequeue</span><span class="params">()</span> </span>&#123;</div><div class="line">        T item = first.item;</div><div class="line">        first = first.next;</div><div class="line">        N--;</div><div class="line">        <span class="comment">//如果队列为空,队尾则为null</span></div><div class="line">        <span class="keyword">if</span> (isEmpty()) last = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">return</span> item;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterator&lt;T&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ListIterator();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 迭代器,与Stack中的实现一致</div><div class="line">     */</div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ListIterator</span> <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">T</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> Node current = first;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> current != <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> T <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">            T item = current.item;</div><div class="line">            current = current.next;</div><div class="line">            <span class="keyword">return</span> item;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><hr>
-<ul>
-<li>Author: SylvanasSun</li>
-<li>GitHub: <a href="https://github.com/SylvanasSun" target="_blank" rel="external">https://github.com/SylvanasSun</a></li>
-<li>Email: sylvanassun_xtz@163.com</li>
-<li>Reference: 《Algorithms 4th edition》&amp; <a href="https://zh.wikipedia.org/wiki/%E9%93%BE%E8%A1%A8" target="_blank" rel="external">wiki</a></li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;什么是链表&quot;&gt;&lt;a href=&quot;#什么是链表&quot; class=&quot;headerlink&quot; title=&quot;什么是链表?&quot;&gt;&lt;/a&gt;什么是链表?&lt;/h3&gt;&lt;hr&gt;
-&lt;p&gt;链表是一种常见的基础数据结构(数组也是基础数据结构),它是一种递归的数据结构,由一系列节点(Node)
-    
-    </summary>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/categories/Algorithms/"/>
-    
-      <category term="数据结构" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="LinkedTable" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/LinkedTable/"/>
-    
-    
-      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
-      <category term="LinkedTable" scheme="https://sylvanassun.github.io/tags/LinkedTable/"/>
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   

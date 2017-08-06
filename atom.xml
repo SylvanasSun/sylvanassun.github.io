@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-08-06T11:35:27.647Z</updated>
+  <updated>2017-08-06T11:49:34.805Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://sylvanassun.github.io/2017/08/06/2017-08-06-DigestHttps/"/>
     <id>https://sylvanassun.github.io/2017/08/06/2017-08-06-DigestHttps/</id>
     <published>2017-08-06T10:00:00.000Z</published>
-    <updated>2017-08-06T11:35:27.647Z</updated>
+    <updated>2017-08-06T11:49:34.805Z</updated>
     
     <content type="html"><![CDATA[<p>在说<code>https</code>之前,我们先了解一下<code>http</code>,以及为什么要使用<code>https</code>.</p>
 <p><code>http(Hyper Text Transfer  Protocol)</code>超文本传输协议是一种用于分布式、协作式和超媒体信息系统的应用层协议,它是<code>TCP/IP</code>的上层协议,同时它也是万维网(万维网不等同于互联网,它只是基于互联网的一个服务)的数据通信的基础.</p>
@@ -48,21 +48,16 @@
 <ol>
 <li><p><code>Alice</code>要与<code>Bob</code>进行通信,他们协定了一组可以公开的质数$p=23$,$g=5$.</p>
 </li>
-<li><p><code>Alice</code>选择了一个不公开的秘密数$a=6$,并计算$A= g^a mod p$并发送给<code>Bob</code>.</p>
-<pre><code>- $A = 5^6 mod 23 = 8$
-</code></pre></li>
-<li><p><code>Bob</code>选择了一个不公开的秘密数$b=15$,并计算$B = g^b mod p$并发送给<code>Alice</code></p>
-<pre><code>- $B = 5^15 mod 23 = 19$
-</code></pre></li>
-<li><p><code>Alice</code> 计算$s = B^a mod p$</p>
-<pre><code>- $s = 19^6 mod 23 = 2$
-</code></pre></li>
-<li><p><code>Bob</code>计算$s = A^b mod p$</p>
-<pre><code>- $s = 8^15 mod 23 = 2$
-</code></pre></li>
-</ol>
-<ol>
-<li><code>Alice</code>与<code>Bob</code>得到了同样的值,因此$g^{ab} mod p = g^{ba} mod p$</li>
+<li><p><code>Alice</code>选择了一个不公开的秘密数$a=6$,并计算$A= g^a mod p$($A = 5^6 mod 23 = 8$)并发送给<code>Bob</code>.</p>
+</li>
+<li><p><code>Bob</code>选择了一个不公开的秘密数$b=15$,并计算$B = g^b mod p$($B = 5^15 mod 23 = 19$)并发送给<code>Alice</code></p>
+</li>
+<li><p><code>Alice</code> 计算$s = B^a mod p$($s = 19^6 mod 23 = 2$)</p>
+</li>
+<li><p><code>Bob</code>计算$s = A^b mod p$($s = 8^15 mod 23 = 2$)</p>
+</li>
+<li><p><code>Alice</code>与<code>Bob</code>得到了同样的值,因此$g^{ab} mod p = g^{ba} mod p$</p>
+</li>
 </ol>
 <h3 id="对称加密-非对称加密"><a href="#对称加密-非对称加密" class="headerlink" title="对称加密+非对称加密"></a>对称加密+非对称加密</h3><hr>
 <p>尽管非对称加密如此奇妙,但它加解密的效率比对称加密要慢多了.那我们就将对称加密与非对称加密结合起来,取其精华,去其槽粕.</p>
@@ -96,33 +91,33 @@
 <p>那么<code>CA</code>的公钥又要从哪里来呢?这似乎陷入了一个鸡生蛋,蛋生鸡的悖论,其实<code>CA</code>也有证书来证明自己,而且<code>CA</code>证书的信用体系就像一棵树的结构,上层节点是信用高的<code>CA</code>同时它也会对底层的<code>CA</code>做信用背书,操作系统中已经内置了一些根证书,所以相当于你已经自动信任了它们(需要注意误安装一些非法或不安全的证书).</p>
 <h3 id="Https的交互过程"><a href="#Https的交互过程" class="headerlink" title="Https的交互过程"></a>Https的交互过程</h3><hr>
 <p><img src="http://wx2.sinaimg.cn/mw690/63503acbly1fia7yy31rdj20in0o7wfy.jpg" alt=""></p>
-<ol>
+<ul>
 <li>浏览器对服务器发送了一次请求.</li>
-</ol>
-<ol>
+</ul>
+<ul>
 <li>服务器发送证书.</li>
-</ol>
-<ol>
+</ul>
+<ul>
 <li>浏览器读取证书中的所有人,有效期等信息并进行校验.</li>
-</ol>
-<ol>
+</ul>
+<ul>
 <li>浏览器查找操作系统中内置的已经信任的根证书,并对服务器发来的证书进行验证.</li>
-</ol>
-<ol>
+</ul>
+<ul>
 <li>如果找不到,浏览器报错,服务器发来的证书是不可信任的.</li>
-</ol>
-<ol>
+</ul>
+<ul>
 <li>如果找到,浏览器会从操作系统中取出<code>CA</code>的公钥,然后对服务器发来的证书中的数字签名进行解密.</li>
-</ol>
-<ol>
+</ul>
+<ul>
 <li>浏览器使用相同的<code>Hash</code>算法计算出消息摘要,然后对数字签名中的消息摘要进行校对.</li>
-</ol>
-<ol>
+</ul>
+<ul>
 <li>如果结果一致,证书合法.</li>
-</ol>
-<ol>
+</ul>
+<ul>
 <li>之后浏览器就可以生成对称加密的密钥然后用非对称加密的方式发送给服务器,之后的通信就都是安全的了.</li>
-</ol>
+</ul>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><hr>
 <p>现在国内外的大型网站基本都已经全站启用了<code>Https</code>,虽然相对于<code>Http</code>多了许多用于加密的流程,但为了数据的安全这点牺牲是必要的,<code>Https</code>也将是未来互联网的发展趋势.</p>
 <h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><hr>
@@ -414,9 +409,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -654,9 +649,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -795,9 +790,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -878,9 +873,9 @@
       <category term="Other" scheme="https://sylvanassun.github.io/categories/Algorithms/Other/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -1178,9 +1173,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -1255,9 +1250,9 @@
       <category term="动态规划" scheme="https://sylvanassun.github.io/categories/Algorithms/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="动态规划" scheme="https://sylvanassun.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
@@ -1352,11 +1347,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -1410,11 +1405,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -1466,11 +1461,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -1535,11 +1530,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -1863,13 +1858,13 @@
       <category term="HashTable" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/HashTable/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
-    
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -1941,11 +1936,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2162,11 +2157,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2272,11 +2267,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2428,11 +2423,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2747,11 +2742,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   

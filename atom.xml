@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-08-06T11:49:34.805Z</updated>
+  <updated>2017-08-06T11:59:55.217Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://sylvanassun.github.io/2017/08/06/2017-08-06-DigestHttps/"/>
     <id>https://sylvanassun.github.io/2017/08/06/2017-08-06-DigestHttps/</id>
     <published>2017-08-06T10:00:00.000Z</published>
-    <updated>2017-08-06T11:49:34.805Z</updated>
+    <updated>2017-08-06T11:59:55.217Z</updated>
     
     <content type="html"><![CDATA[<p>在说<code>https</code>之前,我们先了解一下<code>http</code>,以及为什么要使用<code>https</code>.</p>
 <p><code>http(Hyper Text Transfer  Protocol)</code>超文本传输协议是一种用于分布式、协作式和超媒体信息系统的应用层协议,它是<code>TCP/IP</code>的上层协议,同时它也是万维网(万维网不等同于互联网,它只是基于互联网的一个服务)的数据通信的基础.</p>
@@ -48,15 +48,15 @@
 <ol>
 <li><p><code>Alice</code>要与<code>Bob</code>进行通信,他们协定了一组可以公开的质数$p=23$,$g=5$.</p>
 </li>
-<li><p><code>Alice</code>选择了一个不公开的秘密数$a=6$,并计算$A= g^a mod p$($A = 5^6 mod 23 = 8$)并发送给<code>Bob</code>.</p>
+<li><p><code>Alice</code>选择了一个不公开的秘密数$a=6$,并计算$A= {g^a} {mod} {p} = {5^6} {mod} {23}$并发送给<code>Bob</code>.</p>
 </li>
-<li><p><code>Bob</code>选择了一个不公开的秘密数$b=15$,并计算$B = g^b mod p$($B = 5^15 mod 23 = 19$)并发送给<code>Alice</code></p>
+<li><p><code>Bob</code>选择了一个不公开的秘密数$b=15$,并计算$B = {g^b} {mod} {p} = {5^15} {mod} {23}$并发送给<code>Alice</code></p>
 </li>
-<li><p><code>Alice</code> 计算$s = B^a mod p$($s = 19^6 mod 23 = 2$)</p>
+<li><p><code>Alice</code> 计算$S = {B^a} {mod} {p} = {19^6} {mod} {23} = 2$</p>
 </li>
-<li><p><code>Bob</code>计算$s = A^b mod p$($s = 8^15 mod 23 = 2$)</p>
+<li><p><code>Bob</code>计算$S = {A^b} {mod} {p} = {8^15} {mod} {23} = 2$</p>
 </li>
-<li><p><code>Alice</code>与<code>Bob</code>得到了同样的值,因此$g^{ab} mod p = g^{ba} mod p$</p>
+<li><p><code>Alice</code>与<code>Bob</code>得到了同样的值,因此${g^{ab}} {mod} {p} = {g^{ba}} {mod} {p}$</p>
 </li>
 </ol>
 <h3 id="对称加密-非对称加密"><a href="#对称加密-非对称加密" class="headerlink" title="对称加密+非对称加密"></a>对称加密+非对称加密</h3><hr>
@@ -1407,9 +1407,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -1463,9 +1463,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -1532,9 +1532,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -2744,9 +2744,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   

@@ -107,7 +107,7 @@
 <meta property="og:image" content="http://wx2.sinaimg.cn/mw690/63503acbly1fia4nut76kj20l50cht97.jpg">
 <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Diffie-Hellman-Schl%C3%BCsselaustausch.svg/800px-Diffie-Hellman-Schl%C3%BCsselaustausch.svg.png">
 <meta property="og:image" content="http://wx2.sinaimg.cn/mw690/63503acbly1fia7yy31rdj20in0o7wfy.jpg">
-<meta property="og:updated_time" content="2017-08-06T12:15:00.110Z">
+<meta property="og:updated_time" content="2017-08-06T12:20:31.267Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="揭秘HTTPS的&quot;秘密&quot;">
 <meta name="twitter:description" content="在说https之前,我们先了解一下http,以及为什么要使用https. http(Hyper Text Transfer  Protocol)超文本传输协议是一种用于分布式、协作式和超媒体信息系统的应用层协议,它是TCP/IP的上层协议,同时它也是万维网(万维网不等同于互联网,它只是基于互联网的一个服务)的数据通信的基础. http协议是客户端浏览器与其他程序或Web服务器之间交互的应用层通讯协">
@@ -465,11 +465,11 @@
 </li>
 <li><p><code>Alice</code>选择了一个不公开的秘密数$a=6$,并计算$A = {g^a} \; {mod} \; {p} = {5^6} \; {mod} \; {23}  = 8$并发送给<code>Bob</code>.</p>
 </li>
-<li><p><code>Bob</code>选择了一个不公开的秘密数$b=15$,并计算$B = {g^b} \; {mod} \; {p} = {5^15} \; {mod} \; {23} = 19$并发送给<code>Alice</code></p>
+<li><p><code>Bob</code>选择了一个不公开的秘密数$b=15$,并计算$B = {g^b} \; {mod} \; {p} = {5^{15}} \; {mod} \; {23} = 19$并发送给<code>Alice</code></p>
 </li>
 <li><p><code>Alice</code> 计算$S = {B^a} \; {mod} \; {p}  = {19^6} \; {mod} \; {23} = 2$</p>
 </li>
-<li><p><code>Bob</code>计算$S = {A^b} \;  {mod} \; {p} = {8^15} \; {mod} \; {23} = 2$</p>
+<li><p><code>Bob</code>计算$S = {A^b} \;  {mod} \; {p} = {8^{15}} \; {mod} \; {23} = 2$</p>
 </li>
 <li><p><code>Alice</code>与<code>Bob</code>得到了同样的值,因此${g^{ab}} \; {mod} \; {p} = {g^{ba}} \; {mod} \; {p}$</p>
 </li>

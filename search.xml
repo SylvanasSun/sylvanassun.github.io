@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[B树的那点事儿]]></title>
+    <url>%2F2017%2F08%2F13%2F2017-08-13-BTrees%2F</url>
+    <content type="text"><![CDATA[概述 B树(B-Tree)是一种自平衡的树,能够保证数据有序.同时它还保证了在查找、插入、删除等操作时性能都能保持在$O(log\;n)$.需要注意的一点是,B-Tree并不是一棵自平衡的二叉查找树,它拥有多个分叉,且为大块数据的读写操作做了优化,同时它也可以用来描述外部存储(支持对保存在磁盘或者网络上的符号表进行外部查找). 在当今的互联网环境下,数据量已经大到无法想象,而能够在巨型数据集合中快速地进行查找操作是非常重要的,而B-Tree的神奇之处正在于: 只需要使用4~5个指向一小块数据的引用即可有效支持在数百亿甚至更多元素的符号表中进行查找和插入等操作. B-Tree的主要应用在于文件系统与数据库系统,例如Mysql中的InnoDB存储引擎就使用到了B-Tree来实现索引. 本文作者为: SylvanasSun.转载请务必将下面这段话置于文章开头处(保留超链接).本文转发自SylvanasSun Blog,原文链接: https://sylvanassun.github.io/2017/08/13/2017-08-13-BTrees/ 数据表示 我们使用页来表示一块连续的数据,访问一页的数据需要将它读入本地内存.一个页可能是本地计算机上的一个文件,也可能是服务器上的某个文件的一部分等等.页的访问次数(无论读写)即是外部查找算法的成本模型. 首先,构造一棵B-Tree不会将数据保存在树中,而是会构造一棵由键的副本组成的树,每个副本都关联着一条链接.这种方法能够将索引与符号表进行分离,同时我们还需要遵循以下的规定: 选择一个参数M来构造一棵多向树(M一般为偶数),每个节点最多含有M - 1对键和链接. 每个节点最少含有M / 2对键和链接,根节点例外(它最少可以含有2对). .使用M阶的B-Tree来指定M的值,例如: 在一棵4阶B-Tree中,每个节点都含有至少2对至多3对. B-Tree含有两种不同类型的节点,内部节点与外部节点. 内部节点含有与页相关联的键的副本: 每个键都与一个节点相关联(一条链接),以此节点为根的子树中,所有的键都大于等于与此节点关联的键,但小于原内部节点中更大的键(如果存在的话). 外部节点含有指向实际数据的引用: 每个键都对应着实际的值,外部节点就是一张普通的符号表. 12345678910111213141516171819202122232425262728293031323334353637// max children per B-tree node = M - 1// must be even and greater than 2private static final int M = 4;// root of the B-treeprivate Node root;// height of the B-treeprivate int height;// number of key-value paris int the B-treeprivate int N;// B-tree node data typeprivate static final class Node &#123; private int children_length; private Entry[] children = new Entry[M]; // create a node with k children private Node(int k) &#123; children_length = k; &#125;&#125;// internal nodes : only use key and next// external nodes : only use key and valueprivate static class Entry &#123; private Comparable key; private final Object value; private Node next; private Entry(Comparable key, Object value, Node next) &#123; this.key = key; this.value = value; this.next = next; &#125;&#125; 查找 在B-Tree中进行查找操作每次都会结束于一个外部节点.在查找时,从根节点开始,根据被查找的键来选择当前节点中的适当区间并根据对应的链接从一个节点移动到下一层节点.最终,查找过程会到达树底的一个含有键的页(也就是外部节点),如果被查找的键在该页中,查找命中并结束,如果不在,则查找未命中. 12345678910111213141516171819202122232425262728293031public Value get(Key key) &#123; validateKey(key, "argument key to get() is null."); return search(root, key, height);&#125;private Value search(Node x, Key key, int height) &#123; while (x != null) &#123; Entry[] children = x.children; int children_length = x.children_length; // 当树的高度已经递减为0时,也就到达了树的底部(一个外部节点) // 遍历当前节点的每个键进行比较,如果找到则查找命中返回对应的值. if (height == 0) &#123; for (int j = 0; j &lt; children_length; j++) &#123; if (eq(key, children[j].key)) return (Value) children[j].value; &#125; &#125; else &#123; // 当还是内部节点时,根据键来查找适当的区间 for (int j = 0; j &lt; children_length; j++) &#123; if (j + 1 == children_length || less(key, children[j + 1].key)) &#123; // 找到适当的区间后,移动到下一层节点 x = children[j].next; height--; break; &#125; &#125; &#125; &#125; return null;&#125; 插入 插入操作也要先从根节点不断递归地查找到合适的区间,但需要注意一点,如果查找到的外部节点已经满了怎么办呢? 解决方法也很简单,我们允许被插入的节点暂时”溢出”,然后在递归调用自底向上不断地进行分裂.例如:当M为5时,根节点溢出为6-节点,只需要将它分裂为连接了两个3-节点的2-节点.即将一个M-的父节点k分裂为连接着两个(M / 2)-节点的(k + 1)-节点. 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566public void put(Key key, Value value) &#123; validateKey(key, "argument key to put() is null."); Node u = insert(root, key, value, height); N++; if (u == null) return; // need to split root Node t = new Node(2); t.children[0] = new Entry(root.children[0].key, null, root); t.children[1] = new Entry(u.children[0].key, null, u); root = t; height++;&#125;private Node insert(Node x, Key key, Value value, int height) &#123; int j; Entry t = new Entry(key, value, null); Entry[] children = x.children; int children_length = x.children_length; // external node if (height == 0) &#123; for (j = 0; j &lt; children_length; j++) &#123; if (less(key, children[j].key)) break; &#125; &#125; else &#123; // internal node for (j = 0; j &lt; children_length; j++) &#123; if (j + 1 == children_length || less(key, children[j + 1].key)) &#123; // 找到合适的区间后继续递归调用 Node u = insert(children[j++].next, key, value, height - 1); // 如果下一层没有进行过分裂操作,直接返回null if (u == null) return null; t.key = u.children[0].key; t.next = u; break; &#125; &#125; &#125; // 将j之后的元素全部右移(为了腾出j的插入位置) for (int i = children_length; i &gt; j; i--) &#123; children[i] = children[i - 1]; &#125; children[j] = t; x.children_length++; if (x.children_length &lt; M) return null; else return split(x); // 如果空间已满,进行分裂&#125; // 将x分裂为两个含有new_length对键的节点private Node split(Node x) &#123; int new_length = M / 2; Node t = new Node(new_length); x.children_length = new_length; for (int j = 0; j &lt; new_length; j++) t.children[j] = x.children[new_length + j]; return t;&#125; 参考文献 Algorithms, 4th Edition by Robert Sedgewick and Kevin Wayne B-tree - Wikipedia]]></content>
+      <categories>
+        <category>Algorithms</category>
+        <category>数据结构</category>
+        <category>Tree</category>
+      </categories>
+      <tags>
+        <tag>Algorithms</tag>
+        <tag>2017</tag>
+        <tag>数据结构</tag>
+        <tag>Tree</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[揭秘HTTPS的"秘密"]]></title>
     <url>%2F2017%2F08%2F06%2F2017-08-06-DigestHttps%2F</url>
     <content type="text"><![CDATA[在说https之前,我们先了解一下http,以及为什么要使用https. http(Hyper Text Transfer Protocol)超文本传输协议是一种用于分布式、协作式和超媒体信息系统的应用层协议,它是TCP/IP的上层协议,同时它也是万维网(万维网不等同于互联网,它只是基于互联网的一个服务)的数据通信的基础. http协议是客户端浏览器与其他程序或Web服务器之间交互的应用层通讯协议.但它也有一个致命的缺点:http协议是明文传输协议,在传输信息的过程中并没有进行任何加密,通信的双方也没有任何的认证,这是非常不安全的,如果在通信过程中被中间人进行劫持、监听、篡改,会造成个人隐私泄露等严重的安全问题. 举一个现实中的例子来说,假设小李要给小张寄信,如果信件在运输的过程中没有任何安全保护,那么很可能会被邮递员(也就是中间人)窃取其中的内容,甚至于修改内容. https就是用于解决这样的安全问题的,它的全称为Hypertext Transfer Protocol Secure,它在http的基础上添加了SSL(安全套接字层)层来保证传输数据的安全问题. 本文作者为: SylvanasSun.转载请务必将下面这段话置于文章开头处(保留超链接).本文转发自SylvanasSun Blog,原文链接: https://sylvanassun.github.io/2017/08/06/2017-08-06-DigestHttps/ https提供了端对端的加密,而且不仅对数据进行了加密,还对数据完整性提供了保护.不过在讲解https的加密方式之前,我们需要先了解一下加密算法. 对称加密 对称加密的基本思想是: 通信双方使用同一个密钥(或者是两个可以简单地互相推算的密钥)来对明文进行加密与解密. 常见的对称加密算法有DES、3DES、AES、Blowfish、IDEA、RC5、RC6. 对称加密看起来很美好,但是密钥要怎么发送过去呢?如果直接发送过去,被中间人截获了密钥岂不是白费工夫. 非对称加密 非对称加密也叫公开密钥加密,它使用了两个密钥,一个为公钥,一个为私钥,当一个用作于加密的时候,另一个则用作解密. 这两个密钥就算被其他人知道了其中一个也不能凭借它计算出另一个密钥,所以可以公开其中一个密钥(也就是公钥),不公开的密钥为私钥. 如果服务器想发送消息给客户端,只需要用客户端的公钥加密,然后客户端用它自己的私钥进行解密. 常见的非对称加密算法有RSA、DSA、ECDSA、 DH、ECDHE. 我们以DH算法为例,了解一下非对称加密的魅力. Alice要与Bob进行通信,他们协定了一组可以公开的质数$p=23$,$g=5$. Alice选择了一个不公开的秘密数$a=6$,并计算$A = {g^a} \; {mod} \; {p} = {5^6} \; {mod} \; {23} = 8$并发送给Bob. Bob选择了一个不公开的秘密数$b=15$,并计算$B = {g^b} \; {mod} \; {p} = {5^{15}} \; {mod} \; {23} = 19$并发送给Alice Alice 计算$S = {B^a} \; {mod} \; {p} = {19^6} \; {mod} \; {23} = 2$ Bob计算$S = {A^b} \; {mod} \; {p} = {8^{15}} \; {mod} \; {23} = 2$ Alice与Bob得到了同样的值,因此${g^{ab}} \; {mod} \; {p} = {g^{ba}} \; {mod} \; {p}$ 对称加密+非对称加密 尽管非对称加密如此奇妙,但它加解密的效率比对称加密要慢多了.那我们就将对称加密与非对称加密结合起来,取其精华,去其槽粕. 方法很简单,其中一方先自己生成一个对称加密密钥,然后通过非对称加密的方式来发送这个密钥,这样双方之后的通信就可以用对称加密这种高效率的算法进行加解密了. Certificate Authority 对称加密与非对称加密结合使用的方法虽然能够保证了通信过程的安全,但也引发了如下问题: 客户端要如何获取到服务器的公钥? 如果公钥在发送过程被中间人拦截,然后中间人发送自己的公钥给客户端,客户端该如何确认? 解决方法依是通过一个权威的CA(Certificate Authority)证书中心,它来负责颁发证书,这个证书包含了如下等内容: 证书的发布机构. 证书的有效期 公钥 证书所有人 数字签名 数字签名是用来验证数据完整性的,首先将公钥与个人信息用一个Hash算法生成一个消息摘要,Hash算法是不可逆的,且只要内容发生变化,那生成的消息摘要将会截然不同.然后CA再用它的私钥对消息摘要加密,最终形成数字签名. 当客户端接收到证书时,只需要用同样的Hash算法再次生成一个消息摘要,然后用CA的公钥对证书进行解密,之后再对比两个消息摘要就能知道数据有没有被篡改过了. 那么CA的公钥又要从哪里来呢?这似乎陷入了一个鸡生蛋,蛋生鸡的悖论,其实CA也有证书来证明自己,而且CA证书的信用体系就像一棵树的结构,上层节点是信用高的CA同时它也会对底层的CA做信用背书,操作系统中已经内置了一些根证书,所以相当于你已经自动信任了它们(需要注意误安装一些非法或不安全的证书). Https的交互过程 浏览器对服务器发送了一次请求. 服务器发送证书. 浏览器读取证书中的所有人,有效期等信息并进行校验. 浏览器查找操作系统中内置的已经信任的根证书,并对服务器发来的证书进行验证. 如果找不到,浏览器报错,服务器发来的证书是不可信任的. 如果找到,浏览器会从操作系统中取出CA的公钥,然后对服务器发来的证书中的数字签名进行解密. 浏览器使用相同的Hash算法计算出消息摘要,然后对数字签名中的消息摘要进行校对. 如果结果一致,证书合法. 之后浏览器就可以生成对称加密的密钥然后用非对称加密的方式发送给服务器,之后的通信就都是安全的了. 总结 现在国内外的大型网站基本都已经全站启用了Https,虽然相对于Http多了许多用于加密的流程,但为了数据的安全这点牺牲是必要的,Https也将是未来互联网的发展趋势. 参考文献 HTTPS - Wikipedia Public-key cryptography - Wikipedia Diffie–Hellman key exchange - Wikipedia 一个故事讲完https]]></content>
@@ -36,8 +52,8 @@
         <category>Graph</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>Graph</tag>
       </tags>
   </entry>
@@ -50,8 +66,8 @@
         <category>Graph</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>Graph</tag>
       </tags>
   </entry>
@@ -64,8 +80,8 @@
         <category>Graph</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>Graph</tag>
       </tags>
   </entry>
@@ -78,8 +94,8 @@
         <category>Other</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
       </tags>
   </entry>
   <entry>
@@ -91,8 +107,8 @@
         <category>Graph</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>Graph</tag>
       </tags>
   </entry>
@@ -105,8 +121,8 @@
         <category>动态规划</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>动态规划</tag>
       </tags>
   </entry>
@@ -120,8 +136,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -135,9 +151,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
-        <tag>2017</tag>
-        <tag>Algorithms</tag>
         <tag>排序算法</tag>
+        <tag>Algorithms</tag>
+        <tag>2017</tag>
       </tags>
   </entry>
   <entry>
@@ -149,9 +165,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
-        <tag>2017</tag>
-        <tag>Algorithms</tag>
         <tag>排序算法</tag>
+        <tag>Algorithms</tag>
+        <tag>2017</tag>
       </tags>
   </entry>
   <entry>
@@ -163,9 +179,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
-        <tag>2017</tag>
-        <tag>Algorithms</tag>
         <tag>排序算法</tag>
+        <tag>Algorithms</tag>
+        <tag>2017</tag>
       </tags>
   </entry>
   <entry>
@@ -208,9 +224,9 @@
         <category>HashTable</category>
       </categories>
       <tags>
+        <tag>Algorithms</tag>
         <tag>2017</tag>
         <tag>HashTable</tag>
-        <tag>Algorithms</tag>
         <tag>数据结构</tag>
       </tags>
   </entry>
@@ -224,8 +240,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -240,8 +256,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -256,8 +272,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -272,8 +288,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>2017</tag>
         <tag>Algorithms</tag>
+        <tag>2017</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -287,9 +303,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
-        <tag>2017</tag>
-        <tag>Algorithms</tag>
         <tag>排序算法</tag>
+        <tag>Algorithms</tag>
+        <tag>2017</tag>
       </tags>
   </entry>
   <entry>
@@ -317,8 +333,8 @@
         <category>HashTable</category>
       </categories>
       <tags>
-        <tag>HashTable</tag>
         <tag>Algorithms</tag>
+        <tag>HashTable</tag>
         <tag>数据结构</tag>
       </tags>
   </entry>
@@ -375,8 +391,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring</tag>
         <tag>Spring Boot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
@@ -390,8 +406,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring</tag>
         <tag>Spring Boot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
@@ -405,8 +421,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring</tag>
         <tag>Spring Boot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
@@ -420,8 +436,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring</tag>
         <tag>Spring Boot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
@@ -435,8 +451,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring</tag>
         <tag>Spring Boot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
@@ -450,8 +466,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring</tag>
         <tag>Spring Boot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
@@ -465,8 +481,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Spring</tag>
         <tag>Spring Boot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>

@@ -108,7 +108,7 @@
 <meta property="og:image" content="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-04-GBK.png">
 <meta property="og:image" content="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-05-UTF-16-2.png">
 <meta property="og:image" content="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-06-UTF-8.png">
-<meta property="og:updated_time" content="2017-08-21T11:32:08.415Z">
+<meta property="og:updated_time" content="2017-08-21T11:36:35.049Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="编码的那点事儿">
 <meta name="twitter:description" content="什么是编码? 对于普通人来说,编码总是与一些秘密的东西相关联(加密与解密);对于程序员们来说,编码大多数是指一种用来在机器与人之间传递信息的方式. 但从广义上来讲,编码是从一种信息格式转换为另一种信息格式的过程,解码则是编码的逆向过程.接下来举几个使用到编码的例子:   当我们要把想表达的意思通过一种语言表达出来,其实就是在脑海中对信息进行了一次编码,而对方如果也懂得这门语言,那么就可以用这门语">
@@ -479,18 +479,18 @@
 </li>
 <li><p>UTF-8 : <strong><code>UTF-8</code>也是基于<code>Unicode</code>的变长编码表</strong>,它使用<code>1~6</code>个字节来为每个字符进行编码(<code>RFC 3629</code>对<code>UTF-8</code>进行了重新规范,只能使用原来<code>Unicode</code>定义的区域,<code>U+0000~U+10FFFF</code>,也就是说最多只有4个字节),<code>UTF-8</code>完全兼容<code>ASCII</code>,它的编码规则如下:</p>
 <ul>
-<li>在<code>U+0000~U+007F</code>范围内,只需要一个字节(也就是<code>ASCII</code>字符集中的字符).</li>
+<li><p>在<code>U+0000~U+007F</code>范围内,只需要一个字节(也就是<code>ASCII</code>字符集中的字符).</p>
+</li>
+<li><p>在<code>U+0080~U+07FF</code>范围内,需要两个字节(希腊文、阿拉伯文、希伯来文等).</p>
+</li>
+<li><p>在<code>U+0800~U+FFFF</code>范围内,需要三个字节(亚洲汉字等).</p>
+</li>
+<li><p>其他的字符使用四个字节.</p>
+</li>
 </ul>
 </li>
 </ul>
-<pre><code>- 在`U+0080~U+07FF`范围内,需要两个字节(希腊文、阿拉伯文、希伯来文等).
-
-
-- 在`U+0800~U+FFFF`范围内,需要三个字节(亚洲汉字等).
-
-
-- 其他的字符使用四个字节.
-</code></pre><p><img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-06-UTF-8.png" alt=""></p>
+<p><img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-06-UTF-8.png" alt=""></p>
 <h3 id="Java中字符的编解码"><a href="#Java中字符的编解码" class="headerlink" title="Java中字符的编解码"></a>Java中字符的编解码</h3><hr>
 <p><code>Java</code>提供了<code>Charset</code>类来完成对字符的编码与解码,主要使用以下函数: </p>
 <ul>

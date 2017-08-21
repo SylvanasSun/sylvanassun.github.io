@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[编码的那点事儿]]></title>
+    <url>%2F2017%2F08%2F20%2F2017-08-20-Encode%2F</url>
+    <content type="text"><![CDATA[什么是编码? 对于普通人来说,编码总是与一些秘密的东西相关联(加密与解密);对于程序员们来说,编码大多数是指一种用来在机器与人之间传递信息的方式. 但从广义上来讲,编码是从一种信息格式转换为另一种信息格式的过程,解码则是编码的逆向过程.接下来举几个使用到编码的例子: 当我们要把想表达的意思通过一种语言表达出来,其实就是在脑海中对信息进行了一次编码,而对方如果也懂得这门语言,那么就可以用这门语言的解码方法(语法规则)来获得信息(日常的说话交流其实就是在编码与解码). 程序员写程序时,其实就是在将自己的想法通过计算机语言进行编码,而编译器则通过生成抽象语法树,词义分析等操作进行解码,最终交给计算机执行程序(编译器产生的解码结果并不是最终结果,一般为汇编语言,但汇编语言只是CPU指令集的助记符,还需要再进行解码). 计算机只有两种状态(0和1),要想存储和传输多媒体信息,就需要用到编码和解码. 对数据进行压缩,其本质就是以减少自身占用的空间为前提进行重新编码. 了解了编码的含义,我们接下来重点探究Java中的字符编码. 本文作者为: SylvanasSun.转载请务必将下面这段话置于文章开头处(保留超链接).本文首发自SylvanasSun Blog,原文链接: https://sylvanassun.github.io/2017/08/20/2017-08-20-Encode/ 常见的字符集 字符集就是字符与二进制的映射表,每一个字符集都有自己的编码规则,每个字符所占用的字节也不同(支持的字符越多每个字符占用的字节也就越多). ASCII : 美国信息交换标准码(American Standard Code for Information Interchange).学过计算机的都知道大名鼎鼎的ASCII码,它是基于拉丁字母的字符集,总共记有128个字符,主要目的是显示英语.其中每个字符占用一个字节(只用到了低7位). ISO-8859-1 : 它是由国际标准化组织(International Standardization Organization)在ASCII基础上制定的8位字符集(仍然是单字节编码).它在ASCII空置的0xA0-0xFF范围内加入了96个字母与符号,支持了欧洲部分国家的语言. GBK : 如果我们想要让电脑上显示汉字就必须要有支持汉字的字符集,GBK就是这样一个支持汉字的字符集,全称为&lt;&lt;汉字内码扩展规范&gt;&gt;,它的编码方式分为单字节与双字节: 00–7F范围内是第一个字节,与ASCII保持一致,之后的双字节中,前一字节是双字节的第一位(范围在81–FE,不包含80和FF),第二字节的一部分在40–7E,其他部分在80–FE.(这里不再介绍GB2313与GB18030,它们都是互相兼容的.) UTF-16 : UTF-16是Unicode(统一码,一种以支持世界上多国语言为目的的通用字符集)的一种实现方式,它把Unicode的抽象码位映射为2~4个字节来表示,UTF-16是变长编码(UTF-32是真正的定长编码),但在最开始以前UTF-16是用来配合UCS-2(UTF-16的子集,它是定长编码,用2个字节表示所有Unicode字符)使用的,主要原因还是因为当时Unicode只有不到65536个字符,2个字节就足以应对一切了.后来,Unicode支持的字符不断膨胀,2个字节已经不够用了,导致一些只支持UCS-2当做内码的产品很尴尬(Java就是其中之一). ![](http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-05-UTF-16-2.png) UTF-8 : UTF-8也是基于Unicode的变长编码表,它使用1~6个字节来为每个字符进行编码(RFC 3629对UTF-8进行了重新规范,只能使用原来Unicode定义的区域,U+0000~U+10FFFF,也就是说最多只有4个字节),UTF-8完全兼容ASCII,它的编码规则如下: - `U+0000~U+007F`范围内,只需要一个字节(也就是`ASCII`字符集中的字符). - `U+0080~U+07FF`范围内,需要两个字节(希腊文、阿拉伯文、希伯来文等). - `U+0800~U+FFFF`范围内,需要三个字节(亚洲汉字等). - 其他的字符使用四个字节. ![](http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-06-UTF-8.png) Java中字符的编解码 Java提供了Charset类来完成对字符的编码与解码,主要使用以下函数: public static Charset forName(String charsetName) : 这是一个静态工厂函数,它根据传入的字符集名称来返回对应字符集的Charset类. public final ByteBuffer encode(CharBuffer cb) / public final ByteBuffer encode(String str) : 编码函数,它将传入的字符串或者字符序列进行编码,返回的ByteBuffer是一个字节缓冲区. public final CharBuffer decode(ByteBuffer bb) : 解码函数,将传入的字节序列解码为字符序列. 示例代码 1234567891011121314151617181920212223242526272829303132333435363738private static final String text = "Hello,编码!";private static final Charset ASCII = Charset.forName("ASCII");private static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");private static final Charset GBK = Charset.forName("GBK");private static final Charset UTF_16 = Charset.forName("UTF-16");private static final Charset UTF_8 = Charset.forName("UTF-8");private static void encodeAndPrint(Charset charset) &#123; System.out.println(charset.name() + ": "); printHex(text.toCharArray(), charset); System.out.println("----------------------------------");&#125;private static void printHex(char[] chars, Charset charset) &#123; System.out.println("ForEach: "); ByteBuffer byteBuffer; byte[] bytes; if (chars != null) &#123; for (char c : chars) &#123; System.out.print("char: " + Integer.toHexString(c) + " "); // 打印出字符编码后对应的字节 byteBuffer = charset.encode(String.valueOf(c)); bytes = byteBuffer.array(); System.out.print("byte: "); if (bytes != null) &#123; for (byte b : bytes) System.out.print(Integer.toHexString(b &amp; 0xFF) + " "); &#125; System.out.println(); &#125; &#125; System.out.println();&#125; 有的读者可能会对以上代码中的b &amp; 0xFF产生疑惑,这是为了解决符号扩展问题.在Java中,如果一个窄类型强转为一个宽类型时,会对多出来的空位进行符号扩展(如果符号位为1,就补1,为0则补0).只有char类型除外,char是没有符号位的,所以它永远都是补0. 代码中调用了函数Integer.toHexString(),变量b在运算之前就已经被强转为了int类型,为了让数值不受到破坏,我们让b对0xFF进行了与运算,0xFF是一个低八位都为1的值(其他位都为0),而byte的有效范围只在低八位,所以结果为前24位(除符号位)都变为了0,低八位保留了原有的值. 如果不做这项操作,那么b又恰好是个负数的话,那这个强转后的int的前24位都会变为1,这个结果显然已经破坏了原有的值. IO中的字符编码 Reader与Writer是Java中负责字符输入与输出的抽象基类,它们的子类实现了在各种场景中的字符输入输出功能. 在使用Reader与Writer进行IO操作时,需要指定字符集,如果不显式指定的话会默认使用当前环境的字符集,但我还是推荐显式指定一致的字符集,这样才不会出现乱码问题(Reader与Writer指定的字符集不一致或更改了环境导致字符集不一致等). 1234567891011121314151617181920212223242526272829303132333435363738394041424344public static void writeChar(String content, String filename, String charset) &#123; OutputStreamWriter writer = null; try &#123; FileOutputStream outputStream = new FileOutputStream(filename); writer = new OutputStreamWriter(outputStream, charset); writer.write(content); &#125; catch (IOException e) &#123; e.printStackTrace(); &#125; finally &#123; try &#123; if (writer != null) writer.close(); &#125; catch (IOException e) &#123; e.printStackTrace(); &#125; &#125;&#125;public static String readChar(String filename, String charset) &#123; InputStreamReader reader = null; StringBuilder sb = null; try &#123; FileInputStream inputStream = new FileInputStream(filename); reader = new InputStreamReader(inputStream, charset); char[] buf = new char[64]; int count = 0; sb = new StringBuilder(); while ((count = reader.read(buf)) != -1) sb.append(buf, 0, count); &#125; catch (IOException e) &#123; e.printStackTrace(); &#125; finally &#123; try &#123; if (reader != null) reader.close(); &#125; catch (IOException e) &#123; e.printStackTrace(); &#125; &#125; return sb.toString();&#125; Web中的字符编码 在Web开发中,乱码也是经常存在的一个问题,主要体现在请求的参数和返回的响应结果,最头疼的是不同的浏览器的默认编码甚至还不一致. Java以Http的请求与响应抽象出了Request和Response两个对象,只要保持请求与响应的编码一致就能避免乱码问题. Request提供了setCharacterEncoding(String encode)函数来改变请求体的编码,一般通过写一个过滤器来统一对所有请求设置编码. 1request.setCharacterEncoding("UTF-8"); Response提供了setCharacterEncoding(String encode)与setHeader(String name,String value)两个函数,它们都可以设置响应的编码. 123response.setCharacterEncoding("UTF-8");// 设置响应头的编码信息,同时也告知了浏览器该如何解码response.setHeader("Content-Type","text/html;charset=UTF-8"); 还有一种更简便的方式,直接使用Spring提供的CharacterEncodingFilter,该过滤器就是用来统一编码的. 12345678910111213141516&lt;filter&gt; &lt;filter-name&gt;charsetFilter&lt;/filter-name&gt; &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt; &lt;init-param&gt; &lt;param-name&gt;encoding&lt;/param-name&gt; &lt;param-value&gt;UTF-8&lt;/param-value&gt; &lt;/init-param&gt; &lt;init-param&gt; &lt;param-name&gt;forceEncoding&lt;/param-name&gt; &lt;param-value&gt;true&lt;/param-value&gt; &lt;/init-param&gt;&lt;/filter&gt;&lt;filter-mapping&gt; &lt;filter-name&gt;charsetFilter&lt;/filter-name&gt; &lt;url-pattern&gt;*&lt;/url-pattern&gt;&lt;/filter-mapping&gt; CharacterEncodingFilter的实现如下: 1234567891011121314151617181920212223242526public class CharacterEncodingFilter extends OncePerRequestFilter &#123; private String encoding; private boolean forceEncoding = false; public CharacterEncodingFilter() &#123; &#125; public void setEncoding(String encoding) &#123; this.encoding = encoding; &#125; public void setForceEncoding(boolean forceEncoding) &#123; this.forceEncoding = forceEncoding; &#125; protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException &#123; if(this.encoding != null &amp;&amp; (this.forceEncoding || request.getCharacterEncoding() == null)) &#123; request.setCharacterEncoding(this.encoding); if(this.forceEncoding) &#123; response.setCharacterEncoding(this.encoding); &#125; &#125; filterChain.doFilter(request, response); &#125;&#125; 为什么Char在Java中占用两个字节? 众所周知,在Java中一个char类型占用两个字节,那么这是为什么呢?这是因为Java使用了UTF-16当作内码. 内码(Internal Encoding)就是程序内部所使用的编码,主要在于编程语言实现其char和String类型在内存中使用的内部编码.与之相对的就是外码(External Encoding),它是程序与外部交互时使用的字符编码. 值得一提的是,当初UTF-16是配合UCS-2使用的,后来Unicode支持的字符不断增多,UTF-16也不再只当作一个定长的2字节编码使用了,也就是说,Java中的一个char其实并不一定能代表一个完整的UTF-16字符. String.getBytes()可以将该String的内码转换为指定的外码并返回这个编完码的字节数组(无参数版使用当前平台的默认编码). 12345public static void main(String[] args) throws UnsupportedEncodingException &#123; String text = "码"; byte[] bytes = text.getBytes("UTF-8"); System.out.println(bytes.length); // 输出3&#125; Java还规定char与String类型的序列化是使用UTF-8当作外码的,Java中的Class文件中的字符串常量与符号名也都规定使用UTF-8.这种设计是为了平衡运行时的时间效率与外部存储的空间效率所做的取舍. 在SUN JDK6中,有一条命令-XX:+UseCompressedString.该命令可以让String内部存储字符内容可能用byte[]也可能用char[]: 当整个字符串所有字符处于ASCII字符集范围内时,就使用byte[](使用了ASCII编码)来存储,如果有任一字符超过了ASCII的范围,就退回到使用char[](UTF-16编码)来存储.但是这个功能实现的并不理想,所以没有包含在Open JDK6/Open JDK7/Oracle JDK7等后续版本中. JavaScript也使用了UTF-16作为内码,其实现也广泛应用了CompressedString的思想,主流的JavaScript引擎中都会尽可能使用ASCII内码的字符串,不过这些细节都是对外隐藏的.. 参考文献 ASCII - Wikipedia ISO/IEC 8859-1 - Wikipedia GBK - Wikipedia UTF-16 - Wikipedia UTF-8 - Wikipedia Java 语言中一个字符占几个字节？ - RednaxelaFX的回答]]></content>
+      <categories>
+        <category>后端</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>2017</tag>
+        <tag>后端</tag>
+        <tag>编码</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[B树的那点事儿]]></title>
     <url>%2F2017%2F08%2F13%2F2017-08-13-BTrees%2F</url>
     <content type="text"><![CDATA[概述 B树(B-Tree)是一种自平衡的树,能够保证数据有序.同时它还保证了在查找、插入、删除等操作时性能都能保持在$O(log\;n)$.需要注意的一点是,B-Tree并不是一棵自平衡的二叉查找树,它拥有多个分叉,且为大块数据的读写操作做了优化,同时它也可以用来描述外部存储(支持对保存在磁盘或者网络上的符号表进行外部查找). 在当今的互联网环境下,数据量已经大到无法想象,而能够在巨型数据集合中快速地进行查找操作是非常重要的,而B-Tree的神奇之处正在于: 只需要使用4~5个指向一小块数据的引用即可有效支持在数百亿甚至更多元素的符号表中进行查找和插入等操作. B-Tree的主要应用在于文件系统与数据库系统,例如Mysql中的InnoDB存储引擎就使用到了B-Tree来实现索引. 本文作者为: SylvanasSun.转载请务必将下面这段话置于文章开头处(保留超链接).本文转发自SylvanasSun Blog,原文链接: https://sylvanassun.github.io/2017/08/13/2017-08-13-BTrees/ 数据表示 我们使用页来表示一块连续的数据,访问一页的数据需要将它读入本地内存.一个页可能是本地计算机上的一个文件,也可能是服务器上的某个文件的一部分等等.页的访问次数(无论读写)即是外部查找算法的成本模型. 首先,构造一棵B-Tree不会将数据保存在树中,而是会构造一棵由键的副本组成的树,每个副本都关联着一条链接.这种方法能够将索引与符号表进行分离,同时我们还需要遵循以下的规定: 选择一个参数M来构造一棵多向树(M一般为偶数),每个节点最多含有M - 1对键和链接. 每个节点最少含有M / 2对键和链接,根节点例外(它最少可以含有2对). .使用M阶的B-Tree来指定M的值,例如: 在一棵4阶B-Tree中,每个节点都含有至少2对至多3对. B-Tree含有两种不同类型的节点,内部节点与外部节点. 内部节点含有与页相关联的键的副本: 每个键都与一个节点相关联(一条链接),以此节点为根的子树中,所有的键都大于等于与此节点关联的键,但小于原内部节点中更大的键(如果存在的话). 外部节点含有指向实际数据的引用: 每个键都对应着实际的值,外部节点就是一张普通的符号表. 12345678910111213141516171819202122232425262728293031323334353637// max children per B-tree node = M - 1// must be even and greater than 2private static final int M = 4;// root of the B-treeprivate Node root;// height of the B-treeprivate int height;// number of key-value paris int the B-treeprivate int N;// B-tree node data typeprivate static final class Node &#123; private int children_length; private Entry[] children = new Entry[M]; // create a node with k children private Node(int k) &#123; children_length = k; &#125;&#125;// internal nodes : only use key and next// external nodes : only use key and valueprivate static class Entry &#123; private Comparable key; private final Object value; private Node next; private Entry(Comparable key, Object value, Node next) &#123; this.key = key; this.value = value; this.next = next; &#125;&#125; 查找 在B-Tree中进行查找操作每次都会结束于一个外部节点.在查找时,从根节点开始,根据被查找的键来选择当前节点中的适当区间并根据对应的链接从一个节点移动到下一层节点.最终,查找过程会到达树底的一个含有键的页(也就是外部节点),如果被查找的键在该页中,查找命中并结束,如果不在,则查找未命中. 12345678910111213141516171819202122232425262728293031public Value get(Key key) &#123; validateKey(key, "argument key to get() is null."); return search(root, key, height);&#125;private Value search(Node x, Key key, int height) &#123; while (x != null) &#123; Entry[] children = x.children; int children_length = x.children_length; // 当树的高度已经递减为0时,也就到达了树的底部(一个外部节点) // 遍历当前节点的每个键进行比较,如果找到则查找命中返回对应的值. if (height == 0) &#123; for (int j = 0; j &lt; children_length; j++) &#123; if (eq(key, children[j].key)) return (Value) children[j].value; &#125; &#125; else &#123; // 当还是内部节点时,根据键来查找适当的区间 for (int j = 0; j &lt; children_length; j++) &#123; if (j + 1 == children_length || less(key, children[j + 1].key)) &#123; // 找到适当的区间后,移动到下一层节点 x = children[j].next; height--; break; &#125; &#125; &#125; &#125; return null;&#125; 插入 插入操作也要先从根节点不断递归地查找到合适的区间,但需要注意一点,如果查找到的外部节点已经满了怎么办呢? 解决方法也很简单,我们允许被插入的节点暂时”溢出”,然后在递归调用自底向上不断地进行分裂.例如:当M为5时,根节点溢出为6-节点,只需要将它分裂为连接了两个3-节点的2-节点.即将一个M-的父节点k分裂为连接着两个(M / 2)-节点的(k + 1)-节点. 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566public void put(Key key, Value value) &#123; validateKey(key, "argument key to put() is null."); Node u = insert(root, key, value, height); N++; if (u == null) return; // need to split root Node t = new Node(2); t.children[0] = new Entry(root.children[0].key, null, root); t.children[1] = new Entry(u.children[0].key, null, u); root = t; height++;&#125;private Node insert(Node x, Key key, Value value, int height) &#123; int j; Entry t = new Entry(key, value, null); Entry[] children = x.children; int children_length = x.children_length; // external node if (height == 0) &#123; for (j = 0; j &lt; children_length; j++) &#123; if (less(key, children[j].key)) break; &#125; &#125; else &#123; // internal node for (j = 0; j &lt; children_length; j++) &#123; if (j + 1 == children_length || less(key, children[j + 1].key)) &#123; // 找到合适的区间后继续递归调用 Node u = insert(children[j++].next, key, value, height - 1); // 如果下一层没有进行过分裂操作,直接返回null if (u == null) return null; t.key = u.children[0].key; t.next = u; break; &#125; &#125; &#125; // 将j之后的元素全部右移(为了腾出j的插入位置) for (int i = children_length; i &gt; j; i--) &#123; children[i] = children[i - 1]; &#125; children[j] = t; x.children_length++; if (x.children_length &lt; M) return null; else return split(x); // 如果空间已满,进行分裂&#125; // 将x分裂为两个含有new_length对键的节点private Node split(Node x) &#123; int new_length = M / 2; Node t = new Node(new_length); x.children_length = new_length; for (int j = 0; j &lt; new_length; j++) t.children[j] = x.children[new_length + j]; return t;&#125; 参考文献 Algorithms, 4th Edition by Robert Sedgewick and Kevin Wayne B-tree - Wikipedia]]></content>
@@ -10,8 +25,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -52,8 +67,8 @@
         <category>Graph</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>Graph</tag>
       </tags>
   </entry>
@@ -66,8 +81,8 @@
         <category>Graph</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>Graph</tag>
       </tags>
   </entry>
@@ -80,8 +95,8 @@
         <category>Graph</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>Graph</tag>
       </tags>
   </entry>
@@ -94,8 +109,8 @@
         <category>Other</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
       </tags>
   </entry>
   <entry>
@@ -107,8 +122,8 @@
         <category>Graph</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>Graph</tag>
       </tags>
   </entry>
@@ -121,8 +136,8 @@
         <category>动态规划</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>动态规划</tag>
       </tags>
   </entry>
@@ -136,8 +151,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -151,9 +166,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
-        <tag>排序算法</tag>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
+        <tag>排序算法</tag>
       </tags>
   </entry>
   <entry>
@@ -165,9 +180,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
-        <tag>排序算法</tag>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
+        <tag>排序算法</tag>
       </tags>
   </entry>
   <entry>
@@ -179,9 +194,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
-        <tag>排序算法</tag>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
+        <tag>排序算法</tag>
       </tags>
   </entry>
   <entry>
@@ -224,9 +239,9 @@
         <category>HashTable</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
         <tag>HashTable</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
       </tags>
   </entry>
@@ -240,8 +255,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -256,8 +271,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -272,8 +287,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -288,8 +303,8 @@
         <category>Tree</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
@@ -303,9 +318,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
-        <tag>排序算法</tag>
-        <tag>Algorithms</tag>
         <tag>2017</tag>
+        <tag>Algorithms</tag>
+        <tag>排序算法</tag>
       </tags>
   </entry>
   <entry>
@@ -333,8 +348,8 @@
         <category>HashTable</category>
       </categories>
       <tags>
-        <tag>Algorithms</tag>
         <tag>HashTable</tag>
+        <tag>Algorithms</tag>
         <tag>数据结构</tag>
       </tags>
   </entry>

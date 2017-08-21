@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-08-13T04:43:26.309Z</updated>
+  <updated>2017-08-21T11:02:43.781Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -14,6 +14,152 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>编码的那点事儿</title>
+    <link href="https://sylvanassun.github.io/2017/08/20/2017-08-20-Encode/"/>
+    <id>https://sylvanassun.github.io/2017/08/20/2017-08-20-Encode/</id>
+    <published>2017-08-20T04:00:00.000Z</published>
+    <updated>2017-08-21T11:02:43.781Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-01.png" alt=""></p>
+<h3 id="什么是编码"><a href="#什么是编码" class="headerlink" title="什么是编码?"></a>什么是编码?</h3><hr>
+<p>对于普通人来说,编码总是与一些秘密的东西相关联(加密与解密);对于程序员们来说,编码大多数是指一种用来在机器与人之间传递信息的方式.</p>
+<p>但从广义上来讲,<strong>编码是从一种信息格式转换为另一种信息格式的过程,解码则是编码的逆向过程</strong>.接下来举几个使用到编码的例子: </p>
+<ul>
+<li><p>当我们要把想表达的意思通过一种语言表达出来,其实就是在脑海中对信息进行了一次编码,而对方如果也懂得这门语言,那么就可以用这门语言的解码方法(语法规则)来获得信息(日常的说话交流其实就是在编码与解码).</p>
+</li>
+<li><p>程序员写程序时,其实就是在将自己的想法通过计算机语言进行编码,而编译器则通过生成抽象语法树,词义分析等操作进行解码,最终交给计算机执行程序(编译器产生的解码结果并不是最终结果,一般为汇编语言,但汇编语言只是CPU指令集的助记符,还需要再进行解码).</p>
+</li>
+</ul>
+<ul>
+<li>计算机只有两种状态(0和1),要想存储和传输多媒体信息,就需要用到编码和解码.</li>
+</ul>
+<ul>
+<li>对数据进行压缩,其本质就是以减少自身占用的空间为前提进行重新编码.</li>
+</ul>
+<p>了解了编码的含义,我们接下来重点探究<code>Java</code>中的字符编码.</p>
+<blockquote>
+<p>本文作者为: <a href="https://github.com/SylvanasSun/" target="_blank" rel="external">SylvanasSun</a>.转载请务必将下面这段话置于文章开头处(保留超链接).<br>本文首发自<a href="https://sylvanassun.github.io/">SylvanasSun Blog</a>,原文链接: <a href="https://sylvanassun.github.io/2017/08/20/2017-08-20-Encode/">https://sylvanassun.github.io/2017/08/20/2017-08-20-Encode/</a></p>
+</blockquote>
+<h3 id="常见的字符集"><a href="#常见的字符集" class="headerlink" title="常见的字符集"></a>常见的字符集</h3><hr>
+<p><strong>字符集就是字符与二进制的映射表</strong>,每一个字符集都有自己的编码规则,每个字符所占用的字节也不同(支持的字符越多每个字符占用的字节也就越多).</p>
+<ul>
+<li><p>ASCII : 美国信息交换标准码(American Standard Code for Information Interchange).学过计算机的都知道大名鼎鼎的<code>ASCII</code>码,它是基于拉丁字母的字符集,总共记有128个字符,主要目的是显示英语.其中每个字符占用一个字节(只用到了低7位).</p>
+<p> <img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-02-ASCII.png" alt=""></p>
+</li>
+</ul>
+<ul>
+<li><p>ISO-8859-1 : 它是由国际标准化组织(International Standardization Organization)在<code>ASCII</code>基础上制定的8位字符集(仍然是单字节编码).它在<code>ASCII</code>空置的<code>0xA0-0xFF</code>范围内加入了96个字母与符号,支持了欧洲部分国家的语言.</p>
+<p> <img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-03-ISO-8859-1.png" alt=""></p>
+</li>
+</ul>
+<ul>
+<li><p>GBK : 如果我们想要让电脑上显示汉字就必须要有支持汉字的字符集,GBK就是这样一个支持汉字的字符集,全称为&lt;&lt;汉字内码扩展规范&gt;&gt;,它的编码方式分为单字节与双字节: <code>00–7F</code>范围内是第一个字节,与<code>ASCII</code>保持一致,之后的双字节中,前一字节是双字节的第一位(范围在<code>81–FE</code>,不包含<code>80</code>和<code>FF</code>),第二字节的一部分在<code>40–7E</code>,其他部分在<code>80–FE</code>.(这里不再介绍<code>GB2313</code>与<code>GB18030</code>,它们都是互相兼容的.)</p>
+<p> <img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-04-GBK.png" alt=""></p>
+</li>
+<li><p>UTF-16 : <code>UTF-16</code>是<code>Unicode(统一码,一种以支持世界上多国语言为目的的通用字符集)</code>的一种实现方式,它把<code>Unicode</code>的抽象码位<strong>映射为<code>2~4</code>个字节来表示</strong>,<strong><code>UTF-16</code>是变长编码(<code>UTF-32是真正的定长编码</code>)</strong>,但在最开始以前<code>UTF-16</code>是用来配合<code>UCS-2(UTF-16的子集,它是定长编码,用2个字节表示所有Unicode字符)</code>使用的,主要原因还是因为当时<code>Unicode</code>只有不到65536个字符,2个字节就足以应对一切了.后来,<code>Unicode</code>支持的字符不断膨胀,2个字节已经不够用了,导致一些只支持<code>UCS-2</code>当做内码的产品很尴尬(<code>Java</code>就是其中之一).</p>
+</li>
+</ul>
+<pre><code>![](http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-05-UTF-16-2.png)
+</code></pre><ul>
+<li>UTF-8 : <strong><code>UTF-8</code>也是基于<code>Unicode</code>的变长编码表</strong>,它使用<code>1~6</code>个字节来为每个字符进行编码(<code>RFC 3629</code>对<code>UTF-8</code>进行了重新规范,只能使用原来<code>Unicode</code>定义的区域,<code>U+0000~U+10FFFF</code>,也就是说最多只有4个字节),<code>UTF-8</code>完全兼容<code>ASCII</code>,它的编码规则如下:</li>
+</ul>
+<pre><code> - `U+0000~U+007F`范围内,只需要一个字节(也就是`ASCII`字符集中的字符).
+
+
+ - `U+0080~U+07FF`范围内,需要两个字节(希腊文、阿拉伯文、希伯来文等).
+
+
+ - `U+0800~U+FFFF`范围内,需要三个字节(亚洲汉字等).
+
+
+ - 其他的字符使用四个字节.
+
+
+![](http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-06-UTF-8.png)
+</code></pre><h3 id="Java中字符的编解码"><a href="#Java中字符的编解码" class="headerlink" title="Java中字符的编解码"></a>Java中字符的编解码</h3><hr>
+<p><code>Java</code>提供了<code>Charset</code>类来完成对字符的编码与解码,主要使用以下函数: </p>
+<ul>
+<li><code>public static Charset forName(String charsetName)</code> : 这是一个静态工厂函数,它根据传入的字符集名称来返回对应字符集的<code>Charset</code>类.</li>
+</ul>
+<ul>
+<li><code>public final ByteBuffer encode(CharBuffer cb) / public final ByteBuffer encode(String str)</code> : 编码函数,它将传入的字符串或者字符序列进行编码,返回的<code>ByteBuffer</code>是一个字节缓冲区.</li>
+</ul>
+<ul>
+<li><code>public final CharBuffer decode(ByteBuffer bb)</code> : 解码函数,将传入的字节序列解码为字符序列.</li>
+</ul>
+<h4 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h4><hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String text = <span class="string">"Hello,编码!"</span>;</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Charset ASCII = Charset.forName(<span class="string">"ASCII"</span>);</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Charset ISO_8859_1 = Charset.forName(<span class="string">"ISO-8859-1"</span>);</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Charset GBK = Charset.forName(<span class="string">"GBK"</span>);</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Charset UTF_16 = Charset.forName(<span class="string">"UTF-16"</span>);</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Charset UTF_8 = Charset.forName(<span class="string">"UTF-8"</span>);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">encodeAndPrint</span><span class="params">(Charset charset)</span> </span>&#123;</div><div class="line">	System.out.println(charset.name() + <span class="string">": "</span>);</div><div class="line">	printHex(text.toCharArray(), charset);</div><div class="line">	System.out.println(<span class="string">"----------------------------------"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printHex</span><span class="params">(<span class="keyword">char</span>[] chars, Charset charset)</span> </span>&#123;</div><div class="line">	System.out.println(<span class="string">"ForEach: "</span>);</div><div class="line">	ByteBuffer byteBuffer;</div><div class="line">	<span class="keyword">byte</span>[] bytes;</div><div class="line">	<span class="keyword">if</span> (chars != <span class="keyword">null</span>) &#123;</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">char</span> c : chars) &#123;</div><div class="line">			System.out.print(<span class="string">"char: "</span> + Integer.toHexString(c) + <span class="string">" "</span>);</div><div class="line">			<span class="comment">// 打印出字符编码后对应的字节</span></div><div class="line">			byteBuffer = charset.encode(String.valueOf(c));</div><div class="line">			bytes = byteBuffer.array();</div><div class="line">			System.out.print(<span class="string">"byte: "</span>);</div><div class="line">			<span class="keyword">if</span> (bytes != <span class="keyword">null</span>) &#123;</div><div class="line">				<span class="keyword">for</span> (<span class="keyword">byte</span> b : bytes)</div><div class="line">					System.out.print(Integer.toHexString(b &amp; <span class="number">0xFF</span>) + <span class="string">" "</span>);</div><div class="line">			&#125;</div><div class="line">			System.out.println();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	System.out.println();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>有的读者可能会对以上代码中的<code>b &amp; 0xFF</code>产生疑惑,这是为了解决符号扩展问题.在<code>Java</code>中,<strong>如果一个窄类型强转为一个宽类型时,会对多出来的空位进行符号扩展(如果符号位为1,就补1,为0则补0)</strong>.只有<code>char</code>类型除外,<code>char</code>是没有符号位的,所以它永远都是补0.</p>
+<p>代码中调用了函数<code>Integer.toHexString()</code>,变量<code>b</code>在运算之前就已经被强转为了<code>int</code>类型,为了让数值不受到破坏,我们让<code>b</code>对<code>0xFF</code>进行了与运算,<code>0xFF</code>是一个低八位都为1的值(其他位都为0),而<code>byte</code>的有效范围只在低八位,所以结果为前24位(除符号位)都变为了0,低八位保留了原有的值.</p>
+<p>如果不做这项操作,那么<code>b</code>又恰好是个负数的话,那这个强转后的<code>int</code>的前24位都会变为1,这个结果显然已经破坏了原有的值.</p>
+<h3 id="IO中的字符编码"><a href="#IO中的字符编码" class="headerlink" title="IO中的字符编码"></a>IO中的字符编码</h3><hr>
+<p><code>Reader</code>与<code>Writer</code>是<code>Java</code>中负责字符输入与输出的抽象基类,它们的子类实现了在各种场景中的字符输入输出功能.</p>
+<p>在使用<code>Reader</code>与<code>Writer</code>进行<code>IO</code>操作时,需要指定字符集,如果不显式指定的话会默认使用当前环境的字符集,但我还是推荐显式指定<strong>一致的字符集</strong>,这样才不会出现乱码问题(<code>Reader</code>与<code>Writer</code>指定的字符集不一致或更改了环境导致字符集不一致等).</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeChar</span><span class="params">(String content, String filename, String charset)</span> </span>&#123;</div><div class="line">	OutputStreamWriter writer = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		FileOutputStream outputStream = <span class="keyword">new</span> FileOutputStream(filename);</div><div class="line">		writer = <span class="keyword">new</span> OutputStreamWriter(outputStream, charset);</div><div class="line">		writer.write(content);</div><div class="line">	&#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">		e.printStackTrace();</div><div class="line">	&#125; <span class="keyword">finally</span> &#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">if</span> (writer != <span class="keyword">null</span>)</div><div class="line">				writer.close();</div><div class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">readChar</span><span class="params">(String filename, String charset)</span> </span>&#123;</div><div class="line">	InputStreamReader reader = <span class="keyword">null</span>;</div><div class="line">	StringBuilder sb = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		FileInputStream inputStream = <span class="keyword">new</span> FileInputStream(filename);</div><div class="line">		reader = <span class="keyword">new</span> InputStreamReader(inputStream, charset);</div><div class="line">		<span class="keyword">char</span>[] buf = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">64</span>];</div><div class="line">		<span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line">		sb = <span class="keyword">new</span> StringBuilder();</div><div class="line">		<span class="keyword">while</span> ((count = reader.read(buf)) != -<span class="number">1</span>)</div><div class="line">			sb.append(buf, <span class="number">0</span>, count);</div><div class="line">	&#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">		e.printStackTrace();</div><div class="line">	&#125; <span class="keyword">finally</span> &#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">if</span> (reader != <span class="keyword">null</span>)</div><div class="line">				reader.close();</div><div class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> sb.toString();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Web中的字符编码"><a href="#Web中的字符编码" class="headerlink" title="Web中的字符编码"></a>Web中的字符编码</h3><hr>
+<p>在<code>Web</code>开发中,乱码也是经常存在的一个问题,主要体现在请求的参数和返回的响应结果,最头疼的是不同的浏览器的默认编码甚至还不一致.</p>
+<p><code>Java</code>以<code>Http</code>的请求与响应抽象出了<code>Request</code>和<code>Response</code>两个对象,只要保持<strong>请求与响应的编码一致</strong>就能避免乱码问题.</p>
+<p><code>Request</code>提供了<code>setCharacterEncoding(String encode)</code>函数来改变请求体的编码,一般通过写一个过滤器来统一对所有请求设置编码.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">request.setCharacterEncoding(<span class="string">"UTF-8"</span>);</div></pre></td></tr></table></figure>
+<p><code>Response</code>提供了<code>setCharacterEncoding(String encode)</code>与<code>setHeader(String name,String value)</code>两个函数,它们都可以设置响应的编码.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">response.setCharacterEncoding(<span class="string">"UTF-8"</span>);</div><div class="line"><span class="comment">// 设置响应头的编码信息,同时也告知了浏览器该如何解码</span></div><div class="line">response.setHeader(<span class="string">"Content-Type"</span>,<span class="string">"text/html;charset=UTF-8"</span>);</div></pre></td></tr></table></figure>
+<p>还有一种更简便的方式,直接使用<code>Spring</code>提供的<code>CharacterEncodingFilter</code>,该过滤器就是用来统一编码的.</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>charsetFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.springframework.web.filter.CharacterEncodingFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>encoding<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>forceEncoding<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>charsetFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>CharacterEncodingFilter</code>的实现如下: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CharacterEncodingFilter</span> <span class="keyword">extends</span> <span class="title">OncePerRequestFilter</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> String encoding;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> forceEncoding = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CharacterEncodingFilter</span><span class="params">()</span> </span>&#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEncoding</span><span class="params">(String encoding)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.encoding = encoding;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setForceEncoding</span><span class="params">(<span class="keyword">boolean</span> forceEncoding)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.forceEncoding = forceEncoding;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doFilterInternal</span><span class="params">(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</div><div class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.encoding != <span class="keyword">null</span> &amp;&amp; (<span class="keyword">this</span>.forceEncoding || request.getCharacterEncoding() == <span class="keyword">null</span>)) &#123;</div><div class="line">            request.setCharacterEncoding(<span class="keyword">this</span>.encoding);</div><div class="line">            <span class="keyword">if</span>(<span class="keyword">this</span>.forceEncoding) &#123;</div><div class="line">                response.setCharacterEncoding(<span class="keyword">this</span>.encoding);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        filterChain.doFilter(request, response);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="为什么Char在Java中占用两个字节"><a href="#为什么Char在Java中占用两个字节" class="headerlink" title="为什么Char在Java中占用两个字节?"></a>为什么Char在Java中占用两个字节?</h3><hr>
+<p>众所周知,在<code>Java</code>中一个<code>char</code>类型占用两个字节,那么这是为什么呢?这是因为<code>Java</code>使用了<code>UTF-16</code>当作内码.</p>
+<p><strong>内码(<code>Internal Encoding</code>)就是程序内部所使用的编码</strong>,主要在于编程语言实现其<code>char</code>和<code>String</code>类型在内存中使用的内部编码.与之相对的就是<strong>外码(<code>External Encoding</code>),它是程序与外部交互时使用的字符编码</strong>.</p>
+<p>值得一提的是,当初<code>UTF-16</code>是配合<code>UCS-2</code>使用的,后来<code>Unicode</code>支持的字符不断增多,<code>UTF-16</code>也不再只当作一个定长的2字节编码使用了,也就是说,<strong><code>Java</code>中的一个<code>char</code>其实并不一定能代表一个完整的<code>UTF-16</code>字符.</strong></p>
+<p><code>String.getBytes()</code>可以将该String的内码转换为指定的外码并返回这个编完码的字节数组(无参数版使用当前平台的默认编码).</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> UnsupportedEncodingException </span>&#123;</div><div class="line">	String text = <span class="string">"码"</span>;</div><div class="line">	<span class="keyword">byte</span>[] bytes = text.getBytes(<span class="string">"UTF-8"</span>); </div><div class="line">	System.out.println(bytes.length); <span class="comment">// 输出3</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>Java</code>还规定<code>char</code>与<code>String</code>类型的序列化是使用<code>UTF-8</code>当作外码的,<code>Java</code>中的<code>Class</code>文件中的字符串常量与符号名也都规定使用<code>UTF-8</code>.这种设计是为了平衡运行时的时间效率与外部存储的空间效率所做的取舍.</p>
+<p>在<code>SUN JDK6</code>中,有一条命令<code>-XX:+UseCompressedString</code>.该命令可以让<code>String</code>内部存储字符内容可能用<code>byte[]</code>也可能用<code>char[]</code>: 当整个字符串所有字符处于<code>ASCII</code>字符集范围内时,就使用<code>byte[]</code>(使用了<code>ASCII</code>编码)来存储,如果有任一字符超过了<code>ASCII</code>的范围,就退回到使用<code>char[]</code>(<code>UTF-16</code>编码)来存储.但是这个功能实现的并不理想,所以没有包含在<code>Open JDK6</code>/<code>Open JDK7</code>/<code>Oracle JDK7</code>等后续版本中.</p>
+<p><code>JavaScript</code>也使用了<code>UTF-16</code>作为内码,其实现也广泛应用了<code>CompressedString</code>的思想,主流的<code>JavaScript</code>引擎中都会尽可能使用<code>ASCII</code>内码的字符串,不过这些细节都是对外隐藏的..</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><hr>
+<ul>
+<li><p><a href="https://en.wikipedia.org/wiki/ASCII" target="_blank" rel="external">ASCII - Wikipedia</a></p>
+</li>
+<li><p><a href="https://en.wikipedia.org/wiki/ISO/IEC_8859-1" target="_blank" rel="external">ISO/IEC 8859-1 - Wikipedia</a></p>
+</li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/GBK" target="_blank" rel="external">GBK - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/UTF-16" target="_blank" rel="external">UTF-16 - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/UTF-8" target="_blank" rel="external">UTF-8 - Wikipedia</a></li>
+</ul>
+<ul>
+<li><a href="https://www.zhihu.com/question/27562173/answer/37188642" target="_blank" rel="external">Java 语言中一个字符占几个字节？ - RednaxelaFX的回答</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-01.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;什么是编码&quot;&gt;&lt;a href=&quot;#什么是编码&quot; class=&quot;headerlink&quot; title
+    
+    </summary>
+    
+      <category term="后端" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/"/>
+    
+      <category term="Java" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/Java/"/>
+    
+    
+      <category term="Java" scheme="https://sylvanassun.github.io/tags/Java/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="后端" scheme="https://sylvanassun.github.io/tags/%E5%90%8E%E7%AB%AF/"/>
+    
+      <category term="编码" scheme="https://sylvanassun.github.io/tags/%E7%BC%96%E7%A0%81/"/>
+    
+  </entry>
   
   <entry>
     <title>B树的那点事儿</title>
@@ -82,9 +228,9 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
@@ -486,9 +632,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -726,9 +872,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -867,9 +1013,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -950,9 +1096,9 @@
       <category term="Other" scheme="https://sylvanassun.github.io/categories/Algorithms/Other/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -1250,9 +1396,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -1327,9 +1473,9 @@
       <category term="动态规划" scheme="https://sylvanassun.github.io/categories/Algorithms/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="动态规划" scheme="https://sylvanassun.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
@@ -1424,9 +1570,9 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
@@ -1482,11 +1628,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -1538,11 +1684,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -1607,11 +1753,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
@@ -1935,11 +2081,11 @@
       <category term="HashTable" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/HashTable/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
@@ -2013,9 +2159,9 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
@@ -2234,9 +2380,9 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
@@ -2344,165 +2490,9 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
-      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>     《Algorithms,4th Edition》读书笔记-二叉查找树</title>
-    <link href="https://sylvanassun.github.io/2017/03/26/2017-3-26-binary_search_tree/"/>
-    <id>https://sylvanassun.github.io/2017/03/26/2017-3-26-binary_search_tree/</id>
-    <published>2017-03-26T10:00:00.000Z</published>
-    <updated>2017-07-11T06:59:44.425Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
-<p>二叉查找树是一颗<strong>有序的二叉树</strong>,它有以下性质:</p>
-<ol>
-<li>若任意节点的左子树不为空,则<strong>左子树上所有节点的值均小于它的根节点的值</strong>.</li>
-</ol>
-<ol>
-<li>若任意节点的右子树不为空,则<strong>右子树上所有节点的值均大于它的根节点的值</strong>.</li>
-</ol>
-<ol>
-<li>可以将<strong>每个链接看做指向另一颗二叉查找树</strong>,而这棵树的根节点就是被指向的节点.</li>
-</ol>
-<ol>
-<li>没有键值相等的节点.</li>
-</ol>
-<p><img src="http://algs4.cs.princeton.edu/32bst/images/binary-tree-anatomy.png" alt=""> </p>
-<p><img src="http://algs4.cs.princeton.edu/32bst/images/bst-anatomy.png" alt=""></p>
-<p>使用二叉查找树实现的符号表结合了<strong>链表插入的灵活性和有序数组查找的高效性</strong>.通常采取二叉链表作为存储结构.</p>
-<p>每个节点都含有一个键、一个值、一条左链接、一条右链接和一个节点计数器(用于统计其所有子节点数).<strong>左链接指向一棵由小于该节点的所有键组成的二叉查找树,右链接指向一棵由大于该节点的所有键组成的二叉查找树.</strong></p>
-<p>如果将一棵二叉查找树的所有键投影到一条直线上,保证一个节点的<strong>左子树中的键出现在它的左边</strong>,<strong>右子树种的键出现在它的右边</strong>,那么我们一定<strong>可以得到一条有序的键列</strong>.</p>
-<p>可以说二叉查找树和快速排序很相似.树的根节点就是快速排序中的第一个<code>基准数(切分元素)</code>,左侧的键都比它小,右侧的键都比它大.</p>
-<h3 id="基本实现"><a href="#基本实现" class="headerlink" title="基本实现"></a>基本实现</h3><hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BinarySearchTree</span>&lt;<span class="title">K</span> <span class="keyword">extends</span> <span class="title">Comparable</span>&lt;<span class="title">K</span>&gt;, <span class="title">V</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> Node root; <span class="comment">// root node</span></div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</div><div class="line">        <span class="keyword">private</span> K key;</div><div class="line">        <span class="keyword">private</span> V value;</div><div class="line">        <span class="keyword">private</span> Node left, right; <span class="comment">// left and right subtree</span></div><div class="line">        <span class="keyword">private</span> <span class="keyword">int</span> size; <span class="comment">// number of nodes in subtree</span></div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(K key, V value, <span class="keyword">int</span> size)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.key = key;</div><div class="line">            <span class="keyword">this</span>.value = value;</div><div class="line">            <span class="keyword">this</span>.size = size;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	<span class="comment">/**</span></div><div class="line">     * Returns true if this symbol table is empty.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; is this symbol table is empty, &#123;<span class="doctag">@code</span> false&#125; otherwise.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> size() == <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Returns the number of key-value pairs in this symbol table.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> the number of key-value pairs in this symbol table.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> size(root);</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	<span class="comment">// return number of key-value pairs in binary search tree rooted at x</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">        <span class="keyword">else</span> <span class="keyword">return</span> x.size;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在以上代码中,使用私有嵌套类<code>Node</code>来表示一个二叉链表,每个<code>Node</code>对象都是一棵含有N个节点的子树的根节点.变量<code>root</code>指向二叉查找树的根节点(这棵树包含了符号表中的所有键值对).</p>
-<h3 id="查找与插入"><a href="#查找与插入" class="headerlink" title="查找与插入"></a>查找与插入</h3><hr>
-<h4 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">    * Returns the value associated with the given key.</div><div class="line">    *</div><div class="line">    * <span class="doctag">@param</span> key the key</div><div class="line">    * <span class="doctag">@return</span> the value associated with the given key if the key is in the symbol table</div><div class="line">    * and &#123;<span class="doctag">@code</span> null&#125; if the key is not in the symbol table.</div><div class="line">    * <span class="doctag">@throws</span> IllegalArgumentException if &#123;<span class="doctag">@code</span> key&#125; is &#123;<span class="doctag">@code</span> null&#125;</div><div class="line">    */</div><div class="line">   <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called get() with a null key."</span>);</div><div class="line">       <span class="keyword">return</span> get(root, key);</div><div class="line">   &#125;</div><div class="line"></div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">private</span> V <span class="title">get</span><span class="params">(Node x, K key)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">       <span class="keyword">int</span> cmp = key.compareTo(x.key);</div><div class="line">       <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) &#123;</div><div class="line">           <span class="comment">// if key &lt; x.key , search left subtree</span></div><div class="line">           <span class="keyword">return</span> get(x.left, key);</div><div class="line">       &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>) &#123;</div><div class="line">           <span class="comment">// if key &gt; x.key , search right subtree</span></div><div class="line">           <span class="keyword">return</span> get(x.right, key);</div><div class="line">       &#125; <span class="keyword">else</span> &#123;</div><div class="line">           <span class="comment">// hit target</span></div><div class="line">           <span class="keyword">return</span> x.value;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>在二叉查找树中实现查找操作是很简单而简洁的,这也是二叉查找树的特性之一.-<strong>如果树为空,就返回null,如果被查找的键小于根节点的键,我们就继续在左子树中查找,否则在右子树中查找.</strong></p>
-<h4 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h4><p>插入操作的逻辑与查找差不多,只不过需要在<strong>判定树为空时,返回一个含有该键值对的新节点,还需要重置搜索路径上每个父节点指向子节点的链接,并增加路径上每个节点中的子节点计数器的值</strong>.</p>
-<p><img src="http://algs4.cs.princeton.edu/32bst/images/bst-insert.png" alt=""></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">     * Inserts the specified key-value pair into  the symbol table.</div><div class="line">     * overwriting the old value with the new value if the symbol table already contains</div><div class="line">     * the specified key.</div><div class="line">     * Deletes the specified key (and its associated value) from this symbol table</div><div class="line">     * if the specified value is &#123;<span class="doctag">@code</span> null&#125;.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> key   the key</div><div class="line">     * <span class="doctag">@param</span> value the value</div><div class="line">     * <span class="doctag">@throws</span> IllegalArgumentException if &#123;<span class="doctag">@code</span> key&#125; is &#123;<span class="doctag">@code</span> null&#125;.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called put() with a null key."</span>);</div><div class="line">        <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</div><div class="line">            delete(key);</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        root = put(root, key, value);</div><div class="line">        <span class="function"><span class="keyword">assert</span> <span class="title">check</span><span class="params">()</span></span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> Node <span class="title">put</span><span class="params">(Node x, K key, V value)</span> </span>&#123;</div><div class="line">        <span class="comment">// if tree is empty, return a new node.</span></div><div class="line">        <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">new</span> Node(key, value, <span class="number">1</span>);</div><div class="line"></div><div class="line">        <span class="keyword">int</span> cmp = key.compareTo(x.key);</div><div class="line">        <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) &#123;</div><div class="line">            x.left = put(x.left, key, value);</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>) &#123;</div><div class="line">            x.right = put(x.right, key, value);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// hit target,overwriting old value with the new value</span></div><div class="line">            x.value = value;</div><div class="line">        &#125;</div><div class="line">        x.size = <span class="number">1</span> + size(x.left) + size(x.right); <span class="comment">// compute subtree node size</span></div><div class="line">        <span class="keyword">return</span> x;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<h3 id="最大键和最小键"><a href="#最大键和最小键" class="headerlink" title="最大键和最小键"></a>最大键和最小键</h3><hr>
-<ul>
-<li>如果根节点的<strong>左链接为空</strong>,那么一棵二叉查找树中<strong>最小的键就是根节点</strong>.</li>
-</ul>
-<ul>
-<li>如果<strong>左链接非空</strong>,那么树中的<strong>最小键就是左子树中的最小键</strong>.找出最大键的逻辑也是类似的,只是变为查找右子树而已.</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">  * Returns the smallest key in the symbol table.</div><div class="line">  *</div><div class="line">  * <span class="doctag">@return</span> the smallest key in the symbol table.</div><div class="line">  * <span class="doctag">@throws</span> NoSuchElementException if the symbol table is empty</div><div class="line">  */</div><div class="line"> <span class="function"><span class="keyword">public</span> K <span class="title">min</span><span class="params">()</span> </span>&#123;</div><div class="line">     <span class="keyword">if</span> (isEmpty())</div><div class="line">         <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"called min() with empty symbol table."</span>);</div><div class="line">     <span class="keyword">return</span> min(root).key;</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">private</span> Node <span class="title">min</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">     <span class="keyword">if</span> (x.left == <span class="keyword">null</span>) <span class="keyword">return</span> x;</div><div class="line">     <span class="keyword">else</span> <span class="keyword">return</span> min(x.left);</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="comment">/**</span></div><div class="line">  * Returns the largest key in the symbol table.</div><div class="line">  *</div><div class="line">  * <span class="doctag">@return</span> the largest key in the symbol table.</div><div class="line">  * <span class="doctag">@throws</span> NoSuchElementException if the symbol table is empty</div><div class="line">  */</div><div class="line"> <span class="function"><span class="keyword">public</span> K <span class="title">max</span><span class="params">()</span> </span>&#123;</div><div class="line">     <span class="keyword">if</span> (isEmpty())</div><div class="line">         <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"called max() with empty symbol table."</span>);</div><div class="line">     <span class="keyword">return</span> max(root).key;</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">private</span> Node <span class="title">max</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">     <span class="keyword">if</span> (x.right == <span class="keyword">null</span>) <span class="keyword">return</span> x;</div><div class="line">     <span class="keyword">else</span> <span class="keyword">return</span> max(x.right);</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
-<h3 id="向上取整和向下取整"><a href="#向上取整和向下取整" class="headerlink" title="向上取整和向下取整"></a>向上取整和向下取整</h3><hr>
-<p><img src="http://algs4.cs.princeton.edu/32bst/images/bst-floor.png" alt="向下取整的路径轨迹"></p>
-<ul>
-<li>如果给定的键<strong>key小于二叉查找树的根节点的键</strong>,那么小于等于key的最大键<code>floor(key)</code><strong>一定在根节点的左子树中</strong>.</li>
-</ul>
-<ul>
-<li>如果给定的键<strong>key大于二叉查找树的根节点</strong>,那么<strong>只有当根节点右子树中存在小于等于key的节点时,小于等于key的最大键才会出现在右子树中,否则根节点就是小于等于key的最大键</strong>.(将左变为右,小于变为大于就是向上取整的实现逻辑)</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> K <span class="title">floor</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called floor() with a null key."</span>);</div><div class="line">       <span class="keyword">if</span> (isEmpty())</div><div class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"called floor() with empty symbol table."</span>);</div><div class="line">       Node x = floor(root, key);</div><div class="line">       <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">       <span class="keyword">else</span> <span class="keyword">return</span> x.key;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">private</span> Node <span class="title">floor</span><span class="params">(Node x, K key)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line"></div><div class="line">       <span class="keyword">int</span> cmp = key.compareTo(x.key);</div><div class="line">       <span class="keyword">if</span> (cmp == <span class="number">0</span>) <span class="keyword">return</span> x;</div><div class="line">       <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) <span class="keyword">return</span> floor(x.left, key);</div><div class="line">       Node t = floor(x.right, key);</div><div class="line">       <span class="keyword">if</span> (t != <span class="keyword">null</span>) <span class="keyword">return</span> t;</div><div class="line">       <span class="keyword">else</span> <span class="keyword">return</span> x;</div><div class="line">   &#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> K <span class="title">ceiling</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called ceiling() with a null key."</span>);</div><div class="line">       <span class="keyword">if</span> (isEmpty())</div><div class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"called ceiling() with empty symbol table."</span>);</div><div class="line">       Node x = ceiling(root, key);</div><div class="line">       <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">       <span class="keyword">else</span> <span class="keyword">return</span> x.key;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">private</span> Node <span class="title">ceiling</span><span class="params">(Node x, K key)</span> </span>&#123;</div><div class="line">       <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line"></div><div class="line">       <span class="keyword">int</span> cmp = key.compareTo(x.key);</div><div class="line">       <span class="keyword">if</span> (cmp == <span class="number">0</span>) <span class="keyword">return</span> x;</div><div class="line">       <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) &#123;</div><div class="line">           Node t = ceiling(x.left, key);</div><div class="line">           <span class="keyword">if</span> (t != <span class="keyword">null</span>) <span class="keyword">return</span> t;</div><div class="line">           <span class="keyword">else</span> <span class="keyword">return</span> x;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">return</span> ceiling(x.right, key);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<h3 id="选择和排名"><a href="#选择和排名" class="headerlink" title="选择和排名"></a>选择和排名</h3><hr>
-<h4 id="select"><a href="#select" class="headerlink" title="select"></a>select</h4><p>假设我们想找到排名为<code>k</code>的键(即树中正好有k个小于它的键).</p>
-<ul>
-<li>如果<strong>左子树中的节点数<code>t</code>大于<code>k</code></strong>,那么我们就继续递归地<strong>在左子树中查找排名为<code>k</code>的键</strong>.</li>
-</ul>
-<ul>
-<li><strong>如果<code>t</code>等于<code>k</code></strong>,我们就<strong>返回根节点中的键</strong>.</li>
-</ul>
-<ul>
-<li><strong>如果<code>t</code>小于<code>k</code></strong>,我们就递归地<strong>在右子树中查找排名为<code>(k-t-1)</code>的键</strong>.</li>
-</ul>
-<p><img src="http://algs4.cs.princeton.edu/32bst/images/bst-select.png" alt="选择操作路径轨迹"></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> K <span class="title">select</span><span class="params">(<span class="keyword">int</span> k)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (k &lt; <span class="number">0</span> || k &gt;= size())</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called select() with invalid argument: "</span> + k);</div><div class="line">    <span class="keyword">return</span> select(root, k).key;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">select</span><span class="params">(Node x, <span class="keyword">int</span> k)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">int</span> t = size(x.left);</div><div class="line">    <span class="comment">// if left subtree node size greater than k,in left subtree search</span></div><div class="line">    <span class="keyword">if</span> (t &gt; k) <span class="keyword">return</span> select(x.left, k);</div><div class="line">        <span class="comment">// otherwise,in right subtree search</span></div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (t &lt; k) <span class="keyword">return</span> select(x.right, k - t - <span class="number">1</span>);</div><div class="line">    <span class="keyword">else</span> <span class="keyword">return</span> x;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="rank"><a href="#rank" class="headerlink" title="rank"></a>rank</h4><p><code>rank()</code>函数是<code>select()</code>函数的逆函数,它会返回指定键的排名.</p>
-<ul>
-<li>如果给定的<strong>键和根节点的键相等</strong>,就<strong>返回左子树中的节点总数t</strong>.</li>
-</ul>
-<ul>
-<li>如果给定的<strong>键小于根节点</strong>,就<strong>返回该键在左子树中的排名</strong>(递归计算).</li>
-</ul>
-<ul>
-<li>如果给定的<strong>键大于根节点</strong>,就<strong>返回<code>t+1(根节点)</code>加上它在右子树中的排名</strong>(递归计算).</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">rank</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called rank() with a null key."</span>);</div><div class="line">    <span class="keyword">return</span> rank(root, key);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">rank</span><span class="params">(Node x, K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> cmp = key.compareTo(x.key);</div><div class="line">    <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>)</div><div class="line">        <span class="keyword">return</span> rank(x.left, key);</div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>)</div><div class="line">        <span class="keyword">return</span> <span class="number">1</span> + size(x.left) + rank(x.right, key);</div><div class="line">    <span class="keyword">else</span></div><div class="line">        <span class="keyword">return</span> size(x.left);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="删除最大键和删除最小键"><a href="#删除最大键和删除最小键" class="headerlink" title="删除最大键和删除最小键"></a>删除最大键和删除最小键</h3><hr>
-<p>对于删除最小键,需要不断深入根节点的左子树<strong>直至遇见一个空链接</strong>,然后将指向该节点的链接指向该节点的右子树(只需要在递归调用中返回它的右链接即可).此时已经没有任何链接指向要被删除的节点,因此它会被垃圾回收器gc掉.</p>
-<p>删除最大键与其逻辑相似,只是方向相反.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Removes the smallest key and associated value from the symbol table.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@throws</span> NoSuchElementException if the symbol table is empty.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteMin</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (isEmpty())</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"Symbol table underflow."</span>);</div><div class="line">    root = deleteMin(root);</div><div class="line">    <span class="function"><span class="keyword">assert</span> <span class="title">check</span><span class="params">()</span></span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">deleteMin</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    <span class="comment">// if the left link is empty,will link to the node of the right subtree.</span></div><div class="line">    <span class="keyword">if</span> (x.left == <span class="keyword">null</span>) <span class="keyword">return</span> x.right;</div><div class="line"></div><div class="line">    x.left = deleteMin(x.left);</div><div class="line">    x.size = size(x.left) + size(x.right) + <span class="number">1</span>;</div><div class="line">    <span class="keyword">return</span> x;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Removes the largest key and associated value from the symbol table.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@throws</span> NoSuchElementException if the symbol table is empty</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteMax</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (isEmpty())</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"Symbol table underflow."</span>);</div><div class="line">    root = deleteMax(root);</div><div class="line">    <span class="function"><span class="keyword">assert</span> <span class="title">check</span><span class="params">()</span></span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">deleteMax</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    <span class="comment">// if the right link is empty,will link to the node of the left subtree.</span></div><div class="line">    <span class="keyword">if</span> (x.right == <span class="keyword">null</span>) <span class="keyword">return</span> x.left;</div><div class="line"></div><div class="line">    x.right = deleteMax(x.right);</div><div class="line">    x.size = size(x.left) + size(x.right) + <span class="number">1</span>;</div><div class="line">    <span class="keyword">return</span> x;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><hr>
-<p>删除操作是二叉查找树中较为复杂的操作,假设我们要删除节点<code>x</code>(它是一个拥有两个子节点的节点),基本的实现逻辑如下.</p>
-<ul>
-<li><p>在删除节点<code>x</code>后用它的后继节点填补它的位置.</p>
-</li>
-<li><p>找出<code>x</code>的<strong>右子树中的最小节点</strong>(这样替换仍能保证树的有序性,因为<code>x.key</code>和它的后继节点的键之间不存在其他的键)做为<code>x</code>的后继节点.</p>
-</li>
-</ul>
-<ul>
-<li>将由此节点到根节点的路径上的所有节点的计数器减1(这里计数器的值仍然会被设为其所有子树中的节点总数加1).</li>
-</ul>
-<p><img src="http://algs4.cs.princeton.edu/32bst/images/bst-delete.png" alt=""></p>
-<p>具体的过程如以下例子:</p>
-<ol>
-<li>将指向即将被删除的节点的链接保存为<code>t</code>.</li>
-</ol>
-<ol>
-<li>将<code>x</code>指向它的后继节点<code>min(t.right)</code>.</li>
-</ol>
-<ol>
-<li>将<code>x</code>的右链接(原本指向一棵所有节点都大于<code>x.key</code>的二叉查找树)指向<code>deleteMin(t.right)</code>,也就是在删除后所有的节点仍然都大于<code>x.key</code>的子二叉查找树.</li>
-</ol>
-<ol>
-<li>将<code>x</code>的左链接(本为空)指向<code>t.left</code>(其下所有的键都小于被删除的节点和它的后继节点).</li>
-</ol>
-<p>以上的实现逻辑有一个缺点,即是<strong>在某些实际应用场景下会产生性能问题</strong>,主要原因<strong>在于后继节点是一个随意的决定,且没有考虑树的对称性</strong>.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called delete() with a null key."</span>);</div><div class="line">    root = delete(root, key);</div><div class="line">    <span class="function"><span class="keyword">assert</span> <span class="title">check</span><span class="params">()</span></span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">delete</span><span class="params">(Node x, K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> cmp = key.compareTo(x.key);</div><div class="line">    <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>)</div><div class="line">        x.left = delete(x.left, key);</div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>)</div><div class="line">        x.right = delete(x.right, key);</div><div class="line">    <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">if</span> (x.right == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">return</span> x.left;</div><div class="line">        <span class="keyword">if</span> (x.left == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">return</span> x.right;</div><div class="line">        Node t = x;</div><div class="line">        x = min(t.right);</div><div class="line">        x.right = deleteMin(t.right);</div><div class="line">        x.left = t.left;</div><div class="line">    &#125;</div><div class="line">    x.size = size(x.left) + size(x.right) + <span class="number">1</span>;</div><div class="line">    <span class="keyword">return</span> x;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="范围查找"><a href="#范围查找" class="headerlink" title="范围查找"></a>范围查找</h3><hr>
-<p>实现一个范围查找的思路可以是:<strong>将所有落在给定范围以内的键放入一个队列<code>Queue</code>并跳过那些不可能含有所查找键的子树</strong>.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Iterable&lt;K&gt; <span class="title">keys</span><span class="params">(K lo, K hi)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (lo == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called keys(lo,hi) first argument is null."</span>);</div><div class="line">    <span class="keyword">if</span> (hi == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called keys(lo,hi) second argument is null."</span>);</div><div class="line"></div><div class="line">    Queue&lt;K&gt; queue = <span class="keyword">new</span> Queue&lt;K&gt;();</div><div class="line">    keys(root, queue, lo, hi);</div><div class="line">    <span class="keyword">return</span> queue;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">keys</span><span class="params">(Node x, Queue&lt;K&gt; queue, K lo, K hi)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (x == <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">    <span class="keyword">int</span> cmp_lo = lo.compareTo(x.key);</div><div class="line">    <span class="keyword">int</span> cmp_hi = hi.compareTo(x.key);</div><div class="line">    <span class="keyword">if</span> (cmp_lo &lt; <span class="number">0</span>)</div><div class="line">        keys(x.left, queue, lo, hi);</div><div class="line">    <span class="keyword">if</span> (cmp_lo &lt;= <span class="number">0</span> &amp;&amp; cmp_hi &gt;= <span class="number">0</span>)</div><div class="line">        queue.enqueue(x.key);</div><div class="line">    <span class="keyword">if</span> (cmp_hi &gt; <span class="number">0</span>)</div><div class="line">        keys(x.right, queue, lo, hi);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><hr>
-<p>二叉查找树的高度决定了它在最坏情况下的运行效率,但由于键的插入顺序不会是永远随机的,所以树的某一端高度可能会非常深,解决这个问题可以使用平衡二叉查找树,它能保证无论键的插入顺序如何,树的高度都将是总键数的对数.</p>
-<p>本文中的实现皆采用递归的方式是为了提高可读性,二叉查找树可以使用非递归的方式实现且效率会更高.</p>
-<p>二叉查找树结合了链表插入操作的灵活性和有序数组查找操作的高效性,且还有很多种优化的改进方案(例如平衡二叉查找树),总体来说二叉查找树是一种比较好的动态查找方法.</p>
-<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><hr>
-<ul>
-<li>Author : <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun</a></li>
-</ul>
-<ul>
-<li>Email : sylvanassun_xtz@163.com</li>
-</ul>
-<ul>
-<li>文中的完整实现代码见我的<a href="https://github.com/SylvanasSun/algs4-study" target="_blank" rel="external">GitHub</a> &amp; <a href="https://gist.github.com/SylvanasSun/c4bddf50d94148470c0836af64449e8b" target="_blank" rel="external">Gist</a></li>
-</ul>
-<ul>
-<li>本文参考资料引用自<a href="http://algs4.cs.princeton.edu/32bst/" target="_blank" rel="external">&lt;<algorithms,4th edition="">&gt;</algorithms,4th></a> &amp; <a href="https://zh.wikipedia.org/wiki/%E4%BA%8C%E5%85%83%E6%90%9C%E5%B0%8B%E6%A8%B9" target="_blank" rel="external">WikiPedia</a></li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h3&gt;&lt;hr&gt;
-&lt;p&gt;二叉查找树是一颗&lt;strong&gt;有序的二叉树&lt;/strong&gt;,它有以下性质:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;若任意节点的左子树不为空
-    
-    </summary>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/categories/Algorithms/"/>
-    
-      <category term="数据结构" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
-    
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     

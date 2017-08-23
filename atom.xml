@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-08-21T11:36:35.049Z</updated>
+  <updated>2017-08-23T03:08:56.005Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -20,10 +20,9 @@
     <link href="https://sylvanassun.github.io/2017/08/20/2017-08-20-Encode/"/>
     <id>https://sylvanassun.github.io/2017/08/20/2017-08-20-Encode/</id>
     <published>2017-08-20T04:00:00.000Z</published>
-    <updated>2017-08-21T11:36:35.049Z</updated>
+    <updated>2017-08-23T03:08:56.005Z</updated>
     
-    <content type="html"><![CDATA[<p><img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-01.png" alt=""></p>
-<h3 id="什么是编码"><a href="#什么是编码" class="headerlink" title="什么是编码?"></a>什么是编码?</h3><hr>
+    <content type="html"><![CDATA[<h3 id="什么是编码"><a href="#什么是编码" class="headerlink" title="什么是编码?"></a>什么是编码?</h3><hr>
 <p>对于普通人来说,编码总是与一些秘密的东西相关联(加密与解密);对于程序员们来说,编码大多数是指一种用来在机器与人之间传递信息的方式.</p>
 <p>但从广义上来讲,<strong>编码是从一种信息格式转换为另一种信息格式的过程,解码则是编码的逆向过程</strong>.接下来举几个使用到编码的例子: </p>
 <ul>
@@ -46,20 +45,20 @@
 <p><strong>字符集就是字符与二进制的映射表</strong>,每一个字符集都有自己的编码规则,每个字符所占用的字节也不同(支持的字符越多每个字符占用的字节也就越多).</p>
 <ul>
 <li><p>ASCII : 美国信息交换标准码(American Standard Code for Information Interchange).学过计算机的都知道大名鼎鼎的<code>ASCII</code>码,它是基于拉丁字母的字符集,总共记有128个字符,主要目的是显示英语.其中每个字符占用一个字节(只用到了低7位).</p>
-<p> <img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-02-ASCII.png" alt=""></p>
+<p> <img src="http://wx4.sinaimg.cn/large/63503acbly1fith5ayrgdj20n50ct0tj.jpg" alt=""></p>
 </li>
 </ul>
 <ul>
 <li><p>ISO-8859-1 : 它是由国际标准化组织(International Standardization Organization)在<code>ASCII</code>基础上制定的8位字符集(仍然是单字节编码).它在<code>ASCII</code>空置的<code>0xA0-0xFF</code>范围内加入了96个字母与符号,支持了欧洲部分国家的语言.</p>
-<p> <img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-03-ISO-8859-1.png" alt=""></p>
+<p> <img src="http://wx1.sinaimg.cn/large/63503acbly1fith5be3u3j20o80bcgmk.jpg" alt=""></p>
 </li>
 </ul>
 <ul>
 <li><p>GBK : 如果我们想要让电脑上显示汉字就必须要有支持汉字的字符集,GBK就是这样一个支持汉字的字符集,全称为&lt;&lt;汉字内码扩展规范&gt;&gt;,它的编码方式分为单字节与双字节: <code>00–7F</code>范围内是第一个字节,与<code>ASCII</code>保持一致,之后的双字节中,前一字节是双字节的第一位(范围在<code>81–FE</code>,不包含<code>80</code>和<code>FF</code>),第二字节的一部分在<code>40–7E</code>,其他部分在<code>80–FE</code>.(这里不再介绍<code>GB2313</code>与<code>GB18030</code>,它们都是互相兼容的.)</p>
-<p> <img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-04-GBK.png" alt=""></p>
+<p> <img src="http://wx1.sinaimg.cn/large/63503acbly1fith5bqcprj20r00bcjsi.jpg" alt=""></p>
 </li>
 <li><p>UTF-16 : <code>UTF-16</code>是<code>Unicode(统一码,一种以支持世界上多国语言为目的的通用字符集)</code>的一种实现方式,它把<code>Unicode</code>的抽象码位<strong>映射为<code>2~4</code>个字节来表示</strong>,<strong><code>UTF-16</code>是变长编码(<code>UTF-32是真正的定长编码</code>)</strong>,但在最开始以前<code>UTF-16</code>是用来配合<code>UCS-2(UTF-16的子集,它是定长编码,用2个字节表示所有Unicode字符)</code>使用的,主要原因还是因为当时<code>Unicode</code>只有不到65536个字符,2个字节就足以应对一切了.后来,<code>Unicode</code>支持的字符不断膨胀,2个字节已经不够用了,导致一些只支持<code>UCS-2</code>当做内码的产品很尴尬(<code>Java</code>就是其中之一).</p>
-<p> <img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-05-UTF-16-2.png" alt=""></p>
+<p> <img src="http://wx4.sinaimg.cn/large/63503acbly1fith5c3ib8j20qg0ck3zq.jpg" alt=""></p>
 </li>
 <li><p>UTF-8 : <strong><code>UTF-8</code>也是基于<code>Unicode</code>的变长编码表</strong>,它使用<code>1~6</code>个字节来为每个字符进行编码(<code>RFC 3629</code>对<code>UTF-8</code>进行了重新规范,只能使用原来<code>Unicode</code>定义的区域,<code>U+0000~U+10FFFF</code>,也就是说最多只有4个字节),<code>UTF-8</code>完全兼容<code>ASCII</code>,它的编码规则如下:</p>
 <ul>
@@ -74,7 +73,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-06-UTF-8.png" alt=""></p>
+<p><img src="http://wx2.sinaimg.cn/large/63503acbly1fith5cmmpbj20w008ot9i.jpg" alt=""></p>
 <h3 id="Java中字符的编解码"><a href="#Java中字符的编解码" class="headerlink" title="Java中字符的编解码"></a>Java中字符的编解码</h3><hr>
 <p><code>Java</code>提供了<code>Charset</code>类来完成对字符的编码与解码,主要使用以下函数: </p>
 <ul>
@@ -138,8 +137,8 @@
     
     <summary type="html">
     
-      &lt;p&gt;&lt;img src=&quot;http://ourzeyn5n.bkt.clouddn.com/2017-08-20-Encode-01.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;h3 id=&quot;什么是编码&quot;&gt;&lt;a href=&quot;#什么是编码&quot; class=&quot;headerlink&quot; title
+      &lt;h3 id=&quot;什么是编码&quot;&gt;&lt;a href=&quot;#什么是编码&quot; class=&quot;headerlink&quot; title=&quot;什么是编码?&quot;&gt;&lt;/a&gt;什么是编码?&lt;/h3&gt;&lt;hr&gt;
+&lt;p&gt;对于普通人来说,编码总是与一些秘密的东西相关联(加密与解密);对于程序员们来说,编码大多数是指一种用来
     
     </summary>
     
@@ -225,11 +224,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -629,9 +628,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -869,9 +868,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -1010,9 +1009,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -1093,9 +1092,9 @@
       <category term="Other" scheme="https://sylvanassun.github.io/categories/Algorithms/Other/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -1393,9 +1392,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -1470,9 +1469,9 @@
       <category term="动态规划" scheme="https://sylvanassun.github.io/categories/Algorithms/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="动态规划" scheme="https://sylvanassun.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
@@ -1567,11 +1566,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -1625,9 +1624,9 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
@@ -1681,9 +1680,9 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
@@ -1750,9 +1749,9 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
@@ -2078,13 +2077,13 @@
       <category term="HashTable" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/HashTable/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -2156,11 +2155,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2377,11 +2376,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2487,11 +2486,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     

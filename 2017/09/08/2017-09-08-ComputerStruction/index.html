@@ -1,0 +1,1644 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="2017,计算机," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SylvanasSun's Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="在我们的生活与工作中所使用到的计算机都是基于冯诺依曼结构实现的,冯诺依曼结构又称冯诺依曼模型或普林斯顿结构,它是一种将程序指令存储器和数据存储器合并在一起的计算机设计概念结构. 冯诺依曼结构起源于EDVAC(Electronic Discrete Variable Automatic Computer)离散变量自动电子计算机,当时冯诺依曼以技术顾问的身份加入EDVAC项目组,负责总结和详细说明ED">
+<meta name="keywords" content="2017,计算机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探索计算机的结构与核心概念">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/09/08/2017-09-08-ComputerStruction/index.html">
+<meta property="og:site_name" content="SylvanasSun&#39;s Blog">
+<meta property="og:description" content="在我们的生活与工作中所使用到的计算机都是基于冯诺依曼结构实现的,冯诺依曼结构又称冯诺依曼模型或普林斯顿结构,它是一种将程序指令存储器和数据存储器合并在一起的计算机设计概念结构. 冯诺依曼结构起源于EDVAC(Electronic Discrete Variable Automatic Computer)离散变量自动电子计算机,当时冯诺依曼以技术顾问的身份加入EDVAC项目组,负责总结和详细说明ED">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Von_Neumann_architecture.svg/420px-Von_Neumann_architecture.svg.png">
+<meta property="og:image" content="http://wx4.sinaimg.cn/large/63503acbly1fius74iz98j212e0po778.jpg">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/4/46/Intel_Core_I7-920_Boxed_-_14.JPG">
+<meta property="og:image" content="http://wx1.sinaimg.cn/large/63503acbly1fj1nimvcrvj20ti0gvdjo.jpg">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/4/49/Cache_incoherence_write.svg">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/e/ec/Dual_Core_Generic.svg">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/e/e1/Operating_system_placement.svg">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Linux_kernel_System_Call_Interface_and_glibc.svg/800px-Linux_kernel_System_Call_Interface_and_glibc.svg.png">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Virtual_memory.svg/620px-Virtual_memory.svg.png">
+<meta property="og:image" content="http://wx3.sinaimg.cn/large/63503acbly1fj7caakdj7j20bs0eigm6.jpg">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/a/a5/Multithreaded_process.svg">
+<meta property="og:image" content="http://wx2.sinaimg.cn/mw690/63503acbly1fjat0ftqf4j20fk0gz758.jpg">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/3/3f/Connection_TCP.png">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/2/2d/Deconnection_TCP.png">
+<meta property="og:image" content="http://wx4.sinaimg.cn/mw690/63503acbly1fjat0gfjirj20q60s8gno.jpg">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/4/4d/Float_mantissa_exponent.png">
+<meta property="og:updated_time" content="2017-09-09T03:35:48.632Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="探索计算机的结构与核心概念">
+<meta name="twitter:description" content="在我们的生活与工作中所使用到的计算机都是基于冯诺依曼结构实现的,冯诺依曼结构又称冯诺依曼模型或普林斯顿结构,它是一种将程序指令存储器和数据存储器合并在一起的计算机设计概念结构. 冯诺依曼结构起源于EDVAC(Electronic Discrete Variable Automatic Computer)离散变量自动电子计算机,当时冯诺依曼以技术顾问的身份加入EDVAC项目组,负责总结和详细说明ED">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Von_Neumann_architecture.svg/420px-Von_Neumann_architecture.svg.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://sylvanassun.github.io/2017/09/08/2017-09-08-ComputerStruction/"/>
+
+
+
+
+
+  <title>探索计算机的结构与核心概念 | SylvanasSun's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SylvanasSun's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://sylvanassun.github.io/2017/09/08/2017-09-08-ComputerStruction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SylvanasSun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SylvanasSun's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">探索计算机的结构与核心概念</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-08T18:00:00+08:00">
+                2017-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/计算机/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/09/08/2017-09-08-ComputerStruction/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/09/08/2017-09-08-ComputerStruction/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/09/08/2017-09-08-ComputerStruction/" class="leancloud_visitors" data-flag-title="探索计算机的结构与核心概念">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在我们的生活与工作中所使用到的计算机都是基于冯诺依曼结构实现的,冯诺依曼结构又称冯诺依曼模型或普林斯顿结构,它是一种将程序指令存储器和数据存储器合并在一起的计算机设计概念结构.</p>
+<p>冯诺依曼结构起源于<code>EDVAC(Electronic Discrete Variable Automatic Computer)</code>离散变量自动电子计算机,当时冯诺依曼以技术顾问的身份加入<code>EDVAC</code>项目组,负责总结和详细说明<code>EDVAC</code>的逻辑设计,直到1945年6月发表了一份长达101页的报告,这就是计算机史上著名的”101页报告”,该报告明确规定<strong>用二进制替代十进制运算</strong>,并<strong>将计算机分成五大组件</strong>,这一卓越的思想为电子计算机的逻辑结构设计奠定了基础,已成为计算机设计的基本原则.</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Von_Neumann_architecture.svg/420px-Von_Neumann_architecture.svg.png" alt="冯诺依曼结构"></p>
+<p>冯诺依曼结构具有以下特点: </p>
+<ol>
+<li>数据由一个贯穿整个结构的总线来进行传输.</li>
+</ol>
+<ol>
+<li>存储器是按地址访问、线性编址的空间</li>
+</ol>
+<ol>
+<li>指令由操作码和地址码组成</li>
+</ol>
+<ol>
+<li>数据以二进制编码</li>
+</ol>
+<ol>
+<li>一个冯诺依曼结构的计算机必须有存储器,控制单元,运算单元,输入输出设备.</li>
+</ol>
+<p>冯诺依曼结构将<code>CPU</code>与存储器分开的做法也并非十全十美,<strong><code>CPU</code>和内存、硬盘等设备的数据传输速度不匹配</strong>成了整体效率的瓶颈,<code>CPU</code>会在等待数据输入的时间中空置,许多技术都是为了解决这个瓶颈,例如<code>DMA(直接内存访问)</code>,在<code>CPU</code>中建立高速缓冲区等.</p>
+<blockquote>
+<p>本文作者为: <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanas.sun@gmail.com)</a>.转载请务必将下面这段话置于文章开头处(保留超链接).<br>本文首发自<a href="https://sylvanassun.github.io/">SylvanasSun Blog</a>,原文链接: <a href="https://sylvanassun.github.io/2017/09/08/2017-09-08-ComputerStructure/">https://sylvanassun.github.io/2017/09/08/2017-09-08-ComputerStructure/</a></p>
+</blockquote>
+<h3 id="现代计算机结构"><a href="#现代计算机结构" class="headerlink" title="现代计算机结构"></a>现代计算机结构</h3><hr>
+<p><strong>现代计算机是基于冯诺依曼结构的电子计算机</strong>.所谓电子计算机,就是是一种利用电子学原理,根据一系列指令对数据进行处理的机器.</p>
+<p>晶体管是组成现代电子计算机的最原始的部件(集成电路中含有数以万计的晶体管),它是一种半导体材料(导电性可受控制,范围可从绝缘体至导体之间),晶体管可以通过电流的变化,实现电路的切换,这种特性非常适合组成各种逻辑门(与或非)与表示二进制数据.值得一提的是,早期使用继电器实现逻辑门的计算机体积甚至大到要一整个屋子才能放下.</p>
+<p>现代计算机的硬件结构如下图,虽然多了很多其他的硬件但与冯诺依曼结构的概念是一致的: </p>
+<p><img src="http://wx4.sinaimg.cn/large/63503acbly1fius74iz98j212e0po778.jpg" alt=""></p>
+<h3 id="总线"><a href="#总线" class="headerlink" title="总线"></a>总线</h3><hr>
+<p><strong>总线是一组贯穿所有硬件结构的电子管道,它携带数据并负责在各个部件间交互传递</strong>.总线传送的数据通常为一个定长的字节块,这个字节块的长度即是总线的位宽,总线位宽越大,数据传输的性能就越高,在32位机器中总线位宽为4个字节,64位机器中为8个字节.</p>
+<p>有意思的是总线的英文单词是<code>bus</code>,如果把主板想象成一座城市,那么总线就像是城市中的公共汽车,它按着多种固定线路不停地来回传输数据.</p>
+<h3 id="I-O设备"><a href="#I-O设备" class="headerlink" title="I/O设备"></a>I/O设备</h3><hr>
+<p><strong><code>I/O(输入/输出)</code>设备是计算机与外部进行联系的桥梁,每个<code>I/O</code>设备都要通过一个控制器或者适配器来与<code>I/O</code>总线相连</strong>.</p>
+<p>控制器与适配器的区别只在于它们的封装方式,它们的功能都是为了让<code>I/O</code>设备与<code>I/O</code>总线进行连接: </p>
+<ul>
+<li><p>控制器是<code>I/O</code>设备本身或者主板上自带的芯片组</p>
+</li>
+<li><p><code>适配器</code>则是插在主板上的外部设备,</p>
+</li>
+</ul>
+<p>在图中,<code>I/O</code>设备包含鼠标、键盘(输入设备)、显示器(输出设备)、磁盘、网络.</p>
+<h3 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h3><hr>
+<p><strong>内存也叫主存,它是一个临时的存储设备,存储了运行时的数据(程序与程序处理的数据),以供CPU进行处理</strong>.内存是由一组<code>DRAM</code>(动态随机存取存储器)芯片组成的,<code>DRAM</code>是<code>RAM</code>(随机存取存储器)的一种,另一种为<code>SRAM</code>(静态随机存取存储器),<code>SRAM</code>比<code>DRAM</code>速度更快,但造价也更贵,通常用来实现为高速缓存区.</p>
+<p><strong>32位操作系统中的<code>CPU</code>的最大寻址空间只有<code>2^32</code>字节</strong>,换算下来最高内存上限为4GB,但由于<code>CPU</code>还要对<code>BIOS</code>和其他硬件等进行寻址(这些优先级更高),所以用户实际可用的内存只有3GB左右.</p>
+<p>64位操作系统的<code>CPU</code>最大寻址空间足足有<code>2^64</code>字节,也就是16EB(1024GB等于1TB,1024TB等于1PB,1024PB等于1EB),这已经是一个无法想象的数字了,不过这也不一定是够用的,毕竟谁又能知道未来的数据量会有多庞大呢?</p>
+<p>内存具有以下特点: </p>
+<ul>
+<li>随机存取: 当存储器中的数据被写入或读取时,所需要的时间与数据所在的位置无关(从逻辑上,可以把内存看成一个线性的字节数组,每个字节都有其唯一的地址(索引),这些地址是从零开始的).</li>
+</ul>
+<ul>
+<li>易失性: 如果电源突然断开,<code>RAM</code>中的数据就会全部丢失(磁盘可以将数据持久化地永久保存下来,就算断电也不会丢失数据).</li>
+</ul>
+<ul>
+<li>依赖刷新: <code>RAM</code>使用电容器来存储数据,当电容器充满电之后表示<code>1</code>,未充电则表示<code>0</code>.由于电容器或多或少有漏电的情形,若不作特别处理,电荷会渐渐随时间流失而使数据发生错误.刷新是指重新为电容器充电,弥补流失了的电荷.<code>DRAM</code>的读取即有刷新的功效,但一般的定时刷新并不需要作完整的读取,只需作该芯片的一个列选择,整列的数据即可获得刷新,而同一时间内,所有相关记忆芯片均可同时作同一列选择,因此,在一段期间内逐一做完所有列的刷新,即可完成所有存储器的刷新.需要刷新正好解释了随机存取存储器的易失性.</li>
+</ul>
+<ul>
+<li>对静电敏感: <code>RAM</code>与集成电路一样,对环境的静电荷非常敏感,静电会干扰存储器内电容器的电荷,导致数据流失,甚至烧坏电路.</li>
+</ul>
+<h3 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h3><hr>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Intel_Core_I7-920_Boxed_-_14.JPG" alt="Intel I7 CPU"></p>
+<p><code>Central Processing Unit</code>中央处理单元,简称<code>CPU</code>或处理器,<code>CPU</code>包含了冯诺依曼结构中的控制器与运算器,它是<strong>解释或执行存储在内存中的指令</strong>的引擎.<code>CPU</code>好比计算机的大脑,从通电开始,直到断电,<code>CPU</code>一直在不断地执行内存中存储的指令.如果没有<code>CPU</code>,那么计算机就会是一台不会动的死机器了.</p>
+<p>所谓<strong>指令就是进行指定操作的操作码</strong>,而<strong>指令集架构就是这些操作码的集合</strong>,至于<strong>微架构是一套用于执行指令集的微处理器设计方法,多个不同微架构的<code>CPU</code>可以使用同一套指令集</strong>,一些常见的指令如下: </p>
+<ul>
+<li>加载: 从内存中复制数据(多少个字节取决于总线位宽)到寄存器,以覆盖寄存器中原来的内容.</li>
+</ul>
+<ul>
+<li>存储: 从寄存器复制数据到内存中的某个位置,以覆盖这个位置上原有的内容.</li>
+</ul>
+<ul>
+<li>操作: 把两个在寄存器中的数据复制到<code>ALU</code>,<code>ALU</code>对这2个数据进行算术运算,并将结果存放到一个寄存器中,以覆盖该寄存器中原有的内容.</li>
+</ul>
+<ul>
+<li>跳转: 从指令本身中抽取数据(地址),将它复制到程序计数器中,以覆盖程序计数器原有的内容.</li>
+</ul>
+<p>下面以一个简单的算术问题<code>1 + 1</code>来大致了解一下<code>CPU</code>的工作流程: </p>
+<ol>
+<li><p>这两个变量首先会被存储在内存中.</p>
+</li>
+<li><p><code>CPU</code>从内存中读取指令并刷新程序计数器(每执行完一个指令都要刷新程序计数器).</p>
+</li>
+<li><p><code>CPU</code>执行加载指令,通过总线将这两个变量传输(复制)到寄存器.</p>
+</li>
+<li><p><code>CPU</code>执行运算指令,从寄存器中复制这两个变量进行算术运算,并将结果存到寄存器.</p>
+</li>
+<li><p><code>CPU</code>执行存储指令,寄存器通过总线将结果存储回内存(覆盖原有位置).</p>
+</li>
+</ol>
+<h4 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h4><hr>
+<p>寄存器是<code>CPU</code>中的一个存储部件,可以认为它是<strong>容量很小但速度飞快的内存</strong>,寄存器是与<code>ALU</code>直接交互的存储设备(不管数据是在内存还是高速缓冲区,<strong>最终都要存到寄存器才能与<code>ALU</code>交互</strong>).</p>
+<p>在<code>CPU</code>架构中,拥有多个寄存器,它们分别拥有各自的用途(指令寄存器,整数寄存器,浮点数寄存器等),且<strong>寄存器的数量和它的大小都与指令集架构和机器支持的位宽相关联</strong>(例如<code>x86-64</code>指令集架构(64位指令集架构)中支持64位的通用寄存器与64位整数运算,而<code>x86</code>指令集架构只能支持32位和16位).</p>
+<h4 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h4><hr>
+<p>程序计数器用于指示将要执行的指令序列,并且不断刷新指向新的指令地址,根据<code>CPU</code>的实现不同,程序计数器可能会指向正在运行的指令地址也可能会是下一个指令的地址.</p>
+<h4 id="高速缓冲"><a href="#高速缓冲" class="headerlink" title="高速缓冲"></a>高速缓冲</h4><hr>
+<p>由于寄存器与内存的速度相差过大,为了避免性能上的浪费,在寄存器与内存之间建立数据的缓存区是很有必要的.</p>
+<p>高速缓存是一个比内存更小但更快的存储设备,且使用<code>SRAM</code>实现,现在的<code>CPU</code>一般都配有三级缓存,<code>L1</code>缓存速度最快但存储的容量也最小,<code>L2</code>要比<code>L1</code>慢但存储的容量也更大,以此类推(<strong>上一层的存储器作为下一层存储器的高速缓存</strong>,也就是说,寄存器就是<code>L1</code>的高速缓存,<code>L1</code>则是<code>L2</code>的高速缓存,<code>L2</code>是<code>L3</code>的高速缓存…)….</p>
+<p>当<code>CPU</code>发起向内存加载数据的请求时,会先从缓存中查找,如果缓存未命中,才会从内存加载数据,并更新缓存.高速缓存之所以如此有效,主要是利用了<strong>局部性原理,即最近访问过的内存位置以及周边的内存位置很容易会被再次访问</strong>.而高速缓存中就存储着这些经常会被访问的数据.</p>
+<p><img src="http://wx1.sinaimg.cn/large/63503acbly1fj1nimvcrvj20ti0gvdjo.jpg" alt=""></p>
+<h4 id="DMA"><a href="#DMA" class="headerlink" title="DMA"></a>DMA</h4><hr>
+<p><code>DMA</code>全称为<code>Direct Memory Access</code>直接内存访问,它<strong>允许其他硬件可以直接访问内存中的数据,而无需让<code>CPU</code>介入处理</strong>.一般会使用到<code>DMA</code>的硬件有显卡、网卡、声卡等.</p>
+<p><code>DMA</code>会导致发生缓存不一致的问题,需要额外的进行同步操作保证数据安全.例如,当<code>CPU</code>从内存中读取数据后,会暂时将新数据写入缓存中,但还没有将数据更新回内存,如果在这期间发生了<code>DMA</code>,就会读取到旧的数据.</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/4/49/Cache_incoherence_write.svg" alt="缓存一致性问题"></p>
+<h4 id="流水线"><a href="#流水线" class="headerlink" title="流水线"></a>流水线</h4><hr>
+<p>流水线又称管线,是现代<code>CPU</code>中必不可少的优化技术,它<strong>将指令的处理过程拆分为多个步骤,并通过多个硬件处理单元并行执行这些步骤.</strong></p>
+<p>管线的具体执行过程很像工厂中的流水线(指令就像在流水线传送带上的产品,各个硬件处理单元就像是在流水线旁进行操作的工人),因此而得名为流水线.</p>
+<p>流水线虽然提高了整体的吞吐量,但也是有其缺点的,这是由于流水线依赖于分支预测,如果<code>CPU</code>预测的分支是错误的,那么整个流水线上的所有指令都要取消,然后重新向流水线填充指令,这项操作是很耗费性能的.</p>
+<h4 id="超线程"><a href="#超线程" class="headerlink" title="超线程"></a>超线程</h4><hr>
+<p><strong>超线程是一种允许一个<code>CPU</code>执行多个控制流的技术</strong>,它复制了<code>CPU</code>中必要的硬件资源(程序计数器、寄存器),来让其在同一时间内处理两个线程的工作.</p>
+<p>通过超线程技术,可以让一个<code>CPU</code>核心去执行两个线程,所以一个带有4核(实体核心)的<code>CPU</code>实际上可以执行8个线程(逻辑线程).</p>
+<h4 id="多核"><a href="#多核" class="headerlink" title="多核"></a>多核</h4><hr>
+<p><strong>多核<code>CPU</code>是指将多个核心(也就是<code>CPU</code>)集成到一个集成电路芯片上.每个核心都可以独立的执行指令,也就是真正意义上的并行执行.</strong></p>
+<p>每个核心都拥有独立的寄存器,程序计数器,高速缓存等组件,一般还会有一个所有核心共享的缓存,它是直接与内存连通的缓冲区.</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/Dual_Core_Generic.svg" alt=""></p>
+<p>多核<code>CPU</code>与多处理器不同,多处理器是将多个<code>CPU</code>封装在多个独立的集成电路芯片中,而多核<code>CPU</code>是所有核心都封装在同一个集成电路芯片中.</p>
+<h3 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h3><hr>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Operating_system_placement.svg" alt=""></p>
+<p><strong>操作系统是用于管理计算机硬件与软件的程序,可以把操作系统看成是应用程序与硬件之间插入的一层软件</strong>,所有应用程序对硬件的操作尝试都必须通过操作系统.</p>
+<p>操作系统需要负责管理与配置内存、调度系统资源的优先次序、管理进程与线程、控制I/O设备、操作网络与管理文件系统等事务.可以说操作系统是整个计算机系统中的灵魂所在.</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Linux_kernel_System_Call_Interface_and_glibc.svg/800px-Linux_kernel_System_Call_Interface_and_glibc.svg.png" alt="System Call"></p>
+<p>操作系统的内核是操作系统最核心的地方,它是代码和数据的一个集合.当应用程序需要操作系统的某些操作时,会执行一条系统调用(<code>system call</code>)指令,这时,控制权会被移交到内核,由内核执行被请求的操作并返回到应用程序.大多数系统的交互式操作都需要在内核完成,例如<code>I/O</code>、进程管理等.</p>
+<h3 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h3><hr>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Virtual_memory.svg/620px-Virtual_memory.svg.png" alt=""></p>
+<p>虚拟内存是计算机系统内存管理的一种技术,<strong>它为每个进程提供了一个假象,即每个进程都在独占地使用内存(一个连续的地址空间)</strong>,而实际上,它通常被分割为多个物理内存碎片,还有部分暂时存储在磁盘存储器上,在需要时进行数据交换.使用虚拟内存会使程序的编写更加容易,对真实的物理内存的使用也会更加有效率.</p>
+<p><img src="http://wx3.sinaimg.cn/large/63503acbly1fj7caakdj7j20bs0eigm6.jpg" alt="进程的虚拟地址空间"></p>
+<p>每个进程所能看到的虚拟地址空间大致如上图所示,每个区域都有它专门的作用.</p>
+<ul>
+<li>内核虚拟内存: 这个区域是为操作系统内核保留的,它不允许应用程序读写这个区域的内容或者直接调用内核代码定义的函数(只有操作系统内核才有权限).</li>
+</ul>
+<ul>
+<li>共享库: 以c语音为例,共享库是用来存放的是像C标准库这样的共享库的代码和数据的区域.</li>
+</ul>
+<ul>
+<li>程序代码和数据: 对于所有进程来说,代码都是从同一固定地址开始,紧接着的是其相对应的数据位置.这片区域就是用来存放代码和数据的.</li>
+</ul>
+<ul>
+<li>堆: <strong>堆内存是指应用程序在运行时进行分配的内存区域,堆可以在运行时动态地扩展和收缩</strong>.像<code>malloc()</code>和<code>free()</code>这样的函数就是在堆内存中进行分配空间与释放,而类似<code>Java</code>这种更高一级的语言提供了自动内存管理和垃圾回收,不需要程序员手动地分配与释放堆内存空间.</li>
+</ul>
+<ul>
+<li>栈: 栈同样也是可以动态地扩展和收缩,它是一个后进先出的容器,<strong>主要用于函数调用</strong>.当一个函数调用时会在栈中分配空间,当调用结束时,这个函数所占用的内存空间会一起释放,无需程序员关心.</li>
+</ul>
+<h3 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h3><hr>
+<h4 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h4><hr>
+<p><strong>进程是操作系统对一个正在运行的程序的一种抽象,它是程序的执行实体,是操作系统对资源进行调度的一个基本单位,同时也是线程的容器.</strong></p>
+<p>进程跟虚拟内存一样,也是操作系统提供的一种假象,它让每个程序看上去都是在独占地使用<code>CPU</code>、内存和<code>I/O</code>设备.但其实<strong>同一时间只有一个进程在运行</strong>,而我们能够边听歌边上网边码代码的原因其实是操作系统在对进程进行切换,一个进程和另一个进程其实是交错执行的,只不过计算机的速度极快,我们无法感受到而已.</p>
+<p>操作系统会保持跟踪进程运行所需的所有状态信息,这种状态,被称为上下文(<code>Context</code>),它包含了许多重要的信息,例如程序计数器和寄存器的当前值等.<strong>当操作系统需要对当前进程进行切换时(转移到另一个进程),会保存当前进程的上下文,然后恢复新进程的上下文</strong>,这时控制权会移交到新进程,新进程会从它上次停下来的地方开始执行,这个过程叫做上下文切换.</p>
+<p><strong>操作系统的进程空间可以分为用户空间与内核空间</strong>,也就是用户态与内核态.它们的执行权限不同,一般的应用程序是在用户态中运行的,而当应用程序执行系统调用时就需要切换到内核态,由内核执行.</p>
+<h4 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h4><hr>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Multithreaded_process.svg" alt=""></p>
+<p><strong>线程是操作系统所能调度的最小单位,它被包含在进程之中,且一个进程中的所有线程共享进程的资源,一个线程一般被指为进程中的一条单一顺序的控制流.</strong></p>
+<p>线程都运行在进程的上下文中,虽然线程共享了进程的资源,但<strong>每条线程都拥有自己的独立空间</strong>,例如函数调用栈、寄存器、线程本地存储.</p>
+<p>线程的实现主要有以下三种方式:</p>
+<ul>
+<li><p>使用内核线程实现: 内核线程就是由操作系统内核直接支持的线程,这种线程由内核来完成线程切换调度,内核通过调度器对线程进行调度,并将线程的任务映射到各个处理器上.<strong>应用程序一般不会直接使用内核线程,而是使用内核线程的一个接口: 轻量级进程,每个轻量级进程都由一个内核线程支持,所以它们的关系是1:1的</strong>.这种线程的实现方式的缺点也很明显,应用程序想要进行任何线程操作都需要进行系统调用,应用程序会在用户态和内核态之间来回切换,消耗的性能资源较多.</p>
+</li>
+<li><p>使用用户线程实现: <strong>这种方式将线程完全实现在用户空间中,相关的线程操作都在用户态中完成</strong>,这样可以避免切换到内核态,提高了性能.但正因为没有借助系统调用,操作系统只负责对进程分配资源,这些复杂的线程操作与线程调度都需要由用户线程自己处理实现,提高了程序的复杂性.这种实现方式下,一个进程对应多个用户线程,它们是1:N的关系.</p>
+</li>
+<li><p>混合实现: 这是一种将内核线程与用户线程一起使用的实现方式.在这种实现下,即存在用户线程,也存在轻量级进程.<strong>用户线程依旧是在用户空间中建立的(相关的线程操作也都是在用户空间中),但使用了轻量级进程来当作用户线程与内核线程之间的桥梁,让内核线程提供线程调度和对处理器的映射</strong>.这种实现方式下,用户线程与轻量级进程的数量比例是不定的,它们是N:M的关系.</p>
+</li>
+</ul>
+<h3 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h3><hr>
+<p>文件也是一个非常重要的抽象概念,<strong>它向应用程序提供了一个统一的视图</strong>,来看待系统中可能含有的所有各式各样的<code>I/O</code>设备.<strong>计算机文件系统通过文件与树形目录的抽象概念来屏蔽磁盘等物理设备所使用的数据块(<code>chunk</code>),让用户在使用文件的时候无需关心它实际的物理地址,用户也不需要管理磁盘上的空间分配,这些都由文件系统负责.</strong></p>
+<p>所谓<strong>文件其实也就是一串字节序列</strong>,一个文件想要长期存储,就必须要存放于某种存储设备上,如本地磁盘、U盘.</p>
+<h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><hr>
+<p>如果用图论的方式来看待网络,<strong>其实网络就是一张无向图(需要双向通信),每台计算机都是图中的一个节点(指计算机网络),图的边就是计算机之间互相通信的连接.简单的说,计算机网络其实就是多台计算机进行通信的系统.</strong></p>
+<p>网络其实也可以看作是一个<code>I/O</code>设备,当系统从内存中复制一串字节到网络适配器时,数据流经过网络传输到达另一台机器上(这其实就是输出操作),系统也可以读取从其他机器传输过来的数据,并把数据复制到内存中(输入).</p>
+<p>互联网(<code>Internet</code>)是计算机网络中的一种(如果按区域划分还有局域网、广域网等),互联网是网络与网络之间组成的巨大的国际网络,这些网络之间以<code>TCP/IP</code>协议相连,连接了全世界上几十亿的设备.</p>
+<p>我们日常生活中用浏览器上网浏览网页,其实使用的是万维网(<code>World Wide Web</code>),它是运行在互联网之上提供的一个服务,万维网是一个基于超文本链接组成的系统,并且通过<code>http</code>协议进行访问.</p>
+<h4 id="OSI模型"><a href="#OSI模型" class="headerlink" title="OSI模型"></a>OSI模型</h4><hr>
+<p><img src="http://wx2.sinaimg.cn/mw690/63503acbly1fjat0ftqf4j20fk0gz758.jpg" alt=""></p>
+<p><code>OSI</code>模型全称为开放式系统互联通信参考模型(<code>Open System Interconnection Reference Model</code>),是由国际标准化组织提出的一个<strong>试图使各种计算机在世界范围内进行互联通信的标准框架.</strong></p>
+<p>在<code>OSI</code>模型中,<strong>数据经过每一层都会添加该层的协议头(物理层除外)</strong>,当一个数据从一端发送到另一端时,需要经过层层封装.</p>
+<ul>
+<li><p>应用层: <strong>应用层直接和应用程序通信并提供常见的网络应用服务</strong>.常见的应用层协议有:HTTP,HTTPS,FTP,TELNET,SSH,SMTP,POP3等.</p>
+</li>
+<li><p>表示层: <strong>表示层为不同终端的上层用户提供数据和信息正确的语法表示变换方法</strong>.该层定义了数据格式及加解密,</p>
+</li>
+<li><p>会话层: <strong>会话层负责在数据传输中设置和维护网络中两台电脑之间的通信连接</strong>.但<strong>会话层不参与具体的传输</strong>,它只提供包括访问验证和会话管理在内的建立和维护应用之间通信的机制.</p>
+</li>
+<li><p>传输层: <strong>传输层将数据封装成数据包,提供端对端的数据通信服务</strong>.它还提供面向连接的数据流支持、可靠性、流量控制、多路复用等服务.最著名的传输层协议有<code>TCP</code>与<code>UDP</code>.</p>
+</li>
+<li><p>网络层: <strong>网络层提供路由和寻址的功能,使两终端系统能够互连且决定最佳路径,并具有一定的拥塞控制和流量控制的能力</strong>.网络层将网络表头(包含网络地址等数据)加到数据包中,网络层协议中最出名的就是<code>IP</code>协议.</p>
+</li>
+<li><p>数据链路层: <strong>数据链路层在两个网络实体之间提供数据链路连接的创建、维持和释放管理</strong>.它将数据划分为数据帧从一个节点传输到临近的另一个节点,这些节点是通过MAC(主机的物理地址)来进行标识的.</p>
+</li>
+<li><p>物理层: 物理层是<code>OSI</code>模型中最低的一层,物理层主要负责传输数据所需要的物理链路创建、维持、拆除，而提供具有机械的,电子的,功能的和规范的特性.简单来说,<strong>物理层负责了物理设备之间的通信传输.</strong></p>
+</li>
+</ul>
+<h4 id="TCP-IP"><a href="#TCP-IP" class="headerlink" title="TCP/IP"></a>TCP/IP</h4><hr>
+<p><code>TCP</code>协议全称为传输控制协议(<code>Transmission Control Protocol</code>),由于它是基于<code>IP</code>协议之上的,所以也有人称作为<code>TCP/IP</code>协议.</p>
+<p><code>TCP</code>协议是位于传输层的协议,它与同样位于传输层的<code>UDP</code>协议差别很大,它保证了数据包在传输时的安全性(丢包重传),而<code>UDP</code>则只负责发送数据,不保证数据的安全.</p>
+<p><code>TCP</code>为了保证不发生丢包,<strong>给每个包标记了一个序号,同时序号也保证了接收端在接收数据包时的顺序.然后接收端对已成功收到的包发回一个相应的确认(<code>ACK</code>)；如果发送端在合理的往返时延(<code>RTT</code>)内未收到确认,那么对应的数据包就被假设为已丢失将会被进行重传</strong>.<code>TCP</code>用一个校验和函数来检验数据是否有错误,在发送和接收时都要计算校验和.</p>
+<p><code>TCP</code>协议在连接建立与终止时需要经过三次握手与四次挥手,这个机制主要都是为了提高可靠性.</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Connection_TCP.png" alt="三次握手"></p>
+<ol>
+<li><p>客户端发送SYN（SEQ=x）报文给服务器端,进入SYN_SEND状态,等待服务器端确认.</p>
+</li>
+<li><p>服务器端收到SYN报文,回应一个SYN （SEQ=y）ACK(ACK=x+1）报文,进入SYN_RECV状态.</p>
+</li>
+<li><p>客户端收到服务器端的SYN报文,回应一个ACK(ACK=y+1）报文,进入Established状态.</p>
+</li>
+<li><p>服务器接收到客户端发送的SYN报文,三次握手完成,连接建立.</p>
+</li>
+</ol>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/Deconnection_TCP.png" alt="四次挥手"></p>
+<ol>
+<li><p>某一端首先调用close,称该端执行“主动关闭”（active close）.该端发送一个FIN报文,表示数据发送完毕(我们称它为<code>A</code>端).</p>
+</li>
+<li><p>另一端接收到这个FIN信号执行 “被动关闭”（passive close ),并回应一个ACK报文.(我们称它为<code>B</code>端)</p>
+</li>
+<li><p>一段时间后,<code>B</code>端没有数据发送的任务了,这时它将调用close关闭套接字,然后向<code>A</code>端发送一个FIN信号.</p>
+</li>
+<li><p><code>A</code>端接收到FIN信号,开始进行关闭连接,并对<code>B</code>端返回一个ACK.</p>
+</li>
+<li><p><code>B</code>端接收到来自<code>A</code>端的ACK信号,进行关闭连接,四次挥手完毕.</p>
+</li>
+</ol>
+<p><code>TCP/IP</code>将<code>OSI</code>模型抽象成了四层,下图为以<code>HTTP</code>为例的一个数据发送过程.</p>
+<p><img src="http://wx4.sinaimg.cn/mw690/63503acbly1fjat0gfjirj20q60s8gno.jpg" alt=""></p>
+<h4 id="分组交换"><a href="#分组交换" class="headerlink" title="分组交换"></a>分组交换</h4><hr>
+<p>数据包在网络中进行传输时使用了分组交换.分组交换也称为包交换,<strong>它将用户通信的数据划分成多个更小的等长数据段,在每个数据段的前面加上必要的控制信息作为数据段的首部,每个带有首部的数据段就构成了一个分组</strong>.首部指明了该分组发送的地址,当交换机收到分组之后,将根据首部中的地址信息将分组转发到目的地,这个过程就是分组交换.能够进行分组交换的通信网被称为分组交换网.</p>
+<p><strong>分组交换的本质就是存储转发</strong>,它将所接受的分组暂时存储下来,在目的方向路由上排队,当它可以发送信息时,再将信息发送到相应的路由上,完成转发.其存储转发的过程就是分组交换的过程.</p>
+<h3 id="数据的表示"><a href="#数据的表示" class="headerlink" title="数据的表示"></a>数据的表示</h3><hr>
+<p>计算机编程语言拥有多种数据类型, 例如<code>int</code>、<code>char</code>、<code>double</code>等.<strong>但不管是什么类型的数据,在计算机中其实都只是一个字节序列(以8位二进制为一个字节)</strong>.每个机器中对字节序列的排序不大相同,有一些机器按照<strong>从最高有效字节到最低有效字节的顺序存储,这种规则被称为大端法</strong>;还有一些机器<strong>将最低有效字节排在最前面,这种规则被称为小端法</strong>.</p>
+<p><strong>计算机使用补码来表示数值,一个数的最高有效位为符号位</strong>(以整数为例,整数占有4字节32位,最高位即最左位,剩下31位用于表示数字,所以整数的有效范围为<code>-2^31 ~ 2^31 - 1</code>),<strong>如果符号位为1,则代表这个值为负,如果符号位为0,则代表这个值为正.负数的补码即是它的反码(在保持符号位不变的前提下按位取反)+1,正数的补码不需要做其他操作,就是它本身的值.</strong></p>
+<p><strong>当将一个较小类型的值强转为较大类型时(如<code>byte</code>强转为<code>int</code>),将会发生符号扩展,较小类型不包含的位会以符号位来进行填充</strong>(还是以<code>byte</code>为例,当它强转为<code>int</code>时,高24位会被填充为最高有效位中的数值,如果最高有效位为1,那么高24位都会为1,这时<code>byte</code>原来要表示的值将产生变化,要避免这种情况,可以使用一个低8位为1高24位为0的数,将它与强转后的结果进行<code>&amp;</code>操作,来保留低8位,并消除高24位中的1).</p>
+<p>对一个数进行移位操作时,也需要按规则填充丢失的位数.<strong>移位操作分为算术移位与逻辑移位,算术移位会填充符号位,而逻辑移位全部填充0.</strong></p>
+<ul>
+<li><p>当进行左移操作时,右边空出的位用0补充,高位左移溢出则舍弃该高位.</p>
+</li>
+<li><p>当进行右移操作时,左边空出的位用符号位来补充(正数补0,负数补1),右边溢出则舍弃.如果使用逻辑移位(<code>Java</code>中为<code>&gt;&gt;&gt;</code>),左边空出的位会用0来补充.</p>
+</li>
+</ul>
+<p>读到这里,可能有人会有疑问,为什么计算机非得使用补码?这主要因为,<strong>计算机中没有减法器只有加法器,而减去一个数其实就是加上一个负数,使用补码进行计算会很方便快速.</strong></p>
+<p>我们假设一个指定<code>n</code>为长度的二进制序列,那么它将会有<code>2^n</code>个可能的值,加减法运算都存在上溢出与下溢出的情况,实际上都<strong>等价于<code>模(≡) 2^n</code>的加减法运算.</strong></p>
+<p>把范围想象成一个时钟,假设现在时针指向数字3,若要得出6小时前时针指向的数字是几,有两种方法:</p>
+<ol>
+<li><p>将时针逆时针拨动6格.</p>
+</li>
+<li><p>将时针顺时针拨动12 - 6 = 6格.</p>
+</li>
+</ol>
+<p>这里的12就是模,3小时-6小时 = 3小时 + (12 - 6)小时.</p>
+<p>例如以下例子,模为<code>2^8 = 256</code></p>
+<ul>
+<li><p>一个8位无符号整数的值的范围是0到255.因此4+254将上溢出,结果为2: <code>(4 + 254) ≡ 258 ≡ 258 - 256 ≡ 2</code></p>
+</li>
+<li><p>一个8位有符号整数的值的范围是−128到127,则126+125将上溢出,结果为-5: <code>(126+125) ≡ 251 ≡ 251 - 256 ≡ -5</code></p>
+</li>
+</ul>
+<h4 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h4><hr>
+<p><strong>浮点数是一种对于实数的近似值数值表现法</strong>,由一个有效数字（即尾数）加上幂数来表示,通常是乘以某个基数的整数次指数得到.<strong>但浮点数计算通常伴随着因为无法精确表示而进行的近似或舍入.</strong></p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/4/4d/Float_mantissa_exponent.png" alt=""></p>
+<p>在计算机使用的浮点数被电气电子工程师协会（IEEE）规范化为IEEE-754,任意一个二进制浮点数V都可以表示成下列形式: </p>
+<p>$$V = {(-1)}^s <em> M </em> {2^E}$$</p>
+<ul>
+<li><p>${(-1)}^s$表示符号位,当s=0,V为正数;s=1,V为负数.</p>
+</li>
+<li><p>M 表示有效数字,$1≤M&lt;2$.</p>
+</li>
+<li><p>$2^E$表示指数位.</p>
+</li>
+</ul>
+<p>这种表示方式有点类似于科学计数法,在计算机中,通常使用2为基数的幂数来表示.IEEE-754同时还规定了单精度(<code>float</code>)与双精度(<code>double</code>)的区别:</p>
+<ul>
+<li><p>32位的单精度浮点数,最高1位是符号位s,接着的8位是指数E,剩下的23位是有效数字M.</p>
+</li>
+<li><p>64位的双精度浮点数,最高1位是符号位s,接着的11位是指数E,剩下的52位为有效数字M.</p>
+</li>
+</ul>
+<h3 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h3><hr>
+<p><strong>当调用一个函数时,系统会在栈上分配一个空间,存放了函数中的局部变量、函数参数、返回地址等,这样的一个结构被称为栈帧.</strong></p>
+<p>函数中的数据的存活状态是后进先出的,而栈正好是满足这一特性的数据结构,这也是为什么计算机使用栈来当作函数调用的存储结构.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">  sayHello();</div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</div><div class="line">  hello_world();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">hello_world</span><span class="params">()</span> </span>&#123;</div><div class="line">  print(<span class="string">"Hello,World"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"> main()  sayHello()  hello_world()  print()</div><div class="line">   -                                main()</div><div class="line">   |</div><div class="line">   +&gt;     -                            sayHello()</div><div class="line">   .      |</div><div class="line">   .      +&gt;   -                              hello_world()</div><div class="line">   .      .    |</div><div class="line">   .      .    +&gt;   -                                  print()</div><div class="line">   .      .    .    |</div><div class="line">   .      .    +   &lt;-                       <span class="keyword">return</span> from print()</div><div class="line">   .      .    |</div><div class="line">   .      +   &lt;-                        <span class="keyword">return</span> from hello_world()</div><div class="line">   .      |</div><div class="line">   +     &lt;-                        <span class="keyword">return</span> from sayHello()</div><div class="line">   |</div><div class="line">   -                             <span class="keyword">return</span> from main()</div></pre></td></tr></table></figure>
+<p><strong>在<code>x86-64</code>架构中,栈是向低地址方向生长的,寄存器<code>%rsp</code>指向栈顶</strong>,当一个函数被调用时,将会执行<code>pushq</code>指令,栈帧入栈,栈指针减小(向下生长),当函数返回后,将会执行<code>popq</code>指令,栈帧出栈,释放空间,栈指针增加.如果不断有函数进行调用,栈就会不断向下生长,最终会产生<code>Stack Overflow</code>.</p>
+<h3 id="计算机编程语言"><a href="#计算机编程语言" class="headerlink" title="计算机编程语言"></a>计算机编程语言</h3><hr>
+<p><strong>计算机编程语言是用来定义计算机程序的语言,它以一种标准化的语法规则来向计算机发出指令</strong>.最早的编程语言是在计算机发明之前产生的,当时是用来控制提花织布机及自动演奏钢琴的动作.如今已经有上千种不同的编程语言,不管是哪种语言,尽管它们的特性各有不同,但写程序的核心都是条件判断、循环、分支(这些也是机器指令的核心).</p>
+<p>编程语言依赖于编译器或解释器(所以也分为编译型语言与解释型语言),如果没有对应的编译器/解释器来对语法与语义进行分析并生成对应的机器语言,那么我们所写的代码其实都只是普通的文本字符(编译器/解释器也会对源代码进行一系列优化提高性能).</p>
+<p>编译型语言通过编译器直接将源代码翻译成机器语言并生成一个可执行文件(机器语言是不兼容的,如果要到另一台机器上运行,就需要对源代码重新编译);解释型语言通过解释器动态地翻译源代码并直接执行(性能上会比编译型语言直接运行可执行文件要差);虽然大多数的语言既可被编译又可被解译,但大多数仅在一种情况下能够良好运行.</p>
+<p><code>Java</code>的编译机制比较特殊,它将<code>Java</code>源代码编译成<code>JVM</code>字节码(通过虚拟机来达到一次编译在所有平台可用),然后<code>JVM</code>对字节码进行解释执行,但对于较热的代码块(频繁调用的函数等),<code>JVM</code>会通过<code>JIT</code>即时编译技术将这些频繁使用的代码块动态地编译成机器语言,提高程序的性能.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/2017/" rel="tag"># 2017</a>
+          
+            <a href="/tags/计算机/" rel="tag"># 计算机</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/20/2017-08-20-Encode/" rel="next" title="编码的那点事儿">
+                <i class="fa fa-chevron-left"></i> 编码的那点事儿
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!--MOB SHARE BEGIN-->
+ <div class="-mob-share-ui-button -mob-share-open">分享</div>
+ <div class="-mob-share-ui" style="display: none">
+     <ul class="-mob-share-list">
+         <li class="-mob-share-weibo"><p>新浪微博</p></li>
+         <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+         <li class="-mob-share-qzone"><p>QQ空间</p></li>
+         <li class="-mob-share-qq"><p>QQ好友</p></li>
+         <li class="-mob-share-weixin"><p>微信</p></li>
+         <li class="-mob-share-douban"><p>豆瓣</p></li>
+         <li class="-mob-share-renren"><p>人人网</p></li>
+         <li class="-mob-share-kaixin"><p>开心网</p></li>
+         <li class="-mob-share-facebook"><p>Facebook</p></li>
+         <li class="-mob-share-twitter"><p>Twitter</p></li>
+         <li class="-mob-share-pocket"><p>Pocket</p></li>
+         <li class="-mob-share-google"><p>Google+</p></li>
+         <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+         <li class="-mob-share-mingdao"><p>明道</p></li>
+         <li class="-mob-share-pengyou"><p>朋友网</p></li>
+         <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+         <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+         <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+     </ul>
+    <div class="-mob-share-close">取消</div>
+ </div>
+ <div class="-mob-share-ui-bg"></div>
+ <script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=1f85dd74c1b48"></script>
+ <!--MOB SHARE END-->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div id="sidebar-dimmer"></div>
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="SylvanasSun" />
+          <p class="site-author-name" itemprop="name">SylvanasSun</p>
+           
+              <p class="site-description motion-element" itemprop="description">这里是SylvanasSun的个人博客,与你一起发现更大的世界。</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">52</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/SylvanasSun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/1666202315/profile?rightmod=1&wvr=6&mod=personinfo" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/sylvanas-sun/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.oschina.net/" title="oschina" target="_blank">oschina</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.csdn.net/" title="csdn" target="_blank">csdn</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://toutiao.io/" title="开发者头条" target="_blank">开发者头条</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#现代计算机结构"><span class="nav-number">1.</span> <span class="nav-text">现代计算机结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总线"><span class="nav-number">2.</span> <span class="nav-text">总线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O设备"><span class="nav-number">3.</span> <span class="nav-text">I/O设备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存"><span class="nav-number">4.</span> <span class="nav-text">内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU"><span class="nav-number">5.</span> <span class="nav-text">CPU</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#寄存器"><span class="nav-number">5.1.</span> <span class="nav-text">寄存器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#程序计数器"><span class="nav-number">5.2.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#高速缓冲"><span class="nav-number">5.3.</span> <span class="nav-text">高速缓冲</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DMA"><span class="nav-number">5.4.</span> <span class="nav-text">DMA</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#流水线"><span class="nav-number">5.5.</span> <span class="nav-text">流水线</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#超线程"><span class="nav-number">5.6.</span> <span class="nav-text">超线程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多核"><span class="nav-number">5.7.</span> <span class="nav-text">多核</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作系统"><span class="nav-number">6.</span> <span class="nav-text">操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟内存"><span class="nav-number">7.</span> <span class="nav-text">虚拟内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程与线程"><span class="nav-number">8.</span> <span class="nav-text">进程与线程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#进程"><span class="nav-number">8.1.</span> <span class="nav-text">进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程"><span class="nav-number">8.2.</span> <span class="nav-text">线程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件"><span class="nav-number">9.</span> <span class="nav-text">文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络"><span class="nav-number">10.</span> <span class="nav-text">网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#OSI模型"><span class="nav-number">10.1.</span> <span class="nav-text">OSI模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP-IP"><span class="nav-number">10.2.</span> <span class="nav-text">TCP/IP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分组交换"><span class="nav-number">10.3.</span> <span class="nav-text">分组交换</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据的表示"><span class="nav-number">11.</span> <span class="nav-text">数据的表示</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#浮点数"><span class="nav-number">11.1.</span> <span class="nav-text">浮点数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数调用"><span class="nav-number">12.</span> <span class="nav-text">函数调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算机编程语言"><span class="nav-number">13.</span> <span class="nav-text">计算机编程语言</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SylvanasSun</span>
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-sylvanassun-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://sylvanassun.github.io/2017/09/08/2017-09-08-ComputerStruction/';
+          this.page.identifier = '2017/09/08/2017-09-08-ComputerStruction/';
+          this.page.title = '探索计算机的结构与核心概念';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-sylvanassun-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("PvA9UJ6yFKF4auJrnukN6hmW-gzGzoHsz", "wfAE2ETw2IfWPPRCprVJW8mm");AV.useAVCloudUS();</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

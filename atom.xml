@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-09-09T08:23:57.317Z</updated>
+  <updated>2017-09-09T08:27:31.646Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://sylvanassun.github.io/2017/09/08/2017-09-08-ComputerStructure/"/>
     <id>https://sylvanassun.github.io/2017/09/08/2017-09-08-ComputerStructure/</id>
     <published>2017-09-08T10:00:00.000Z</published>
-    <updated>2017-09-09T08:23:57.317Z</updated>
+    <updated>2017-09-09T08:27:31.646Z</updated>
     
     <content type="html"><![CDATA[<p>在我们的生活与工作中所使用到的计算机都是基于冯诺依曼结构实现的,冯诺依曼结构又称冯诺依曼模型或普林斯顿结构,它是一种将程序指令存储器和数据存储器合并在一起的计算机设计概念结构.</p>
 <p>冯诺依曼结构起源于<code>EDVAC(Electronic Discrete Variable Automatic Computer)</code>离散变量自动电子计算机,当时冯诺依曼以技术顾问的身份加入<code>EDVAC</code>项目组,负责总结和详细说明<code>EDVAC</code>的逻辑设计,直到1945年6月发表了一份长达101页的报告,这就是计算机史上著名的”101页报告”,该报告明确规定<strong>用二进制替代十进制运算</strong>,并<strong>将计算机分成五大组件</strong>,这一卓越的思想为电子计算机的逻辑结构设计奠定了基础,已成为计算机设计的基本原则.</p>
@@ -271,7 +271,7 @@
 <p><strong>浮点数是一种对于实数的近似值数值表现法</strong>,由一个有效数字（即尾数）加上幂数来表示,通常是乘以某个基数的整数次指数得到.<strong>但浮点数计算通常伴随着因为无法精确表示而进行的近似或舍入.</strong></p>
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/4/4d/Float_mantissa_exponent.png" alt=""></p>
 <p>在计算机使用的浮点数被电气电子工程师协会（IEEE）规范化为IEEE-754,任意一个二进制浮点数V都可以表示成下列形式: </p>
-<p>$V = {(-1)^s} <em> {M} </em> {2^E}$</p>
+<p>$$V = (-1)^s <em> M </em> 2^E$$</p>
 <ul>
 <li><p>${(-1)}^s$表示符号位,当s=0,V为正数;s=1,V为负数.</p>
 </li>

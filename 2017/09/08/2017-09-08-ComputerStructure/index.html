@@ -118,7 +118,7 @@
 <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/2/2d/Deconnection_TCP.png">
 <meta property="og:image" content="http://wx4.sinaimg.cn/mw690/63503acbly1fjat0gfjirj20q60s8gno.jpg">
 <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/4/4d/Float_mantissa_exponent.png">
-<meta property="og:updated_time" content="2017-09-09T03:35:48.632Z">
+<meta property="og:updated_time" content="2017-09-09T08:06:31.935Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="探索计算机的结构与核心概念">
 <meta name="twitter:description" content="在我们的生活与工作中所使用到的计算机都是基于冯诺依曼结构实现的,冯诺依曼结构又称冯诺依曼模型或普林斯顿结构,它是一种将程序指令存储器和数据存储器合并在一起的计算机设计概念结构. 冯诺依曼结构起源于EDVAC(Electronic Discrete Variable Automatic Computer)离散变量自动电子计算机,当时冯诺依曼以技术顾问的身份加入EDVAC项目组,负责总结和详细说明ED">
@@ -442,19 +442,16 @@
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Von_Neumann_architecture.svg/420px-Von_Neumann_architecture.svg.png" alt="冯诺依曼结构"></p>
 <p>冯诺依曼结构具有以下特点: </p>
 <ol>
-<li>数据由一个贯穿整个结构的总线来进行传输.</li>
-</ol>
-<ol>
-<li>存储器是按地址访问、线性编址的空间</li>
-</ol>
-<ol>
-<li>指令由操作码和地址码组成</li>
-</ol>
-<ol>
-<li>数据以二进制编码</li>
-</ol>
-<ol>
-<li>一个冯诺依曼结构的计算机必须有存储器,控制单元,运算单元,输入输出设备.</li>
+<li><p>数据由一个贯穿整个结构的总线来进行传输.</p>
+</li>
+<li><p>存储器是按地址访问、线性编址的空间</p>
+</li>
+<li><p>指令由操作码和地址码组成</p>
+</li>
+<li><p>数据以二进制编码</p>
+</li>
+<li><p>一个冯诺依曼结构的计算机必须有存储器,控制单元,运算单元,输入输出设备.</p>
+</li>
 </ol>
 <p>冯诺依曼结构将<code>CPU</code>与存储器分开的做法也并非十全十美,<strong><code>CPU</code>和内存、硬盘等设备的数据传输速度不匹配</strong>成了整体效率的瓶颈,<code>CPU</code>会在等待数据输入的时间中空置,许多技术都是为了解决这个瓶颈,例如<code>DMA(直接内存访问)</code>,在<code>CPU</code>中建立高速缓冲区等.</p>
 <blockquote>
@@ -462,7 +459,7 @@
 </blockquote>
 <h3 id="现代计算机结构"><a href="#现代计算机结构" class="headerlink" title="现代计算机结构"></a>现代计算机结构</h3><hr>
 <p><strong>现代计算机是基于冯诺依曼结构的电子计算机</strong>.所谓电子计算机,就是是一种利用电子学原理,根据一系列指令对数据进行处理的机器.</p>
-<p>晶体管是组成现代电子计算机的最原始的部件(集成电路中含有数以万计的晶体管),它是一种半导体材料(导电性可受控制,范围可从绝缘体至导体之间),晶体管可以通过电流的变化,实现电路的切换,这种特性非常适合组成各种逻辑门(与或非)与表示二进制数据.值得一提的是,早期使用继电器实现逻辑门的计算机体积甚至大到要一整个屋子才能放下.</p>
+<p>晶体管是组成现代电子计算机的最原始的部件(集成电路中含有数以亿计的晶体管),它是一种半导体材料(导电性可受控制,范围可从绝缘体至导体之间),晶体管可以通过电流的变化,实现电路的切换,这种特性非常适合组成各种逻辑门(与或非)与表示二进制数据.值得一提的是,早期使用继电器实现逻辑门的计算机体积甚至大到要一整个屋子才能放下.</p>
 <p>现代计算机的硬件结构如下图,虽然多了很多其他的硬件但与冯诺依曼结构的概念是一致的: </p>
 <p><img src="http://wx4.sinaimg.cn/large/63503acbly1fius74iz98j212e0po778.jpg" alt=""></p>
 <h3 id="总线"><a href="#总线" class="headerlink" title="总线"></a>总线</h3><hr>
@@ -689,7 +686,7 @@
 <p><strong>浮点数是一种对于实数的近似值数值表现法</strong>,由一个有效数字（即尾数）加上幂数来表示,通常是乘以某个基数的整数次指数得到.<strong>但浮点数计算通常伴随着因为无法精确表示而进行的近似或舍入.</strong></p>
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/4/4d/Float_mantissa_exponent.png" alt=""></p>
 <p>在计算机使用的浮点数被电气电子工程师协会（IEEE）规范化为IEEE-754,任意一个二进制浮点数V都可以表示成下列形式: </p>
-<p>$$V = {(-1)}^s <em> M </em> {2^E}$$</p>
+<p>$V = {(-1)}^s <em> M </em> {2^E}$</p>
 <ul>
 <li><p>${(-1)}^s$表示符号位,当s=0,V为正数;s=1,V为负数.</p>
 </li>

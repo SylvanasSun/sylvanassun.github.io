@@ -220,6 +220,8 @@ links:
   oschina: http://www.oschina.net/
   csdn: http://www.csdn.net/
   开发者头条: https://toutiao.io/
+  掘金: https://juejin.im/
+  御坂研究所: https://www.nosuchfield.com/
 
 
 # ---------------------------------------------------------------
@@ -308,7 +310,7 @@ han: false
 #swiftype_key:
 
 # Baidu Analytics ID
-# baidu_analytics: 
+# baidu_analytics:
 
 # Duoshuo ShortName
 #duoshuo_shortname:
@@ -581,7 +583,7 @@ vendors:
   # Internal version: 0.7.9
   # See: https://faisalman.github.io/ua-parser-js/
   ua_parser:
-  
+
   # Internal version: 4.6.2
   # See: http://fontawesome.io/
   fontawesome:

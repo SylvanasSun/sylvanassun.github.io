@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-09-22T02:33:38.044Z</updated>
+  <updated>2017-10-04T07:04:33.651Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -14,6 +14,211 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>浏览器渲染过程与性能优化</title>
+    <link href="https://sylvanassun.github.io/2017/10/03/2017-10-03-BrowserCriticalRenderingPath/"/>
+    <id>https://sylvanassun.github.io/2017/10/03/2017-10-03-BrowserCriticalRenderingPath/</id>
+    <published>2017-10-03T10:00:00.000Z</published>
+    <updated>2017-10-04T07:04:33.651Z</updated>
+    
+    <content type="html"><![CDATA[<p>大家都知道万维网的应用层使用了<code>HTTP</code>协议，并且用浏览器作为入口访问网络上的资源。用户在使用浏览器访问一个网站时需要先通过<code>HTTP</code>协议向服务器发送请求，之后服务器返回<code>HTML</code>文件与响应信息。这时，浏览器会根据<code>HTML</code>文件来进行解析与渲染（该阶段还包括向服务器请求非内联的<code>CSS</code>文件与<code>JavaScript</code>文件或者其他资源），最终再将页面呈现在用户面前。</p>
+<p>现在知道了网页的渲染都是由浏览器完成的，那么如果一个网站的页面加载速度太慢会导致用户体验不够友好，本文通过详解浏览器渲染页面的过程来引入一些基本的浏览器性能优化方案。让浏览器更快地渲染你的网页并快速响应从而提高用户体验。</p>
+<blockquote>
+<p>本文作者为: <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanas.sun@gmail.com)</a>.转载请务必将下面这段话置于文章开头处(保留超链接).<br>本文首发自<a href="https://sylvanassun.github.io/">SylvanasSun Blog</a>,原文链接: <a href="https://sylvanassun.github.io/2017/10/03/2017-10-03-BrowserCriticalRenderingPath">https://sylvanassun.github.io/2017/10/03/2017-10-03-BrowserCriticalRenderingPath</a></p>
+</blockquote>
+<h3 id="关键渲染路径"><a href="#关键渲染路径" class="headerlink" title="关键渲染路径"></a>关键渲染路径</h3><hr>
+<p><strong>浏览器接收到服务器返回的<code>HTML</code>、<code>CSS</code>和<code>JavaScript</code>字节数据并对其进行解析和转变成像素的渲染过程被称为关键渲染路径。通过优化关键渲染路径即可以缩短浏览器渲染页面的时间。</strong></p>
+<p><strong>浏览器在渲染页面前需要先构建出<code>DOM</code>树与<code>CSSOM</code>树</strong>（如果没有<code>DOM</code>树和<code>CSSOM</code>树就无法确定页面的结构与样式，所以这两项是必须先构建出来的）。</p>
+<p><strong><code>DOM</code>树全称为<code>Document Object Model</code>文档对象模型，它是<code>HTML</code>和<code>XML</code>文档的编程接口，提供了对文档的结构化表示，并定义了一种可以使程序对该结构进行访问的方式</strong>（比如<code>JavaScript</code>就是通过<code>DOM</code>来操作结构、样式和内容）。<code>DOM</code>将文档解析为一个由节点和对象组成的集合，可以说一个<code>WEB</code>页面其实就是一个<code>DOM</code>。</p>
+<p><code>CSSOM</code>树全称为<code>Cascading Style Sheets Object Model</code>层叠样式表对象模型，它与<code>DOM</code>树的含义相差不大，只不过它是<code>CSS</code>的对象集合。</p>
+<h3 id="构建DOM树与CSSOM树"><a href="#构建DOM树与CSSOM树" class="headerlink" title="构建DOM树与CSSOM树"></a>构建DOM树与CSSOM树</h3><hr>
+<p>浏览器从网络或硬盘中获得<code>HTML</code>字节数据后会经过一个流程将字节解析为<code>DOM</code>树：</p>
+<ul>
+<li><p>编码： <strong>先将<code>HTML</code>的原始字节数据转换为文件指定编码的字符。</strong></p>
+</li>
+<li><p>令牌化： 然后<strong>浏览器会根据<code>HTML</code>规范来将字符串转换成各种令牌</strong>（如<code>&lt;html&gt;</code>、<code>&lt;body&gt;</code>这样的标签以及标签中的字符串和属性等都会被转化为令牌，每个令牌具有特殊含义和一组规则）。令牌记录了标签的开始与结束，通过这个特性可以轻松判断一个标签是否为子标签（假设有<code>&lt;html&gt;</code>与<code>&lt;body&gt;</code>两个标签，当<code>&lt;html&gt;</code>标签的令牌还未遇到它的结束令牌<code>&lt;/html&gt;</code>就遇见了<code>&lt;body&gt;</code>标签令牌，那么<code>&lt;body&gt;</code>就是<code>&lt;html&gt;</code>的子标签）。</p>
+</li>
+<li><p>生成对象： <strong>接下来每个令牌都会被转换成定义其属性和规则的对象（这个对象就是节点对象）。</strong></p>
+</li>
+<li><p>构建完毕： <strong><code>DOM</code>树构建完成，整个对象集合就像是一棵树形结构</strong>。可能有人会疑惑为什么<code>DOM</code>是一个树形结构，这是因为标签之间含有复杂的父子关系，树形结构正好可以诠释这个关系（<code>CSSOS</code>同理，层叠样式也含有父子关系。例如： <code>div p {font-size: 18px}</code>，会先寻找所有<code>p</code>标签并判断它的父标签是否为<code>div</code>之后才会决定要不要采用这个样式进行渲染）。</p>
+</li>
+</ul>
+<p>整个<code>DOM</code>树的构建过程其实就是： <strong>字节 -&gt; 字符 -&gt; 令牌 -&gt; 节点对象 -&gt; 对象模型</strong>，下面将通过一个示例<code>HTML</code>代码与配图更形象地解释这个过程。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width,initial-scale=1"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"style.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Critical Path<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello <span class="tag">&lt;<span class="name">span</span>&gt;</span>web performance<span class="tag">&lt;/<span class="name">span</span>&gt;</span> students!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"awesome-photo.jpg"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><img src="http://wx2.sinaimg.cn/large/63503acbly1fk2te7tuh0j20nv0dbjtl.jpg" alt="DOM树构建过程"></p>
+<p>当上述<code>HTML</code>代码遇见<code>&lt;link&gt;</code>标签时，浏览器会发送请求获得该标签中标记的<code>CSS</code>文件（使用内联<code>CSS</code>可以省略请求的步骤提高速度，但没有必要为了这点速度而丢失了模块化与可维护性），<code>style.css</code>中的内容如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">body</span> &#123; <span class="attribute">font-size</span>: <span class="number">16px</span> &#125;</div><div class="line"><span class="selector-tag">p</span> &#123; <span class="attribute">font-weight</span>: bold &#125;</div><div class="line"><span class="selector-tag">span</span> &#123; <span class="attribute">color</span>: red &#125;</div><div class="line"><span class="selector-tag">p</span> <span class="selector-tag">span</span> &#123; <span class="attribute">display</span>: none &#125;</div><div class="line"><span class="selector-tag">img</span> &#123; <span class="attribute">float</span>: right &#125;</div></pre></td></tr></table></figure>
+<p>浏览器获得外部<code>CSS</code>文件的数据后，就会像构建<code>DOM</code>树一样开始构建<code>CSSOM</code>树，这个过程没有什么特别的差别。</p>
+<p><img src="http://wx1.sinaimg.cn/large/63503acbly1fk2te87pafj20hi08mgm3.jpg" alt="CSSOM树"></p>
+<p>如果想要更详细地去体验一下关键渲染路径的构建，可以使用<code>Chrome</code>开发者工具中的<code>Timeline</code>功能，它记录了浏览器从请求页面资源一直到渲染的各种操作过程，甚至还可以录制某一时间段的过程（建议不要去看太大的网站，信息会比较杂乱）。</p>
+<p><img src="http://wx4.sinaimg.cn/large/63503acbly1fk2tubeknuj20uf0e1abt.jpg" alt="Timeline"></p>
+<h3 id="构建渲染树"><a href="#构建渲染树" class="headerlink" title="构建渲染树"></a>构建渲染树</h3><hr>
+<p>在构建了<code>DOM</code>树和<code>CSSOM</code>树之后，浏览器只是拥有了两个互相独立的对象集合，<code>DOM</code>树描述了文档的结构与内容，<code>CSSOM</code>树则描述了对文档应用的样式规则，<strong>想要渲染出页面，就需要将<code>DOM</code>树与<code>CSSOM</code>树结合在一起</strong>，这就是渲染树。</p>
+<p><img src="http://wx3.sinaimg.cn/large/63503acbly1fk2tubr7irj20oo0bmacf.jpg" alt="渲染树"></p>
+<ul>
+<li><p>浏览器会先从<code>DOM</code>树的根节点开始遍历每个可见节点（不可见的节点自然就没必要渲染到页面了，不可见的节点还包括被<code>CSS</code>设置了<code>display: none</code>属性的节点，值得注意的是<code>visibility: hidden</code>属性并不算是不可见属性，它的语义是隐藏元素，但元素仍然占据着布局空间，所以它会被渲染成一个空框）。</p>
+</li>
+<li><p>对每个可见节点，找到其适配的<code>CSS</code>样式规则并应用。</p>
+</li>
+<li><p>渲染树构建完成，每个节点都是可见节点并且都含有其内容和对应规则的样式。</p>
+</li>
+</ul>
+<p>渲染树构建完毕后，浏览器得到了每个可见节点的内容与其样式，下一步工作则<strong>需要计算每个节点在窗口内的确切位置与大小，也就是布局阶段。</strong></p>
+<p><code>CSS</code>采用了一种叫做盒子模型的思维模型来表示每个节点与其他元素之间的距离，盒子模型包括外边距(<code>Margin</code>)，内边距(<code>Padding</code>)，边框(<code>Border</code>)，内容(<code>Content</code>)。页面中的每个标签其实都是一个个盒子。</p>
+<p><img src="http://wx1.sinaimg.cn/large/63503acbly1fk2vm967xsj206105aq2t.jpg" alt="盒子模型"></p>
+<p><strong>布局阶段会从渲染树的根节点开始遍历，然后确定每个节点对象在页面上的确切大小与位置</strong>，布局阶段的输出是一个盒子模型，它会精确地捕获每个元素在屏幕内的确切位置与大小，所有相对的测量值也都会被转换为屏幕内的绝对像素值。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width,initial-scale=1"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Critial Path: Hello world!<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">"width: 50%"</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">"width: 50%"</span>&gt;</span>Hello world!<span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><img src="http://wx3.sinaimg.cn/large/63503acbly1fk2vdt67wuj20hm08f3yl.jpg" alt="上述代码的布局结果"></p>
+<p>当<code>Layout</code>布局事件完成后，浏览器会立即发出<code>Paint Setup</code>与<code>Paint</code>事件，开始将渲染树绘制成像素，绘制所需的时间跟<code>CSS</code>样式的复杂度成正比，绘制完成后，用户就可以看到页面的最终呈现效果了。</p>
+<p>我们对一个网页发送请求并获得渲染后的页面可能也就经过了1~2秒，但浏览器其实已经做了上述所讲的非常多的工作，总结一下浏览器关键渲染路径的整个过程：</p>
+<ul>
+<li><p>处理<code>HTML</code>标记数据并生成<code>DOM</code>树。</p>
+</li>
+<li><p>处理<code>CSS</code>标记数据并生成<code>CSSOM</code>树。</p>
+</li>
+<li><p>将<code>DOM</code>树与<code>CSSOM</code>树合并在一起生成渲染树。</p>
+</li>
+<li><p>遍历渲染树开始布局，计算每个节点的位置信息。</p>
+</li>
+<li><p>将每个节点绘制到屏幕。</p>
+</li>
+</ul>
+<h3 id="渲染阻塞的优化方案"><a href="#渲染阻塞的优化方案" class="headerlink" title="渲染阻塞的优化方案"></a>渲染阻塞的优化方案</h3><hr>
+<p>浏览器想要渲染一个页面就必须先构建出<code>DOM</code>树与<code>CSSOM</code>树，如果<code>HTML</code>与<code>CSS</code>文件结构非常庞大与复杂，这显然会给页面加载速度带来严重影响。</p>
+<p>所谓渲染阻塞资源，即是对该资源发送请求后还需要先构建对应的<code>DOM</code>树或<code>CSSOM</code>树，这种行为显然会延迟渲染操作的开始时间。<strong><code>HTML</code>、<code>CSS</code>、<code>JavaScript</code>都是会对渲染产生阻塞的资源，<code>HTML</code>是必需的（没有<code>DOM</code>还谈何渲染），但还可以从<code>CSS</code>与<code>JavaScript</code>着手优化，尽可能地减少阻塞的产生。</strong></p>
+<h4 id="优化CSS"><a href="#优化CSS" class="headerlink" title="优化CSS"></a>优化CSS</h4><hr>
+<p>如果可以让<code>CSS</code>资源只在特定条件下使用，这样这些资源就可以在首次加载时先不进行构建<code>CSSOM</code>树，只有在符合特定条件时，才会让浏览器进行阻塞渲染然后构建<code>CSSOM</code>树。</p>
+<p><code>CSS</code>的媒体查询正是用来实现这个功能的，它由媒体类型以及零个或多个检查特定媒体特征状况的表达式组成。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 没有使用媒体查询，这个css资源会阻塞渲染  --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"style.css"</span>    <span class="attr">rel</span>=<span class="string">"stylesheet"</span>&gt;</span></div><div class="line"><span class="comment">&lt;!-- all是默认类型，它和不设置媒体查询的效果是一样的 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"style.css"</span>    <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">media</span>=<span class="string">"all"</span>&gt;</span></div><div class="line"><span class="comment">&lt;!-- 动态媒体查询， 将在网页加载时计算。</span></div><div class="line">根据网页加载时设备的方向，portrait.css 可能阻塞渲染，也可能不阻塞渲染。--&gt;</div><div class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"portrait.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">media</span>=<span class="string">"orientation:portrait"</span>&gt;</span></div><div class="line"><span class="comment">&lt;!-- 只在打印网页时应用，因此网页首次在浏览器中加载时，它不会阻塞渲染。 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"print.css"</span>    <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">media</span>=<span class="string">"print"</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>使用媒体查询可以让<code>CSS</code>资源不在首次加载中阻塞渲染，但不管是哪种<code>CSS</code>资源它们的下载请求都不会被忽略，浏览器仍然会先下载CSS文件</strong></p>
+<h4 id="优化JavaScript"><a href="#优化JavaScript" class="headerlink" title="优化JavaScript"></a>优化JavaScript</h4><hr>
+<p><strong>当浏览器的<code>HTML</code>解析器遇到一个<code>script</code>标记时会暂停构建<code>DOM</code>，然后将控制权移交至<code>JavaScript</code>引擎，这时引擎会开始执行<code>JavaScript</code>脚本，直到执行结束后，浏览器才会从之前中断的地方恢复，然后继续构建<code>DOM</code>。每次去执行<code>JavaScript</code>脚本都会严重地阻塞<code>DOM</code>树的构建，如果<code>JavaScript</code>脚本还操作了<code>CSSOM</code>，而正好这个<code>CSSOM</code>还没有下载和构建，浏览器甚至会延迟脚本执行和构建<code>DOM</code>，直至完成其<code>CSSOM</code>的下载和构建</strong>。显而易见，如果对<code>JavaScript</code>的执行位置运用不当，这将会严重影响渲染的速度。</p>
+<p>下面代码中的<code>JavaScript</code>脚本并不会生效，这是因为<code>DOM</code>树还没有构建到<code>&lt;p&gt;</code>标签时，<code>JavaScript</code>脚本就已经开始执行了。这也是为什么经常有人在<code>HTML</code>文件的最下方写内联<code>JavaScript</code>代码，又或者使用<code>window.onload()</code>和<code>JQuery</code>中的<code>$(function(){})</code>（这两个函数有一些区别，<code>window.onload()</code>是等待页面完全加载完毕后触发的事件，而<code>$(function(){})</code>在<code>DOM</code>树构建完毕后就会执行）。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width,initial-scale=1"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"style.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Hello,World<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">    	<span class="keyword">var</span> p = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'p'</span>)[<span class="number">0</span>];</div><div class="line">    	p.textContent = <span class="string">'SylvanasSun'</span>;	</div><div class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello,World!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>使用<code>async</code>可以通知浏览器该脚本不需要在引用位置执行</strong>，这样浏览器就可以继续构建<code>DOM</code>，<code>JavaScript</code>脚本会在就绪后开始执行，这样将显著提升页面首次加载的性能（<code>async</code>只可以在<code>src</code>标签中使用也就是外部引用的<code>JavaScript</code>文件）。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 下面2个用法效果是等价的 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"demo_async.js"</span> <span class="attr">async</span>=<span class="string">"async"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"demo_async.js"</span> <span class="attr">async</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="优化关键渲染路径总结"><a href="#优化关键渲染路径总结" class="headerlink" title="优化关键渲染路径总结"></a>优化关键渲染路径总结</h3><hr>
+<p>上文已经完整讲述了浏览器是如何渲染页面的以及渲染之前的准备工作，接下来我们以下面的案例来总结一下优化关键渲染路径的方法。</p>
+<p>假设有一个<code>HTML</code>页面，它只引入了一个<code>CSS</code>外部文件：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width,initial-scale=1"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"style.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello <span class="tag">&lt;<span class="name">span</span>&gt;</span>web performance<span class="tag">&lt;/<span class="name">span</span>&gt;</span> students!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"awesome-photo.jpg"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>它的关键渲染路径如下：</p>
+<p><img src="http://wx2.sinaimg.cn/large/63503acbly1fk56dzdbn9j20nr068dga.jpg" alt=""></p>
+<p>首先浏览器要先对服务器发送请求获得<code>HTML</code>文件，得到<code>HTML</code>文件后开始构建<code>DOM</code>树，在遇见<code>&lt;link&gt;</code>标签时浏览器需要向服务器再次发出请求来获得<code>CSS</code>文件，然后则是继续构建<code>DOM</code>树和<code>CSSOM</code>树，浏览器合并出渲染树，根据渲染树进行布局计算，执行绘制操作，页面渲染完成。</p>
+<p>有以下几个用于描述关键渲染路径性能的词汇：</p>
+<ul>
+<li><p>关键资源：可能阻塞网页首次渲染的资源（上图中为2个，<code>HTML</code>文件与外部<code>CSS</code>文件<code>style.css</code>）。</p>
+</li>
+<li><p>关键路径长度： 获取关键资源所需的往返次数或总时间（上图为2次或以上，一次获取<code>HTML</code>文件，一次获取<code>CSS</code>文件，这个次数基于<code>TCP</code>协议的最大拥塞窗口，一个文件不一定能在一次连接内传输完毕）。</p>
+</li>
+<li><p>关键字节：所有关键资源文件大小的总和（上图为<code>9KB</code>）。</p>
+</li>
+</ul>
+<p>接下来，案例代码的需求发生了变化，它新增了一个<code>JavaScript</code>文件。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width,initial-scale=1"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"style.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello <span class="tag">&lt;<span class="name">span</span>&gt;</span>web performance<span class="tag">&lt;/<span class="name">span</span>&gt;</span> students!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"awesome-photo.jpg"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"app.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><img src="http://wx1.sinaimg.cn/large/63503acbly1fk56e0i20xj20or06ygmi.jpg" alt=""></p>
+<p><code>JavaScript</code>文件阻塞了<code>DOM</code>树的构建，并且在执行<code>JavaScript</code>脚本时还需要先等待构建<code>CSSOM</code>树，上图的关键渲染路径特性如下：</p>
+<ul>
+<li><p>关键资源： 3（<code>HTML</code>、<code>style.css</code>、<code>app.js</code>）</p>
+</li>
+<li><p>关键路径长度： 2或以上（浏览器会在一次连接中一起下载<code>style.css</code>和<code>app.js</code>）</p>
+</li>
+<li><p>关键字节：11KB</p>
+</li>
+</ul>
+<p>现在，我们要优化关键渲染路径，首先将<code>&lt;script&gt;</code>标签添加异步属性<code>async</code>，这样浏览器的<code>HTML</code>解析器就不会阻塞这个<code>JavaScript</code>文件了。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width,initial-scale=1"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"style.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello <span class="tag">&lt;<span class="name">span</span>&gt;</span>web performance<span class="tag">&lt;/<span class="name">span</span>&gt;</span> students!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"awesome-photo.jpg"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"app.js"</span> <span class="attr">async</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><img src="http://wx3.sinaimg.cn/large/63503acbly1fk56e0sokqj20oj074ab1.jpg" alt=""></p>
+<ul>
+<li><p>关键资源：2（<code>app.js</code>为异步加载，不会成为阻塞渲染的资源）</p>
+</li>
+<li><p>关键路径长度： 2或以上</p>
+</li>
+<li><p>关键字节： 9KB（<code>app.js</code>不再是关键资源，所以没有算上它的大小）</p>
+</li>
+</ul>
+<p>接下来对<code>CSS</code>进行优化，比如添加上媒体查询。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width,initial-scale=1"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"style.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">media</span>=<span class="string">"print"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello <span class="tag">&lt;<span class="name">span</span>&gt;</span>web performance<span class="tag">&lt;/<span class="name">span</span>&gt;</span> students!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"awesome-photo.jpg"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"app.js"</span> <span class="attr">async</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><img src="http://wx1.sinaimg.cn/large/63503acbly1fk56e15x4jj20ny082mxu.jpg" alt=""></p>
+<ul>
+<li><p>关键资源：1（<code>app.js</code>为异步加载，<code>style.css</code>只有在打印时才会使用，所以只剩下<code>HTML</code>一个关键资源，也就是说当<code>DOM</code>树构建完毕，浏览器就会开始进行渲染）</p>
+</li>
+<li><p>关键路径长度：1或以上</p>
+</li>
+<li><p>关键字节：5KB</p>
+</li>
+</ul>
+<p><strong>优化关键渲染路径就是在对关键资源、关键路径长度和关键字节进行优化</strong>。关键资源越少，浏览器在渲染前的准备工作就越少；同样，关键路径长度和关键字节关系到浏览器下载资源的效率，它们越少，浏览器下载资源的速度就越快。</p>
+<h3 id="其他优化方案"><a href="#其他优化方案" class="headerlink" title="其他优化方案"></a>其他优化方案</h3><hr>
+<p>除了异步加载<code>JavaScript</code>和使用媒体查询外还有很多其他的优化方案可以使页面的首次加载变得更快，这些方案可以综合起来使用，但核心的思想还是针对关键渲染路径进行了优化。</p>
+<h4 id="加载部分HTML"><a href="#加载部分HTML" class="headerlink" title="加载部分HTML"></a>加载部分HTML</h4><hr>
+<p><strong>服务端在接收到请求时先只响应回<code>HTML</code>的初始部分，后续的<code>HTML</code>内容在需要时再通过<code>AJAX</code>获得</strong>。由于服务端只发送了部分<code>HTML</code>文件，这让构建<code>DOM</code>树的工作量减少很多，从而让用户感觉页面的加载速度很快。</p>
+<p>注意，这个方法不能用在<code>CSS</code>上，浏览器不允许<code>CSSOM</code>只构建初始部分，否则会无法确定具体的样式。 </p>
+<h4 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h4><hr>
+<p><strong>通过对外部资源进行压缩可以大幅度地减少浏览器需要下载的资源量，它会减少关键路径长度与关键字节，使页面的加载速度变得更快。</strong></p>
+<p><strong>对数据进行压缩其实就是使用更少的位数来对数据进行重编码</strong>。如今有非常多的压缩算法，且每一个的作用领域也各不相同，它们的复杂度也不相同，不过在这里我不会讲压缩算法的细节，感兴趣的朋友可以自己Google。</p>
+<p>在对<code>HTML</code>、<code>CSS</code>和<code>JavaScript</code>这些文件进行压缩之前，还需要先进行一次冗余压缩。<strong>所谓冗余压缩，就是去除多余的字符，例如注释、空格符和换行符</strong>。这些字符对于程序员是有用的，毕竟没有格式化的代码可读性是非常恐怖的，但它们对于浏览器是没有任何意义的，去除这些冗余可以减少文件的数据量。<strong>在进行完冗余压缩之后，再使用压缩算法进一步对数据本身进行压缩</strong>，例如<code>GZIP</code>（<code>GZIP</code>是一个可以作用于任何字节流的通用压缩算法，它会记忆之前已经看到的内容，然后再尝试查找并替换重复的内容。）。</p>
+<h4 id="HTTP缓存"><a href="#HTTP缓存" class="headerlink" title="HTTP缓存"></a>HTTP缓存</h4><hr>
+<p>通过网络来获取资源通常是缓慢的，如果资源文件过于膨大，浏览器还需要与服务器之间进行多次往返通信才能获得完整的资源文件。缓存可以复用之前获取的资源，既然后端可以使用缓存来减少访问数据库的开销，那前端自然也可以使用缓存来复用资源文件。</p>
+<p>浏览器自带了<code>HTTP</code>缓存的功能，只需要确保每个服务器响应的头部都包含了以下的属性：</p>
+<p><img src="http://wx3.sinaimg.cn/large/63503acbly1fk62pilgajj20ab07gt8x.jpg" alt=""></p>
+<ul>
+<li><p>ETag： <strong>ETag是一个传递验证令牌，它对资源的更新进行检查，如果资源未发生变化时不会传送任何数据</strong>。当浏览器发送一个请求时，会把ETag一起发送到服务器，服务器会根据当前资源核对令牌（ETag通常是对内容进行<code>Hash</code>后得出的一个指纹），如果资源未发生变化，服务器将返回<code>304 Not Modified</code>响应，这时浏览器不必再次下载资源，而是继续复用缓存。</p>
+</li>
+<li><p>Cache-Control： <strong>Cache-Control定义了缓存的策略，它规定在什么条件下可以缓存响应以及可以缓存多久</strong>。</p>
+<ul>
+<li><p>no-cache： no-cache表示必须先与服务器确认返回的响应是否发生了变化，然后才能使用该响应来满足后续对同一网址的请求（每次都会根据ETag对服务器发送请求来确认变化，如果未发生变化，浏览器不会下载资源）。</p>
+</li>
+<li><p>no-store： no-store直接禁止浏览器以及所有中间缓存存储任何版本的返回响应。简单的说，该策略会禁止任何缓存，每次发送请求时，都会完整地下载服务器的响应。</p>
+</li>
+<li><p>public&amp;private： 如果响应被标记为public，则即使它有关联的<code>HTTP</code>身份验证，甚至响应状态代码通常无法缓存，浏览器也可以缓存响应。如果响应被标记为private，那么这个响应通常只为单个用户缓存，因此不允许任何中间缓存（CDN）对其进行缓存，private一般用在缓存用户私人信息页面。</p>
+</li>
+<li><p>max-age： max-age定义了从请求时间开始，缓存的最长时间，单位为秒。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="资源预加载"><a href="#资源预加载" class="headerlink" title="资源预加载"></a>资源预加载</h4><hr>
+<p><strong><code>Pre-fetching</code>是一种提示浏览器预先加载用户之后可能会使用到的资源的方法。</strong></p>
+<p>使用<code>dns-prefetch</code>来提前进行<code>DNS</code>解析，以便之后可以快速地访问另一个主机名（浏览器会在加载网页时对网页中的域名进行解析缓存，这样你在之后的访问时无需进行额外的DNS解析，减少了用户等待时间，提高了页面加载速度）。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"dns-prefetch"</span> <span class="attr">href</span>=<span class="string">"other.hostname.com"</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>使用<code>prefetch</code>属性可以预先下载资源，不过它的优先级是最低的。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"prefetch"</span>  <span class="attr">href</span>=<span class="string">"/some_other_resource.jpeg"</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>Chrome</code>允许使用<code>subresource</code>属性指定优先级最高的下载资源（当所有属性为<code>subresource</code>的资源下载完完毕后，才会开始下载属性为<code>prefetch</code>的资源）。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"subresource"</span>  <span class="attr">href</span>=<span class="string">"/some_other_resource.js"</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>prerender</code>可以预先渲染好页面并隐藏起来，之后打开这个页面会跳过渲染阶段直接呈现在用户面前（推荐对用户接下来必须访问的页面进行预渲染，否则得不偿失）。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"prerender"</span>  <span class="attr">href</span>=<span class="string">"//domain.com/next_page.html"</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><hr>
+<ul>
+<li><p><a href="https://developers.google.com/web/fundamentals/" target="_blank" rel="external">Web Fundamentals   |  Google Developers</a></p>
+</li>
+<li><p><a href="http://www.stevesouders.com/blog/2009/05/18/flushing-the-document-early/" target="_blank" rel="external">Flushing the Document Early | High Performance Web Sites</a></p>
+</li>
+<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction" target="_blank" rel="external">Introduction to the DOM - Web APIs | MDN</a></p>
+</li>
+<li><p><a href="https://andydavies.me/blog/2013/10/22/how-the-browser-pre-loader-makes-pages-load-faster/" target="_blank" rel="external">How the Browser Pre-loader Makes Pages Load Faster - Andy Davies</a></p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;大家都知道万维网的应用层使用了&lt;code&gt;HTTP&lt;/code&gt;协议，并且用浏览器作为入口访问网络上的资源。用户在使用浏览器访问一个网站时需要先通过&lt;code&gt;HTTP&lt;/code&gt;协议向服务器发送请求，之后服务器返回&lt;code&gt;HTML&lt;/code&gt;文件与响应信息。这时，
+    
+    </summary>
+    
+      <category term="前端" scheme="https://sylvanassun.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="浏览器" scheme="https://sylvanassun.github.io/categories/%E5%89%8D%E7%AB%AF/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="前端" scheme="https://sylvanassun.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="浏览器" scheme="https://sylvanassun.github.io/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+  </entry>
   
   <entry>
     <title>教你如何快速实现一个图片爬虫</title>
@@ -2085,9 +2290,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -2141,9 +2346,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -2210,9 +2415,9 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -2543,84 +2748,6 @@
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>平衡查找树之AVL树</title>
-    <link href="https://sylvanassun.github.io/2017/04/08/2017-4-08-avl_tree/"/>
-    <id>https://sylvanassun.github.io/2017/04/08/2017-4-08-avl_tree/</id>
-    <published>2017-04-08T10:00:00.000Z</published>
-    <updated>2017-07-11T07:04:24.129Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><hr>
-<p><code>AVL树</code>得名于它的发明者G.M. Adelson-Velsky和E.M. Landis,它是最先发明的<code>自平衡二叉查找树</code>.</p>
-<p>在<code>AVL树</code>中<strong>任何节点的两个子树的高度最大差别为一</strong>.并且,查找、插入、删除等操作在平均和最坏情况下都是<code>O(log n)</code>.</p>
-<p><code>AVL树</code>的基本操作都与<code>二叉查找树</code>的算法一致,只有在插入、删除等这种会<strong>改变树的平衡性的操作需要使用一些<code>旋转操作</code>来修正树的平衡性</strong>.</p>
-<h2 id="平衡因子"><a href="#平衡因子" class="headerlink" title="平衡因子"></a>平衡因子</h2><hr>
-<p>节点的<code>平衡因子</code>一般是它的<code>左子树</code>的高度减去它的<code>右子树</code>的高度(相反也可以).带有<code>平衡因子</code>为1、0或-1的节点被认为是平衡的.带有<code>平衡因子</code>为-2或2的节点被认为是不平衡的.</p>
-<p>计算树的高度与平衡因子的代码如下.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// calculate node x depth</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">calcDepth</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> depth = <span class="number">0</span>;</div><div class="line">    <span class="keyword">if</span> (x.left != <span class="keyword">null</span>)</div><div class="line">        depth = x.left.depth;</div><div class="line">    <span class="keyword">if</span> (x.right != <span class="keyword">null</span> &amp;&amp; x.right.depth &gt; depth)</div><div class="line">        depth = x.right.depth;</div><div class="line">    <span class="comment">// parent + left or right depth</span></div><div class="line">    depth++;</div><div class="line">    <span class="keyword">return</span> depth;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// calculate node x balance(left.depth - right.depth)</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">calcBalance</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> leftDepth = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> rightDepth = <span class="number">0</span>;</div><div class="line">    <span class="keyword">if</span> (x.left != <span class="keyword">null</span>)</div><div class="line">        leftDepth = x.left.depth;</div><div class="line">    <span class="keyword">if</span> (x.right != <span class="keyword">null</span>)</div><div class="line">        rightDepth = x.right.depth;</div><div class="line">    <span class="keyword">return</span> leftDepth - rightDepth;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="旋转"><a href="#旋转" class="headerlink" title="旋转"></a>旋转</h2><hr>
-<p><code>旋转操作</code>是用于修复树的平衡性的,它保证了树的有序性与平衡性(旋转操作的具体讲解可以参考<a href="http://sylvanassun.github.io/2017/03/30/red_black_binary_search_tree/">《Algorithms,4th Edition》读书笔记-红黑二叉查找树</a>).</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">rotateLeft</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    Node t = x.right;</div><div class="line">    x.right = t.left;</div><div class="line">    t.left = x;</div><div class="line">    <span class="keyword">if</span> (x.parent != <span class="keyword">null</span>) &#123;</div><div class="line">        t.parent = x.parent;</div><div class="line">        <span class="keyword">if</span> (x.parent.left == x)</div><div class="line">            x.parent.left = t;</div><div class="line">        <span class="keyword">else</span></div><div class="line">            x.parent.right = t;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        t.parent = <span class="keyword">null</span>;</div><div class="line">        root = t;</div><div class="line">    &#125;</div><div class="line">    x.parent = t;</div><div class="line">    <span class="comment">// calculate depth and balance</span></div><div class="line">    x.depth = calcDepth(x);</div><div class="line">    x.balance = calcBalance(x);</div><div class="line">    t.depth = calcDepth(t);</div><div class="line">    t.balance = calcBalance(t);</div><div class="line">    <span class="comment">// calculate size</span></div><div class="line">    t.size = x.size;</div><div class="line">    x.size = <span class="number">1</span> + size(x.left) + size(x.right);</div><div class="line">    <span class="keyword">return</span> t;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">rotateRight</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    Node t = x.left;</div><div class="line">    x.left = t.right;</div><div class="line">    t.right = x;</div><div class="line">    <span class="keyword">if</span> (x.parent != <span class="keyword">null</span>) &#123;</div><div class="line">        t.parent = x.parent;</div><div class="line">        <span class="keyword">if</span> (x.parent.left == x)</div><div class="line">            x.parent.left = t;</div><div class="line">        <span class="keyword">else</span></div><div class="line">            x.parent.right = t;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        t.parent = <span class="keyword">null</span>;</div><div class="line">        root = t;</div><div class="line">    &#125;</div><div class="line">    x.parent = t;</div><div class="line">    <span class="comment">// calculate depth and balance</span></div><div class="line">    x.depth = calcDepth(x);</div><div class="line">    x.balance = calcBalance(x);</div><div class="line">    t.depth = calcDepth(t);</div><div class="line">    t.balance = calcBalance(t);</div><div class="line">    <span class="comment">// calculate size</span></div><div class="line">    t.size = x.size;</div><div class="line">    x.size = <span class="number">1</span> + size(x.left) + size(x.right);</div><div class="line">    <span class="keyword">return</span> t;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="平衡修正"><a href="#平衡修正" class="headerlink" title="平衡修正"></a>平衡修正</h2><hr>
-<p>当一个节点被认为是不平衡的时候,我们需要使用一些<code>旋转操作</code>来修正树的平衡,一般有以下情况需要进行<code>旋转</code>.</p>
-<ul>
-<li>例如当前节点为<code>x</code>,对<code>x</code>进行平衡修正需要进行以下判断.</li>
-</ul>
-<ul>
-<li>当<code>x</code>的<code>平衡因子</code>大于等于2时(左子树高度偏高),对其进行<code>右旋转</code>.</li>
-</ul>
-<ul>
-<li>当<code>x</code>的<code>左子树</code>的<code>平衡因子</code>等于-1时(左子树的右子节点高度偏高),对<code>x</code>的<code>左子树</code>进行<code>左旋转</code>.</li>
-</ul>
-<ul>
-<li>当<code>x</code>的<code>平衡因子</code>小于等于-2时(右子树高度偏高),对其进行<code>左旋转</code>.</li>
-</ul>
-<ul>
-<li>当<code>x</code>的<code>右子树</code>的<code>平衡因子</code>等于1时(右子树的左子节点高度偏高),对<code>x</code>的<code>右子树</code>进行<code>右旋转</code>.</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">balance</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        x.depth = calcDepth(x);</div><div class="line">        x.balance = calcBalance(x);</div><div class="line">        <span class="comment">// if x left subtree high,rotateRight</span></div><div class="line">        <span class="keyword">if</span> (x.balance &gt;= <span class="number">2</span>) &#123;</div><div class="line">            <span class="comment">// if x.left.right high,rotateLeft</span></div><div class="line">            <span class="keyword">if</span> (x.left != <span class="keyword">null</span> &amp;&amp; x.left.balance == -<span class="number">1</span>) &#123;</div><div class="line">                x.left = rotateLeft(x.left);</div><div class="line">            &#125;</div><div class="line">            x = rotateRight(x);</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// if x right subtree high,rotateLeft</span></div><div class="line">        <span class="keyword">if</span> (x.balance &lt;= -<span class="number">2</span>) &#123;</div><div class="line">            <span class="comment">// if x.right.left high,rotateRight</span></div><div class="line">            <span class="keyword">if</span> (x.right != <span class="keyword">null</span> &amp;&amp; x.right.balance == <span class="number">1</span>) &#123;</div><div class="line">                x.right = rotateRight(x.right);</div><div class="line">            &#125;</div><div class="line">            x = rotateLeft(x);</div><div class="line">        &#125;</div><div class="line">        x.size = <span class="number">1</span> + size(x.left) + size(x.right);</div><div class="line">        x = x.parent;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h2><hr>
-<p><code>AVL树</code>的插入和删除与<code>二分查找树</code>的算法一致,只不过在完成插入后需要自底向上的修复平衡性.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called put() with key is null."</span>);</div><div class="line">    <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</div><div class="line">        remove(key);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    put(root, key, value);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(Node x, K key, V value)</span> </span>&#123;</div><div class="line">    Node parent = x;</div><div class="line">    <span class="keyword">int</span> cmp = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        parent = x;</div><div class="line">        cmp = key.compareTo(x.key);</div><div class="line">        <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) &#123;</div><div class="line">            x = x.left;</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>) &#123;</div><div class="line">            x = x.right;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            x.value = value;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// if not find key,create new node</span></div><div class="line">    x = <span class="keyword">new</span> Node(key, value, <span class="number">1</span>, parent);</div><div class="line">    <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>)</div><div class="line">            parent.left = x;</div><div class="line">        <span class="keyword">else</span></div><div class="line">            parent.right = x;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        root = x;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// fixup balance</span></div><div class="line">    balance(x);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="end"><a href="#end" class="headerlink" title="end"></a>end</h2><hr>
-<ul>
-<li>Author : <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun</a></li>
-</ul>
-<ul>
-<li>Email : sylvanassun_xtz@163.com</li>
-</ul>
-<ul>
-<li>文中的完整实现代码见我的<a href="https://github.com/SylvanasSun/algs4-study" target="_blank" rel="external">GitHub</a> &amp; <a href="https://gist.github.com/SylvanasSun/780045c5b8705ef225eb83c58a013949" target="_blank" rel="external">Gist</a></li>
-</ul>
-<ul>
-<li>本文参考资料引用自<a href="https://en.wikipedia.org/wiki/AVL_tree" target="_blank" rel="external">Wikipedia</a></li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h2&gt;&lt;hr&gt;
-&lt;p&gt;&lt;code&gt;AVL树&lt;/code&gt;得名于它的发明者G.M. Adelson-Velsky和E.M. Landis,它是最先发明的&lt;
-    
-    </summary>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/categories/Algorithms/"/>
-    
-      <category term="数据结构" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
-    
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
-      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
-      <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
   </entry>
   

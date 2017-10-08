@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-10-04T07:04:33.651Z</updated>
+  <updated>2017-10-08T15:20:54.483Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -14,6 +14,136 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>浏览器性能优化-渲染性能</title>
+    <link href="https://sylvanassun.github.io/2017/10/08/2017-10-08-BrowserRenderOptimization/"/>
+    <id>https://sylvanassun.github.io/2017/10/08/2017-10-08-BrowserRenderOptimization/</id>
+    <published>2017-10-08T04:00:00.000Z</published>
+    <updated>2017-10-08T15:20:54.483Z</updated>
+    
+    <content type="html"><![CDATA[<p>在<a href="https://sylvanassun.github.io/2017/10/03/2017-10-03-BrowserCriticalRenderingPath/">浏览器渲染过程与性能优化</a>一文中（建议先去看一下这篇文章再来阅读本文），我们了解与认识了浏览器的关键渲染路径以及如何优化页面的加载速度。在本文中，我们主要关注的是如何提高浏览器的渲染性能（浏览器进行布局计算、绘制像素等操作）与效率。</p>
+<p>很多网页都使用了看起来效果非常酷炫的动画与用户进行交互，这些动画效果显著提高了用户的体验，但如果因为性能原因导致动画的每秒帧数太低，反而会让用户体验变得更差（如果一个酷炫的动画效果运行起来总是经常卡顿或者看起来反应很慢，这些都会让用户感觉糟透了）。</p>
+<p>一个流畅的动画需要保持在每秒60帧，换算成毫秒浏览器需要在10毫秒左右完成渲染任务（每秒有1000毫秒，1000/60 约等于 16毫秒一帧，但浏览器还有其他工作需要占用时间，所以估算为10毫秒），如果能够理解浏览器的渲染过程并发现性能瓶颈对其优化，可以使你的项目变得具有交互性且动画效果如飘柔般顺滑。</p>
+<blockquote>
+<p>本文作者为: <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanas.sun@gmail.com)</a>.转载请务必将本段话置于文章开头处(保留超链接).<br>本文首发自<a href="https://sylvanassun.github.io/">SylvanasSun Blog</a>,原文链接: <a href="https://sylvanassun.github.io/2017/10/08/2017-10-08-BrowserRenderOptimization/">https://sylvanassun.github.io/2017/10/08/2017-10-08-BrowserRenderOptimization/</a></p>
+</blockquote>
+<h3 id="像素管道"><a href="#像素管道" class="headerlink" title="像素管道"></a>像素管道</h3><hr>
+<p><strong>所谓像素管道其实就是浏览器将渲染树绘制成像素的流程。管道的每个区域都有可能产生卡顿，即管道中的某一区域如果发生变化，浏览器将会进行自动重排，然后重新绘制受影响的区域。</strong></p>
+<p><img src="http://wx4.sinaimg.cn/large/63503acbly1fk9uu5zk8xj20o603zdh7.jpg" alt="像素管道"></p>
+<ul>
+<li><p>JavaScript：<strong>该区域其实指的是实现动画效果的方法</strong>，一般使用<code>JavaScript</code>来实现动画，例如<code>JQuery</code>的<code>animate</code>函数、对一个数据集进行排序或动态添加一些<code>DOM</code>节点等。当然，也可以使用其他的方法来实现动画效果，像<code>CSS</code>的<code>Animation</code>、<code>Transition</code>和<code>Transform</code>。</p>
+</li>
+<li><p>Style：<strong>该区域为样式计算阶段，浏览器会根据选择器（就是<code>CSS</code>选择器，如<code>.td</code>）计算出哪些节点应用哪些<code>CSS</code>规则，然后计算出每个节点的最终样式并应用到节点上。</strong></p>
+</li>
+<li><p>Layout：<strong>该区域为布局计算阶段，浏览器会在该过程中根据节点的样式规则来计算它要占据的空间大小以及在屏幕中的位置</strong>。</p>
+</li>
+<li><p>Paint：<strong>该区域为绘制阶段，浏览器会先创建绘图调用的列表，然后填充像素</strong>。绘制阶段会涉及到文本、颜色、图像、边框和阴影，基本上包括了每个可视部分。绘制一般是在多个图层（用过<code>Photoshop</code>等图片编辑软件的童鞋一定很眼熟图层这个词，这里的图层的含义其实是差不多的）上完成的。</p>
+</li>
+<li><p>Composite：<strong>该区域为合成阶段，浏览器将多个图层按照正确顺序绘制到屏幕上。</strong></p>
+</li>
+</ul>
+<p>假设我们修改了一个几何属性（例如宽度、高度等影响布局的属性），这时Layout阶段受到了影响，浏览器必须检查所有其他区域的元素，然后自动重排页面，任何受到影响的部分都需要重新绘制，并且最终绘制的元素还需要重新进行合成（简单地说就是整个像素管道都要重新执行一遍）。</p>
+<p>如果我们只修改了不会影响页面布局的属性，例如背景图片、文字颜色等，那么浏览器会跳过布局阶段，但仍需要重新绘制。</p>
+<p><img src="http://wx2.sinaimg.cn/large/63503acbly1fk9uu6h7edj20nr03wq46.jpg" alt=""></p>
+<p>又或者，我们只修改了一个不影响布局也不影响绘制的属性，那么浏览器将跳过布局与绘制阶段，显然这种改动是性能开销最小的。</p>
+<p><img src="http://wx4.sinaimg.cn/large/63503acbly1fk9uu6u2u3j20o5040wfm.jpg" alt=""></p>
+<p>如果想要知道每个<code>CSS</code>属性将会对哪个阶段产生怎样的影响，请去<a href="https://csstriggers.com/" target="_blank" rel="external">CSS Triggers</a>，该网站详细地说明了每个<code>CSS</code>属性会影响到哪个阶段。</p>
+<h3 id="使用RequestAnimationFrame函数实现动画"><a href="#使用RequestAnimationFrame函数实现动画" class="headerlink" title="使用RequestAnimationFrame函数实现动画"></a>使用RequestAnimationFrame函数实现动画</h3><hr>
+<p>我们经常使用<code>JavaScript</code>来实现动画效果，然而时机不当或长时间运行的<code>JavaScript</code>可能就是导致你性能下降的原因。</p>
+<p>避免使用<code>setTimeout()</code>或者<code>setInterval()</code>函数来实现动画效果，这种做法的主要问题是<strong>回调将会在帧中的某个时间点运行，这可能会刚好在末尾（会丢失帧导致发生卡顿）。</strong></p>
+<p><img src="http://wx4.sinaimg.cn/large/63503acbly1fka0wxn8m2j20p40by40d.jpg" alt=""></p>
+<p>有些第三方库仍在使用<code>setTimeout()&amp;setInterval()</code>函数来实现动画效果，这会产生很多不必要的性能下降，例如老版本的<code>JQuery</code>，如果你使用的是<code>JQuery3</code>，那么不必为此担心，<code>JQuery3</code>已经全面改写了动画模块，采用了<code>requestAnimationFrame()</code>函数来实现动画效果。但如果你使用的是之前版本的<code>JQuery</code>，那么就需要<a href="https://github.com/gnarf/jquery-requestAnimationFrame" target="_blank" rel="external">jquery-requestAnimationFrame</a>来将<code>setTimeout()</code>替换为<code>requestAnimationFrame()</code>函数。</p>
+<p>读到这里，想必一定会对<code>requestAnimationFrame()</code>产生好奇。要想得到一个流畅的动画，我们希望让视觉变化发生在每一帧的开头，而保证<code>JavaScript</code>在帧开始时运行的方式则是使用<code>requestAnimationFrame()</code>函数，本质上它与<code>setTimeout()</code>没有什么区别，都是在递归调用同一个回调函数来不断更新画面以达到动画的效果，<code>requestAnimationFrame()</code>的使用方法如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">updateScreen</span>(<span class="params">time</span>) </span>&#123;</div><div class="line">	<span class="comment">// 这是你的动画效果函数</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 将你的动画效果函数放入requestAnimationFrame()作为回调函数</span></div><div class="line">requestAnimationFrame(updateScreen);</div></pre></td></tr></table></figure>
+<p>并不是所有浏览器都支持<code>requestAnimationFrame()</code>函数，如<code>IE9</code>（又是万恶的<code>IE</code>），但基本上现代浏览器都会支持这个功能的，如果你需要兼容老旧版本的浏览器，可以使用以下函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 本段代码截取自Paul Irish : https://gist.github.com/paulirish/1579671</span></div><div class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> lastTime = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> vendors = [<span class="string">'ms'</span>, <span class="string">'moz'</span>, <span class="string">'webkit'</span>, <span class="string">'o'</span>];</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> x = <span class="number">0</span>; x &lt; vendors.length &amp;&amp; !<span class="built_in">window</span>.requestAnimationFrame; ++x) &#123;</div><div class="line">        <span class="built_in">window</span>.requestAnimationFrame = <span class="built_in">window</span>[vendors[x]+<span class="string">'RequestAnimationFrame'</span>];</div><div class="line">        <span class="built_in">window</span>.cancelAnimationFrame = <span class="built_in">window</span>[vendors[x]+<span class="string">'CancelAnimationFrame'</span>] </div><div class="line">                                   || <span class="built_in">window</span>[vendors[x]+<span class="string">'CancelRequestAnimationFrame'</span>];</div><div class="line">    &#125;</div><div class="line"> 	</div><div class="line">	<span class="comment">// 如果浏览器不支持，则使用setTimeout()</span></div><div class="line">    <span class="keyword">if</span> (!<span class="built_in">window</span>.requestAnimationFrame)</div><div class="line">        <span class="built_in">window</span>.requestAnimationFrame = <span class="function"><span class="keyword">function</span>(<span class="params">callback, element</span>) </span>&#123;</div><div class="line">            <span class="keyword">var</span> currTime = <span class="keyword">new</span> <span class="built_in">Date</span>().getTime();</div><div class="line">            <span class="keyword">var</span> timeToCall = <span class="built_in">Math</span>.max(<span class="number">0</span>, <span class="number">16</span> - (currTime - lastTime));</div><div class="line">            <span class="keyword">var</span> id = <span class="built_in">window</span>.setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; callback(currTime + timeToCall); &#125;, </div><div class="line">              timeToCall);</div><div class="line">            lastTime = currTime + timeToCall;</div><div class="line">            <span class="keyword">return</span> id;</div><div class="line">        &#125;;</div><div class="line"> </div><div class="line">    <span class="keyword">if</span> (!<span class="built_in">window</span>.cancelAnimationFrame)</div><div class="line">        <span class="built_in">window</span>.cancelAnimationFrame = <span class="function"><span class="keyword">function</span>(<span class="params">id</span>) </span>&#123;</div><div class="line">            clearTimeout(id);</div><div class="line">        &#125;;</div><div class="line">&#125;());</div></pre></td></tr></table></figure>
+<h3 id="Web-Workers"><a href="#Web-Workers" class="headerlink" title="Web Workers"></a>Web Workers</h3><hr>
+<p><strong>我们知道<code>JavaScript</code>是单线程的，但浏览器可不是单线程的</strong>。<strong><code>JavaScript</code>在浏览器的主线程上运行</strong>，这恰好与样式计算、布局等许多其他情况下的渲染操作一起运行，<strong>如果<code>JavaScript</code>的运行时间过长，就会阻塞这些后续工作，导致帧丢失。</strong></p>
+<p>使用<code>Chrome</code>开发者工具的<code>Timeline</code>功能可以帮助我们查看每个<code>JavaScript</code>脚本的运行时间（包括子脚本），帮助我们发现并突破性能瓶颈。</p>
+<p><img src="http://wx3.sinaimg.cn/large/63503acbly1fka16g0tbyj20tq0lqacb.jpg" alt="数据采自掘金"></p>
+<p>在找到影响性能的<code>JavaScript</code>脚本后，我们可以通过<code>Web Workers</code>进行优化。<code>Web Workers</code>是<code>HTML5</code>提出的一个标准，它<strong>可以让<code>JavaScript</code>脚本运行在后台线程（类似于创建一个子线程），而后台线程不会影响到主线程中的页面</strong>。不过，<strong>使用<code>Web Workers</code>创建的线程是不能操作<code>DOM</code>树的</strong>（这也是<code>Web Workers</code>没有颠覆<code>JavaScript</code>是单线程的原因，<code>JavaScript</code>之所以一直是单线程设计主要也是因为为了避免多个脚本操作<code>DOM</code>树的同步问题，这会提高很多复杂性），所以它只适合于做一些纯计算的工作（数据的排序、遍历等）。</p>
+<p>如果你的<code>JavaScript</code>必须要在主线程中执行，那么只能选择另一种方法。将一个大任务分割为多个小任务（每个占用时间不超过几毫秒），并且在每帧的<code>requestAnimationFrame()</code>函数中运行：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> taskList = breakBigTaskIntoMicroTasks(monsterTaskList);</div><div class="line">requestAnimationFrame(processTaskList);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">processTaskList</span>(<span class="params">taskStartTime</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> taskFinishTime;</div><div class="line"></div><div class="line">  <span class="keyword">do</span> &#123;</div><div class="line">    <span class="comment">// 从列表中弹出任务</span></div><div class="line">    <span class="keyword">var</span> nextTask = taskList.pop();</div><div class="line"></div><div class="line">    <span class="comment">// 执行任务</span></div><div class="line">    processTask(nextTask);</div><div class="line"></div><div class="line">    <span class="comment">// 如果有足够的时间进行下一个任务则继续执行</span></div><div class="line">    taskFinishTime = <span class="built_in">window</span>.performance.now();</div><div class="line">  &#125; <span class="keyword">while</span> (taskFinishTime - taskStartTime &lt; <span class="number">3</span>);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (taskList.length &gt; <span class="number">0</span>)</div><div class="line">    requestAnimationFrame(processTaskList);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>创建一个<code>Web Workers</code>对象很简单，只需要调用<code>Worker()</code>构造器，然后传入指定脚本的<code>URI</code>。现代主流浏览器均支持<code>Web Workers</code>，除了<code>Internet Explorer</code>（又是万恶的IE），所以我们在下面的示例代码中还需要检测浏览器是否兼容。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> myWorker;</div><div class="line"></div><div class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span>(Worker) !== <span class="string">"undefined"</span>) &#123;</div><div class="line">	<span class="comment">// 支持Web Workers</span></div><div class="line">	myWorker = <span class="keyword">new</span> Worker(<span class="string">"worker.js"</span>);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">	<span class="comment">// 不支持Web Workers</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong><code>Web Workers</code>与主线程之间通过<code>postMessage()</code>函数来发送信息，使用<code>onmessage()</code>事件处理函数来响应消息（主线程与子线程之间并没有共享数据，只是通过复制数据来交互）。</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">main.js: </div><div class="line"><span class="comment">// 在主线程js中发送数据到myWorker绑定的js脚本线程</span></div><div class="line">myWorker.postMessage(<span class="string">"Hello,World"</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">'Message posted to worker'</span>);</div><div class="line"> </div><div class="line">worker.js:</div><div class="line"><span class="comment">// onmessage处理函数允许我们在任何时刻，</span></div><div class="line"><span class="comment">// 一旦接收到消息就可以执行一些代码，代码中消息本身作为事件的data属性进行使用。</span></div><div class="line">onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"Message received from main script."</span>);</div><div class="line">	<span class="built_in">console</span>.log(<span class="string">"Posting message back to main script."</span>);</div><div class="line">	postMessage(<span class="string">"Hello~"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line">main.js:</div><div class="line"><span class="comment">// 主线程使用onmessage接收消息</span></div><div class="line">myWorker.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"Received message: "</span> + data);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果你需要从主线程中立刻终止一个运行中的worker，可以调用worker的<code>terminate()</code>函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">myWorker.terminate();</div></pre></td></tr></table></figure>
+<p>myWorker会被立即杀死，不会有任何机会让它继续完成剩下的工作。而在worker线程中也可以调用<code>close()</code>函数进行关闭：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">close();</div></pre></td></tr></table></figure>
+<p>有关更多的<code>Web Workers</code>使用方法，请参考<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers" target="_blank" rel="external">Using Web Workers - Web APIs | MDN</a>。</p>
+<h3 id="降低样式计算的复杂度"><a href="#降低样式计算的复杂度" class="headerlink" title="降低样式计算的复杂度"></a>降低样式计算的复杂度</h3><hr>
+<p><strong>每次修改<code>DOM</code>和<code>CSS</code>都会导致浏览器重新计算样式</strong>，在很多情况下还会对页面或页面的一部分重新进行布局计算。</p>
+<p>计算样式的第一部分是创建一组匹配选择器（用于计算哪些节点应用哪些样式），第二部分涉及从匹配选择器中获取所有样式规则，并计算出节点的最终样式。</p>
+<p><strong>通过降低选择器的复杂性可以提升样式计算的速度。</strong></p>
+<p>下面是一个复杂的<code>CSS</code>选择器：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="selector-class">.box</span><span class="selector-pseudo">:nth-last-child(-n+1)</span> <span class="selector-class">.title</span> &#123;</div><div class="line">  <span class="comment">/* styles */</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>浏览器如果想要找到应用该样式的节点，需要先找到有<code>.title</code>类的节点，然后其父节点正好是负n个子元素+1个带<code>.box</code>类的节点。浏览器计算此结果可能需要大量的时间，但我们可以把选择器的预期行为更改为一个类：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="selector-class">.final-box-title</span> &#123;</div><div class="line">  <span class="comment">/* styles */</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们只是将<code>CSS</code>的命名模块化（降低选择器的复杂性），然后只让浏览器简单地将选择器与节点进行匹配，这样浏览器计算样式的效率会提升许多。</p>
+<p><code>BEM</code>是一种模块化的<code>CSS</code>命名规范，使用这种方法组织<code>CSS</code>不仅结构上十分清晰，也对浏览器的样式查找提供了帮助。</p>
+<p><code>BEM</code>其实就是<code>Block,Element,Modifier</code>，它是一种基于组件的开发方式，其背后的思想就是将用户界面划分为独立的块。这样即使是使用复杂的<code>UI</code>也可以轻松快速地开发，并且模块化的方式可以提高代码的复用性。</p>
+<p><strong><code>Block</code>是一个功能独立的页面组件（可以被重用），<code>Block</code>的命名方式就像写<code>Class</code>名一样</strong>。如下面的<code>.button</code>就是代表<code>&lt;button&gt;</code>的<code>Block</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">.button &#123;</div><div class="line">    background-color: red;</div><div class="line">&#125;</div><div class="line"></div><div class="line">&lt;button class=&quot;button&quot;&gt;I&apos;m a button&lt;/button&gt;</div></pre></td></tr></table></figure>
+<p><strong><code>Element</code>是一个不能单独使用的<code>Block</code>的复合部分</strong>。可以认为<code>Element</code>是<code>Block</code>的子节点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;!-- `search-form`是一个block --&gt;</div><div class="line">&lt;form class=&quot;search-form&quot;&gt;</div><div class="line">    &lt;!-- &apos;search-form__input&apos;是&apos;search-form&apos; block中的一个element --&gt;</div><div class="line">    &lt;input class=&quot;search-form__input&quot;&gt;</div><div class="line"></div><div class="line">    &lt;!-- &apos;search-form__button&apos;是&apos;search-form&apos; block中的一个element  --&gt;</div><div class="line">    &lt;button class=&quot;search-form__button&quot;&gt;Search&lt;/button&gt;</div><div class="line">&lt;/form&gt;</div></pre></td></tr></table></figure>
+<p><strong><code>Modifier</code>是用于定义<code>Block</code>或<code>Element</code>的外观、状态或行为的实体</strong>。假设，我们有了一个新的需求，对<code>button</code>的背景颜色使用绿色，那么我们可以使用<code>Modifier</code>对<code>.button</code>进行一次扩展：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">.button &#123;</div><div class="line">    background-color: red;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.button--secondary &#123;</div><div class="line">    background-color: green;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>第一次接触<code>BEM</code>的童鞋可能会对这种命名方式感到奇怪，但<code>BEM</code>重要的是模块化与可维护性的思想，至于命名完全可以按照你所能接受的方式修改。限于篇幅，本文就不再继续探讨<code>BEM</code>了，感兴趣的童鞋可以去看<a href="https://en.bem.info/methodology/quick-start/" target="_blank" rel="external">BEM的官方文档</a>。</p>
+<h3 id="避免强制同步布局和布局抖动"><a href="#避免强制同步布局和布局抖动" class="headerlink" title="避免强制同步布局和布局抖动"></a>避免强制同步布局和布局抖动</h3><hr>
+<p><strong>浏览器每次进行布局计算时几乎总是会作用到整个<code>DOM</code>，如果有大量元素，那么将会需要很长时间才能计算出所有元素的位置与尺寸。</strong></p>
+<p>所以我们<strong>应当尽量避免在运行时动态地修改几何属性</strong>（宽度、高度等），因为这些改动都会导致浏览器重新进行布局计算。如果无法避免，那么要<strong>优先使用<code>Flexbox</code></strong>，它会尽量减少布局所需的开销。</p>
+<p><strong>强制同步布局就是使用<code>JavaScript</code>强制浏览器提前执行布局</strong>。需要先明白一点，<strong>在<code>JavaScript</code>运行时，来自上一帧的所有旧布局值都是已知的。</strong></p>
+<p>以下代码为例，它在每一帧的开头输出了元素的高度：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">requestAnimationFrame(logBoxHeight);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">logBoxHeight</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(box.offsetHeight);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>但如果在请求高度之前，修改了其样式，就会出现问题，浏览器必须先应用样式，然后进行布局计算，之后才能返回正确的高度。这是不必要的且会产生非常大的开销。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">logBoxHeight</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  box.classList.add(<span class="string">'super-big'</span>);</div><div class="line">  </div><div class="line">  <span class="built_in">console</span>.log(box.offsetHeight);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>正确的做法，应该利用浏览器可以使用上一帧布局值的特性，然后再执行任何写操作：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">logBoxHeight</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(box.offsetHeight);</div><div class="line"></div><div class="line">  box.classList.add(<span class="string">'super-big'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>如果接二连三地发生强制同步布局，那么就会产生布局抖动</strong>。以下代码循环处理一组段落，并设置每个段落的宽度以匹配一个名为“box”的元素的宽度。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">resizeAllParagraphsToMatchBlockWidth</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; paragraphs.length; i++) &#123;</div><div class="line">    paragraphs[i].style.width = box.offsetWidth + <span class="string">'px'</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码的问题在于每次迭代都会读取<code>box.offsetWidth</code>，然后立即使用此值来更新段落的宽度。在循环的下次迭代中，浏览器必须考虑样式更新这一事实（<code>box.offsetWidth</code>是在上一次迭代中请求的），因此它必须应用样式更改，然后执行布局。这会导致每次迭代都会产生强制同步布局，正确的做法应该先读取值，然后再写入值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Read.</span></div><div class="line"><span class="keyword">var</span> width = box.offsetWidth;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">resizeAllParagraphsToMatchBlockWidth</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; paragraphs.length; i++) &#123;</div><div class="line">    <span class="comment">// Now write.</span></div><div class="line">    paragraphs[i].style.width = width + <span class="string">'px'</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>要想轻松地解决这个问题，可以使用<a href="https://github.com/wilsonpage/fastdom" target="_blank" rel="external">FastDOM</a>进行批量读取与写入，它可以防止强制布局同步与布局抖动。</p>
+<h3 id="使用不会触发布局与绘制的属性来实现动画"><a href="#使用不会触发布局与绘制的属性来实现动画" class="headerlink" title="使用不会触发布局与绘制的属性来实现动画"></a>使用不会触发布局与绘制的属性来实现动画</h3><hr>
+<p>在像素管道一节中，我们发现有种属性修改后会跳过布局与绘制阶段，这显然会减少不少性能开销。目前只有两种属性符合这个条件：<code>transform</code>和<code>opacity</code> 。</p>
+<p>需要注意的是，使用<code>transform</code>和<code>opacity</code>时，更改这些属性所在的元素应处于其自身的图层，<strong>所以我们需要将设置动画的元素单独新建一个图层（这样做的好处是该图层上的重绘可以在不影响其他图层上元素的情况下进行处理。如果你用过<code>Photoshop</code>，想必能够理解多图层工作的方便之处）。</strong></p>
+<p>创建新图层的最佳方式是使用<code>will-change</code>属性，<strong>该属性告知浏览器该元素会有哪些变化，这样浏览器可以在元素属性真正发生变化之前提前做好对应的优化准备工作。</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">.moving-element &#123;</div><div class="line">  will-change: transform;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 对于不支持 will-change 但受益于层创建的浏览器，需要使用（滥用）3D 变形来强制创建一个新层</div><div class="line">.moving-element &#123;</div><div class="line">  transform: translateZ(0);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>但不要认为<code>will-change</code>可以提高性能就随便滥用，使用<code>will-change</code>进行预优化与创建图层都需要额外的内存和管理开销，随便滥用只会得不偿失。</strong></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><hr>
+<ul>
+<li><p><a href="https://developers.google.com/web/" target="_blank" rel="external">Web   |  Google Developers</a></p>
+</li>
+<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers" target="_blank" rel="external">Using Web Workers - Web APIs | MDN</a></p>
+</li>
+<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/will-change" target="_blank" rel="external">will-change - CSS | MDN</a></p>
+</li>
+<li><p><a href="https://en.bem.info/methodology/quick-start/" target="_blank" rel="external">Quick start / Methodology / BEM</a></p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在&lt;a href=&quot;https://sylvanassun.github.io/2017/10/03/2017-10-03-BrowserCriticalRenderingPath/&quot;&gt;浏览器渲染过程与性能优化&lt;/a&gt;一文中（建议先去看一下这篇文章再来阅读本文），我们了解与
+    
+    </summary>
+    
+      <category term="前端" scheme="https://sylvanassun.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="浏览器" scheme="https://sylvanassun.github.io/categories/%E5%89%8D%E7%AB%AF/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="前端" scheme="https://sylvanassun.github.io/tags/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="浏览器" scheme="https://sylvanassun.github.io/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+  </entry>
   
   <entry>
     <title>浏览器渲染过程与性能优化</title>
@@ -2575,179 +2705,6 @@
       <category term="CAS" scheme="https://sylvanassun.github.io/tags/CAS/"/>
     
       <category term="多线程" scheme="https://sylvanassun.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>《Algorithms,4th Edition》读书笔记-散列表</title>
-    <link href="https://sylvanassun.github.io/2017/04/13/2017-4-13-hash_table/"/>
-    <id>https://sylvanassun.github.io/2017/04/13/2017-4-13-hash_table/</id>
-    <published>2017-04-13T10:00:00.000Z</published>
-    <updated>2017-07-11T07:04:13.506Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
-<p><code>散列表</code>(<code>Hash Table</code>,也叫<code>哈希表</code>),它是根据键而直接访问在内存存储位置的数据结构.也可以说是用一个数组来实现的<strong>无序的符号表</strong>,将键作为数组的索引而数组中键<code>i</code>处存储的就是它对应的值.</p>
-<p><code>散列表</code>通过<code>散列函数</code>将键转化为数组的索引来访问数组中的键值对.</p>
-<p>在<code>散列表</code>的算法中,最重要的两个操作如下.</p>
-<ol>
-<li>使用<code>散列函数</code>将被查找的键转化为数组的一个索引.</li>
-</ol>
-<ol>
-<li>处理散列表中的<code>碰撞冲突</code>问题.</li>
-</ol>
-<p><img src="http://algs4.cs.princeton.edu/34hash/images/hashing-crux.png" alt=""></p>
-<h3 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h3><hr>
-<ul>
-<li>若关键字为<code>k</code>,则其值存放于<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c36f16f5357aeb5b0fa2fe3040e74282d62f8881">的存储位置上.由此,不需要比较便可直接取得所查记录.称这个对应关系<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61">为<code>散列函数</code>,按照这个思想建立的符合表为<code>散列表</code>.</li>
-</ul>
-<ul>
-<li>对不同的键可能会得到同一个<code>散列地址</code>,即<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f2b910a452063a4769272110d8d22cab053d433d">,而<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fa1d43b27a17bf57baf12626ad7cfbf8ee9bb96d">,这种现象被称为<code>碰撞冲突</code>.具有相同函数值的键对该<code>散列函数</code>来说称做同义词.综上所述,根据散列函数<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c36f16f5357aeb5b0fa2fe3040e74282d62f8881">和处理<code>碰撞冲突</code>的方法将一组键映射到一个有限的连续的地址集(区间)上,这种表称为<code>散列表</code>,这一映射过程称为<code>散列</code>,所得的存储位置称为<code>散列地址</code>.</li>
-</ul>
-<ul>
-<li>若对于键集合中的任一个键,经<code>散列函数</code>映射到地址集合中任何一个地址的概率是相等的,则这个<code>散列函数</code>被称为<code>均匀散列函数</code>,它可以减少<code>碰撞冲突</code>.</li>
-</ul>
-<h3 id="散列函数"><a href="#散列函数" class="headerlink" title="散列函数"></a>散列函数</h3><hr>
-<p><code>散列函数</code>用于将键转化为数组的索引.如果我们有一个能够保存M个键值对的数组,那么我们就需要一个能够将任意键转化为该数组范围内的索引([0,M-1]范围内的整数)的<code>散列函数</code></p>
-<p><code>散列函数</code>与键的类型有关,对于每种类型的键都需要一个与之对应的<code>散列函数</code>.</p>
-<h4 id="实现散列函数的几种方法"><a href="#实现散列函数的几种方法" class="headerlink" title="实现散列函数的几种方法"></a>实现散列函数的几种方法</h4><ul>
-<li>直接定址法 : 取<code>key</code>或者<code>key</code>的某个线性函数值为<code>散列地址</code>.即<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/989ebc7db55ece5d29e2a8baa005e876ef486e4e">或<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/989ebc7db55ece5d29e2a8baa005e876ef486e4e">其中a,b为常数(这种<code>散列函数</code>叫做自身函数).</li>
-</ul>
-<ul>
-<li>数字分析法 : 假设<code>key</code>是以<code>r</code>为基的数,并且<code>散列表</code>中可能出现的<code>key</code>都是事先知道的,则可取<code>key</code>的若干数位组成<code>散列地址</code>.</li>
-</ul>
-<ul>
-<li>平方取中法 : 取<code>key</code>平方后的中间几位为<code>散列地址</code>.通常在选定<code>散列函数</code>时不一定能知道<code>key</code>的全部情况,取其中的哪几位也不一定合适,而一个数平方后的中间几位数和数的每一位都相关,由此使随机分布的<code>key</code>得到的<code>散列地址</code>也是随机的.取的位数由表长决定.</li>
-</ul>
-<ul>
-<li>折叠法 : 将<code>key</code>分割成位数相同的几部分(最后一部分的位数可以不同),然后取这几部分的叠加和(舍去进位)作为<code>散列地址</code>.</li>
-</ul>
-<ul>
-<li>除留余数法 : 取<code>key</code>被某个不大于<code>散列表</code>长度<code>m</code>的数<code>p</code>除后所得的余数为<code>散列地址</code>.即<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bc04a0c2f72156976761fa24dd4ba098855b7dca">,<img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3aad2b022083cbc8aef0745526f3a448e7d96160">.不仅可以对<code>key</code>直接取模，也可在<code>折叠法</code>、<code>平方取中法</code>等运算之后取模。对<code>p</code>的选择很重要，一般取<code>素数</code>或<code>m</code>，若<code>p</code>选择不好，容易产生<code>碰撞冲突</code>.</li>
-</ul>
-<h4 id="正整数"><a href="#正整数" class="headerlink" title="正整数"></a>正整数</h4><p>将正整数<code>散列</code>一般使用的是<code>除留余数法</code>.我们选择大小为<strong>素数</strong><code>M</code>的数组,对于任意正整数<code>k</code>,计算<code>k</code>除以<code>M</code>的余数(即<code>k%M</code>).它能够有效地将<code>key</code>散布在0到M-1的范围内.</p>
-<p>如果<code>M</code>不是<strong>素数</strong>,可能无法利用<code>key</code>中包含的所有信息,这<strong>可能导致无法均匀地散列散列值</strong>.</p>
-<p><img src="http://algs4.cs.princeton.edu/34hash/images/modular-hashing.png" alt=""></p>
-<h4 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h4><p>对浮点数进行散列一般是将<code>key</code>表示为二进制数然后再使用<code>除留余数法</code>.</p>
-<h4 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h4><p><code>除留余数法</code>也可以处理较长的<code>key</code>,例如字符串,我们只需将它们当成大整数即可.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> hash = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; s.length(); i++) &#123;</div><div class="line">   	hash = (R * hash + s.charAt(i)) % M;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Java的<code>charAt()</code>函数能够返回一个char值,即一个非负16位整数.如果<code>R</code>比任何字符的值都大,这种计算相当于将字符串当作一个N位的<code>R</code>进制值,将它除以<code>M</code>并取余.只要<code>R</code>足够小,不造成溢出,那么结果就能够落在0至M-1之间.可以使用一个较小的素数,例如31.</p>
-<h4 id="组合键"><a href="#组合键" class="headerlink" title="组合键"></a>组合键</h4><p>如果<code>key</code>的类型含有多个整型变量,我们可以和字符串类型一样将它们混合起来.</p>
-<p>例如,<code>key</code>的类型为Date,其中含有几个整型的域 : day(两个数字表示的日),month(两个数字表示的月),year(四个数字表示的年).我们可以这样计算它的散列值: </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> hash = (((day * R + month) % M) * R + year) % M;</div></pre></td></tr></table></figure>
-<h4 id="Java中的约定"><a href="#Java中的约定" class="headerlink" title="Java中的约定"></a>Java中的约定</h4><p>在Java中如果要为自定义的数据类型定义散列函数,需要同时重写<code>hashCode()</code>和<code>equals()</code>两个函数,并要遵守以下规则.</p>
-<ul>
-<li><code>hashCode()</code>与<code>equals()</code>的结果必须保持一致性.即<code>a.equals(b)</code>返回true,则<code>a.hashCode()</code>的返回值也必然和<code>b.hashCode()</code>的返回值相同.</li>
-</ul>
-<ul>
-<li>但如果两个对象的<code>hashCode()</code>函数的返回值相同,这两个对象也有可能不同,还需要用<code>equals()</code>函数进行判断.</li>
-</ul>
-<p>一个使用<code>除留余数法</code>的简单<code>散列函数</code>如下,它会将符号位屏蔽(将一个32位整数变为一个31位非负整数).</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Key key)</span> </span>&#123;</div><div class="line">   <span class="keyword">return</span> (key.hashCode() &amp; <span class="number">0x7fffffff</span>) % M;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="软缓存"><a href="#软缓存" class="headerlink" title="软缓存"></a>软缓存</h4><p>由于<code>散列函数</code>的计算有可能会很耗时,我们可以进行缓存优化,将每个<code>key</code>的散列值缓存起来(可以在每个<code>key</code>中使用一个hash变量来保存它的<code>hashCode()</code>的返回值).</p>
-<p>当第一次调用<code>hashCode()</code>时,需要计算对象的散列值,但之后对<code>hashCode()</code>方法的调用会直接返回hash变量的值.</p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>总之,要想实现一个优秀的<code>散列函数</code>需要满足以下的条件.</p>
-<ol>
-<li>一致性,等价的<code>key</code>必然产生相等的散列值.</li>
-</ol>
-<ol>
-<li>.高效性,计算简便.</li>
-</ol>
-<ol>
-<li>均匀性,均匀地散列所有的<code>key</code>.</li>
-</ol>
-<h3 id="基于拉链法的散列表"><a href="#基于拉链法的散列表" class="headerlink" title="基于拉链法的散列表"></a>基于拉链法的散列表</h3><hr>
-<p>拉链法是解决<code>碰撞冲突</code>的一种策略,它的核心思想是 : 将大小为<code>M</code>的<strong>数组中的每个元素指向一条链表</strong>,链表中的每个节点都存储了散列值为该元素的索引的键值对.</p>
-<p>拉链法的实现一般分为以下两种: </p>
-<ol>
-<li>使用一个原始的链表数据类型来表示数组中的每个元素.</li>
-</ol>
-<ol>
-<li>使用一个符号表实现来表示数组中的每个元素(这个方法实现简单但效率偏低).</li>
-</ol>
-<p><img src="http://algs4.cs.princeton.edu/34hash/images/separate-chaining.png" alt=""></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SeparateChainingHashST</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> INIT_CAPACITY = <span class="number">4</span>;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> n; <span class="comment">// the number of key-value pairs in the symbol table</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> m; <span class="comment">// the number of size of separate chaining table</span></div><div class="line">    <span class="keyword">private</span> Node&lt;K, V&gt;[] table; <span class="comment">// array of linked-list symbol tables</span></div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">private</span> K key;</div><div class="line">        <span class="keyword">private</span> V value;</div><div class="line">        <span class="keyword">private</span> Node&lt;K,V&gt; next;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(K key, V value, Node next)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.key = key;</div><div class="line">            <span class="keyword">this</span>.value = value;</div><div class="line">            <span class="keyword">this</span>.next = next;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> ((key.hashCode()) &amp; <span class="number">0x7fffffff</span>) % m;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="查找、插入、删除"><a href="#查找、插入、删除" class="headerlink" title="查找、插入、删除"></a>查找、插入、删除</h4><p>基于拉链法的<code>散列表</code>的查找、插入、删除算法基本分为两步:</p>
-<ol>
-<li>首先根据散列值找到对应的链表.</li>
-</ol>
-<ol>
-<li>然后沿着这条链表进行相应的操作.</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called get() with key is null."</span>);</div><div class="line">    <span class="keyword">int</span> i = hash(key);</div><div class="line">    Node x = table[i];</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (key.equals(x.key))</div><div class="line">            <span class="keyword">return</span> (V) x.value;</div><div class="line">        x = x.next;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div><div class="line">	</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called put() with key is null."</span>);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</div><div class="line">        remove(key);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// double table size if average length of list &gt;= 10</span></div><div class="line">    <span class="keyword">if</span> (n &gt;= <span class="number">10</span> * m)</div><div class="line">        resize(<span class="number">2</span> * m);</div><div class="line">    <span class="keyword">int</span> i = hash(key);</div><div class="line">    Node x = table[i];</div><div class="line">    Node p = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (key.equals(x.key)) &#123;</div><div class="line">            x.value = value;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        p = x;</div><div class="line">        x = x.next;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (p == <span class="keyword">null</span>) &#123;</div><div class="line">        table[i] = <span class="keyword">new</span> Node(key, value, <span class="keyword">null</span>);</div><div class="line">        n++;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        p.next = <span class="keyword">new</span> Node(key, value, <span class="keyword">null</span>);</div><div class="line">        n++;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">	</div><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">remove</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called remove() with key is null."</span>);</div><div class="line">    <span class="keyword">if</span> (isEmpty())</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"called remove() with empty symbol table."</span>);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (!contains(key))</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">int</span> i = hash(key);</div><div class="line">    Node x = table[i];</div><div class="line">    Node p = <span class="keyword">null</span>;</div><div class="line">    V oldValue = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">while</span> (x != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (key.equals(x.key)) &#123;</div><div class="line">            oldValue = (V) x.value;</div><div class="line">            <span class="keyword">if</span> (p == <span class="keyword">null</span>) &#123;</div><div class="line">                table[i] = x.next;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                p.next = x.next;</div><div class="line">            &#125;</div><div class="line">            n--;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        p = x;</div><div class="line">        x = x.next;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// halve table size if average length of list &lt;= 2</span></div><div class="line">    <span class="keyword">if</span> (m &gt; INIT_CAPACITY &amp;&amp; n &lt;= <span class="number">2</span> * m)</div><div class="line">        resize(m / <span class="number">2</span>);</div><div class="line">    <span class="keyword">return</span> oldValue;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="基于线性探测法的散列表"><a href="#基于线性探测法的散列表" class="headerlink" title="基于线性探测法的散列表"></a>基于线性探测法的散列表</h3><hr>
-<p>解决<code>碰撞冲突</code>的另一种策略是使用线性探测法.它的核心思想是: 使用大小为<code>M</code>的数组保存<code>N</code>个键值对,其中<code>M&gt;N</code>.这种方法<strong>需要依靠数组中的空位来解决<code>碰撞冲突</code></strong>,基于这种策略的所有方法被统称为<code>开放地址散列表</code>.</p>
-<p><code>开放地址散列表</code>中最简单的方法就是线性探测法: 当发生<code>碰撞冲突</code>时,我们直接检查<code>散列表</code>中的下一个位置(将索引值加1).它可能会产生三种结果: </p>
-<ol>
-<li>命中,该位置的<code>key</code>和被查找的<code>key</code>相同.</li>
-</ol>
-<ol>
-<li>未命中,<code>key</code>为空(该位置没有<code>key</code>).</li>
-</ol>
-<ol>
-<li>继续查找,该位置的<code>key</code>和被查找的<code>key</code>不同.</li>
-</ol>
-<p>我们使用<code>散列函数</code>找到<code>key</code>在数组中的索引,检查其中的<code>key</code>和被查找的<code>key</code>是否相同.如果不同则继续查找(将索引值加1,到达数组结尾时折回数组的开头),直到找到该<code>key</code>或者遇到一个空元素.</p>
-<p><code>开放地址散列表</code>的核心思想是: 与其将内存用作链表,不如将它们作为在<code>散列表</code>的空元素(这些空元素可以作为查找结束的标识).</p>
-<p><img src="http://algs4.cs.princeton.edu/34hash/images/linear-probing.png" alt=""></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinearProbingHashST</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> INIT_CAPACITY = <span class="number">4</span>;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> n; <span class="comment">// the number of key-value pairs in the symbol table</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> m; <span class="comment">// the number of size of linear probing table</span></div><div class="line">    <span class="keyword">private</span> K[] keys; <span class="comment">// the keys</span></div><div class="line">    <span class="keyword">private</span> V[] vals; <span class="comment">// the values</span></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Initializes an empty symbol table.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LinearProbingHashST</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>(INIT_CAPACITY);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Initializes an empty symbol table with the specified initial capacity.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> capacity the initial capacity</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LinearProbingHashST</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</div><div class="line">        m = capacity;</div><div class="line">        n = <span class="number">0</span>;</div><div class="line">        keys = (K[]) <span class="keyword">new</span> Object[m];</div><div class="line">        vals = (V[]) <span class="keyword">new</span> Object[m];</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called get() with key is null."</span>);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = hash(key); keys[i] != <span class="keyword">null</span>; i = (i + <span class="number">1</span>) % m) &#123;</div><div class="line">            <span class="keyword">if</span> (keys[i].equals(key))</div><div class="line">                <span class="keyword">return</span> vals[i];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called put() with key is null."</span>);</div><div class="line">        <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</div><div class="line">            delete(key);</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// double table size if 50% full</span></div><div class="line">        <span class="keyword">if</span> (n &gt;= m / <span class="number">2</span>) resize(<span class="number">2</span> * m);</div><div class="line"></div><div class="line">        <span class="keyword">int</span> i;</div><div class="line">        <span class="keyword">for</span> (i = hash(key); keys[i] != <span class="keyword">null</span>; i = (i + <span class="number">1</span>) % m) &#123;</div><div class="line">            <span class="keyword">if</span> (keys[i].equals(key)) &#123;</div><div class="line">                vals[i] = value;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        keys[i] = key;</div><div class="line">        vals[i] = value;</div><div class="line">        n++;</div><div class="line">    &#125;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><p>基于线性探测法的<code>散列表</code>的删除操作较为复杂,我们不能直接将<code>key</code>所在的位置设为<code>null</code>,这样会使在此位置之后的元素无法被查找到.</p>
-<p>因此,我们需要<strong>将被删除键的右侧的所有键重新插入到<code>散列表</code>中</strong>.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">delete</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"called delete() with key is null."</span>);</div><div class="line">    <span class="keyword">if</span> (isEmpty())</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"called delete() with empty symbol table."</span>);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (!contains(key))</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    <span class="comment">// find position i of key</span></div><div class="line">    <span class="keyword">int</span> i = hash(key);</div><div class="line">    <span class="keyword">while</span> (!key.equals(keys[i])) &#123;</div><div class="line">        i = (i + <span class="number">1</span>) % m;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    V oldValue = vals[i];</div><div class="line">    <span class="comment">// delete key and associated value</span></div><div class="line">    keys[i] = <span class="keyword">null</span>;</div><div class="line">    vals[i] = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="comment">// rehash all keys in same cluster</span></div><div class="line">    i = (i + <span class="number">1</span>) % m;</div><div class="line">    <span class="keyword">while</span> (keys[i] != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// delete keys[i] an vals[i] and reinsert</span></div><div class="line">        K keyToRehash = keys[i];</div><div class="line">        V valToRehash = vals[i];</div><div class="line">        keys[i] = <span class="keyword">null</span>;</div><div class="line">        vals[i] = <span class="keyword">null</span>;</div><div class="line">        n--;</div><div class="line">        put(keyToRehash, valToRehash);</div><div class="line">        i = (i + <span class="number">1</span>) % m;</div><div class="line">    &#125;</div><div class="line">    n--;</div><div class="line"></div><div class="line">    <span class="comment">// halves size of array if it's 12.5% full or less</span></div><div class="line">    <span class="keyword">if</span> (n &gt; <span class="number">0</span> &amp;&amp; n &lt;= m / <span class="number">8</span>) resize(m / <span class="number">2</span>);</div><div class="line">    <span class="function"><span class="keyword">assert</span> <span class="title">check</span><span class="params">()</span></span>;</div><div class="line">    <span class="keyword">return</span> oldValue;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="键簇"><a href="#键簇" class="headerlink" title="键簇"></a>键簇</h4><p>线性探测法的平均成本取决于元素在插入数组后聚集成的一组连续的条目,也叫作<code>键簇</code>.</p>
-<p>显然,短小的<code>键簇</code>才能保证较高的效率.随着插入的<code>key</code>越来越多,这个要求会很难满足,较长的<code>键簇</code>会越来越多.<code>长键簇</code>的可能性要比<code>短键簇</code>更大,因为新键的散列值无论落在<code>键簇</code>的任何位置都会使它的长度加1.</p>
-<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><hr>
-<p><code>散列表</code>使用了适度的空间和时间并在这两个极端之间找到了一种平衡,所以它可以在一般应用中实现拥有(均摊后)常数级别的查找和插入操作的<code>符号表</code>.</p>
-<p>但<code>散列表</code>是很难实现有序操作的,这是因为散列最主要的目的在于均匀地将键散布开来,因此在计算散列后键的顺序信息就已经丢失了.</p>
-<p>同时,<code>散列表</code>的性能也依赖于<code>α=N/M</code>的比值,其中<code>α</code>称为<code>散列表</code>的使用率.对于<code>拉链法</code>来说,<code>α</code>是每条链表的长度,因此一般大于1.对于<code>线性探测法</code>来说,<code>α</code>是表中已被占用的空间的比例,它是不可能大于1的.</p>
-<p><code>散列表</code>的性能虽然高效,但它也有以下的局限性: </p>
-<ul>
-<li>每种类型的键都需要一个优秀的<code>散列函数</code>.</li>
-</ul>
-<ul>
-<li>性能保证来自于<code>散列函数</code>的质量.</li>
-</ul>
-<ul>
-<li><code>散列函数</code>的计算可能复杂而且昂贵.</li>
-</ul>
-<ul>
-<li>难以支持有序性相关的操作.</li>
-</ul>
-<h3 id="end"><a href="#end" class="headerlink" title="end"></a>end</h3><hr>
-<ul>
-<li>Author : <a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun</a></li>
-</ul>
-<ul>
-<li>Email : sylvanassun_xtz@163.com</li>
-</ul>
-<ul>
-<li>文中的完整实现代码见我的<a href="https://github.com/SylvanasSun/algs4-study" target="_blank" rel="external">GitHub</a> &amp; <a href="https://gist.github.com/SylvanasSun/6872abd0fad061de28466cb775a84cea" target="_blank" rel="external">Gist</a></li>
-</ul>
-<ul>
-<li>文中参考资料引用自<a href="http://algs4.cs.princeton.edu/34hash/" target="_blank" rel="external">&lt;<algorithms,4th edition="">&gt;</algorithms,4th></a> &amp; <a href="https://en.wikipedia.org/wiki/Hash_table" target="_blank" rel="external">Wikepedia</a></li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h3&gt;&lt;hr&gt;
-&lt;p&gt;&lt;code&gt;散列表&lt;/code&gt;(&lt;code&gt;Hash Table&lt;/code&gt;,也叫&lt;code&gt;哈希表&lt;/code&gt;),它是根据
-    
-    </summary>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/categories/Algorithms/"/>
-    
-      <category term="数据结构" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="HashTable" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/HashTable/"/>
-    
-    
-      <category term="HashTable" scheme="https://sylvanassun.github.io/tags/HashTable/"/>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
-      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   

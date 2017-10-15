@@ -1,0 +1,1466 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java,2017,后端," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SylvanasSun's Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="什么是注解? 注解是JDK1.5引入的一个语法糖，它主要用来当作元数据，简单的说就是用于解释数据的数据。在Java中，类、方法、变量、参数、包都可以被注解。很多开源框架都使用了注解，例如Spring、MyBatis、Junit。我们平常最常见的注解可能就是@Override了，该注解用来标识一个重写的函数。 注解的作用：  配置文件：替代xml等文本文件格式的配置文件。使用注解作为配置文件可以在代">
+<meta name="keywords" content="Java,2017,后端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="注解的那点事儿">
+<meta property="og:url" content="https://sylvanassun.github.io/2017/10/15/2017-10-15-JavaAnnotation/index.html">
+<meta property="og:site_name" content="SylvanasSun&#39;s Blog">
+<meta property="og:description" content="什么是注解? 注解是JDK1.5引入的一个语法糖，它主要用来当作元数据，简单的说就是用于解释数据的数据。在Java中，类、方法、变量、参数、包都可以被注解。很多开源框架都使用了注解，例如Spring、MyBatis、Junit。我们平常最常见的注解可能就是@Override了，该注解用来标识一个重写的函数。 注解的作用：  配置文件：替代xml等文本文件格式的配置文件。使用注解作为配置文件可以在代">
+<meta property="og:updated_time" content="2017-10-15T13:44:59.245Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="注解的那点事儿">
+<meta name="twitter:description" content="什么是注解? 注解是JDK1.5引入的一个语法糖，它主要用来当作元数据，简单的说就是用于解释数据的数据。在Java中，类、方法、变量、参数、包都可以被注解。很多开源框架都使用了注解，例如Spring、MyBatis、Junit。我们平常最常见的注解可能就是@Override了，该注解用来标识一个重写的函数。 注解的作用：  配置文件：替代xml等文本文件格式的配置文件。使用注解作为配置文件可以在代">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://sylvanassun.github.io/2017/10/15/2017-10-15-JavaAnnotation/"/>
+
+
+
+
+
+  <title>注解的那点事儿 | SylvanasSun's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SylvanasSun's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://sylvanassun.github.io/2017/10/15/2017-10-15-JavaAnnotation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SylvanasSun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SylvanasSun's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">注解的那点事儿</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-15T18:00:00+08:00">
+                2017-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/10/15/2017-10-15-JavaAnnotation/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/10/15/2017-10-15-JavaAnnotation/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/10/15/2017-10-15-JavaAnnotation/" class="leancloud_visitors" data-flag-title="注解的那点事儿">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="什么是注解"><a href="#什么是注解" class="headerlink" title="什么是注解?"></a>什么是注解?</h3><hr>
+<p><strong>注解是<code>JDK1.5</code>引入的一个语法糖，它主要用来当作元数据，简单的说就是用于解释数据的数据</strong>。在Java中，类、方法、变量、参数、包都可以被注解。很多开源框架都使用了注解，例如<code>Spring</code>、<code>MyBatis</code>、<code>Junit</code>。我们平常最常见的注解可能就是<code>@Override</code>了，该注解用来标识一个重写的函数。</p>
+<p>注解的作用：</p>
+<ul>
+<li><p>配置文件：替代<code>xml</code>等文本文件格式的配置文件。使用注解作为配置文件可以在代码中实现动态配置，相比外部配置文件，注解的方式会减少很多文本量。但缺点也很明显，更改配置需要对代码进行重新编译，无法像外部配置文件一样进行集中管理（所以现在基本都是外部配置文件+注解混合使用）。</p>
+</li>
+<li><p>数据的标记：注解可以作为一个标记（例如：被<code>@Override</code>标记的方法代表被重写的方法）。</p>
+</li>
+<li><p>减少重复代码：注解可以减少重复且乏味的代码。比如我们定义一个<code>@ValidateInt</code>，然后通过反射来获得类中所有成员变量，只要是含有<code>@ValidateInt</code>注解的成员变量，我们就可以对其进行数据的规则校验。</p>
+</li>
+</ul>
+<p>定义一个注解非常简单，只需要遵循以下的语法规则：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</div><div class="line"><span class="meta">@Target</span>(ElementType.FIELD)</div><div class="line"><span class="meta">@Documented</span></div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> ValidateInt &#123;</div><div class="line">	<span class="comment">// 它们看起来像是定义一个函数，但其实这是注解中的属性</span></div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxLength</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">minLength</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们发现上面的代码在定义注解时也使用了注解，这些注解被称为元注解。<strong>作用于注解上的注解称为元注解（元注解其实就是注解的元数据）</strong>，<code>Java</code>中一共有以下元注解。</p>
+<ul>
+<li><p><code>@Target</code>：用于描述注解的使用范围（注解可以用在什么地方）。</p>
+<ul>
+<li><p>ElementType.CONSTRUCTOR：构造器。</p>
+</li>
+<li><p>ElementType.FIELD：成员变量。</p>
+</li>
+<li><p>ElementType.LOCAL_VARIABLE：局部变量。</p>
+</li>
+<li><p>ElementType.PACKAGE：包。</p>
+</li>
+<li><p>ElementType.PARAMETER：参数。</p>
+</li>
+<li><p>ElementType.METHOD：方法。</p>
+</li>
+<li><p>ElementType.TYPE：类、接口(包括注解类型) 或enum声明。</p>
+</li>
+</ul>
+</li>
+<li><p><code>@Retention</code>：注解的生命周期，用于表示该注解会在什么时期保留。</p>
+<ul>
+<li><p>RetentionPolicy.RUNTIME：运行时保留，这样就可以通过反射获得了。</p>
+</li>
+<li><p>RetentionPolicy.CLASS：在class文件中保留。</p>
+</li>
+<li><p>RetentionPolicy.SOURCE：在源文件中保留。</p>
+</li>
+</ul>
+</li>
+<li><p><code>@Documented</code>：表示该注解会被作为被标注的程序成员的公共API，因此可以被例如javadoc此类的工具文档化。</p>
+</li>
+<li><p><code>@Inherited</code>：表示该注解是可被继承的（如果一个使用了@Inherited修饰的annotation类型被用于一个class，则这个annotation将被用于该class的子类）。</p>
+</li>
+</ul>
+<p>了解了这些基础知识之后，接着完成上述定义的<code>@ValidateInt</code>，我们定义一个<code>Cat</code>类然后在它的成员变量中使用<code>@ValidateInt</code>，并通过反射进行数据校验。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cat</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">    <span class="meta">@ValidateInt</span>(minLength = <span class="number">0</span>, maxLength = <span class="number">10</span>)</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.age = age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IllegalAccessException </span>&#123;</div><div class="line">        Cat cat = <span class="keyword">new</span> Cat();</div><div class="line">        cat.setName(<span class="string">"楼楼"</span>);</div><div class="line">        cat.setAge(<span class="number">11</span>);</div><div class="line"></div><div class="line">        Class&lt;? extends Cat&gt; clazz = cat.getClass();</div><div class="line">        Field[] fields = clazz.getDeclaredFields();</div><div class="line">        <span class="keyword">if</span> (fields != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">for</span> (Field field : fields) &#123;</div><div class="line">                ValidateInt annotation = field.getDeclaredAnnotation(ValidateInt.class);</div><div class="line">                <span class="keyword">if</span> (annotation != <span class="keyword">null</span>) &#123;</div><div class="line">                    field.setAccessible(<span class="keyword">true</span>);</div><div class="line">                    <span class="keyword">int</span> value = field.getInt(cat);</div><div class="line">                    <span class="keyword">if</span> (value &lt; annotation.minLength()) &#123;</div><div class="line">                        <span class="comment">// ....</span></div><div class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (value &gt; annotation.maxLength()) &#123;</div><div class="line">                        <span class="comment">// ....</span></div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>本文作者为:<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanas.sun@gmail.com)</a>，首发于<a href="https://sylvanassun.github.io/">SylvanasSun’s Blog</a>。<br>原文链接：<a href="https://sylvanassun.github.io/2017/10/15/2017-10-15-JavaAnnotation/">https://sylvanassun.github.io/2017/10/15/2017-10-15-JavaAnnotation/</a><br>（转载请务必保留本段声明，并且保留超链接。）</p>
+</blockquote>
+<h3 id="注解的实现"><a href="#注解的实现" class="headerlink" title="注解的实现"></a>注解的实现</h3><hr>
+<p>注解其实只是<code>Java</code>的一颗语法糖（语法糖是一种方便程序员使用的语法规则，但它其实并没有表面上那么神奇的功能，只不过是由编译器帮程序员生成那些繁琐的代码）。在<code>Java</code>中这样的语法糖还有很多，例如<code>enum</code>、泛型、<code>forEach</code>等。</p>
+<p>通过阅读<a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6" target="_blank" rel="external">JLS(Java Language Specification</a>（当你想了解一个语言特性的实现时，最好的方法就是阅读官方规范）发现，<strong>注解是一个继承自<code>java.lang.annotation.Annotation</code>接口的特殊接口</strong>，原文如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">An annotation type declaration specifies a new annotation type, a special kind of interface type. To distinguish an annotation type declaration from a normal interface declaration, the keyword interface is preceded by an at-sign (@).</div><div class="line"></div><div class="line">Note that the at-sign (@) and the keyword interface are distinct tokens. It is possible to separate them with whitespace, but this is discouraged as a matter of style.</div><div class="line"></div><div class="line">The rules for annotation modifiers on an annotation type declaration are specified in §9.7.4 and §9.7.5.</div><div class="line"></div><div class="line">The Identifier in an annotation type declaration specifies the name of the annotation type.</div><div class="line"></div><div class="line">It is a compile-time error if an annotation type has the same simple name as any of its enclosing classes or interfaces.</div><div class="line"></div><div class="line">The direct superinterface of every annotation type is java.lang.annotation.Annotation.</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> java.lang.annotation;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * The common interface extended by all annotation types.  Note that an</div><div class="line"> * interface that manually extends this one does &lt;i&gt;not&lt;/i&gt; define</div><div class="line"> * an annotation type.  Also note that this interface does not itself</div><div class="line"> * define an annotation type.</div><div class="line"> *</div><div class="line"> * More information about annotation types can be found in section 9.6 of</div><div class="line"> * &lt;cite&gt;The Java&amp;trade; Language Specification&lt;/cite&gt;.</div><div class="line"> *</div><div class="line"> * The &#123;<span class="doctag">@link</span> java.lang.reflect.AnnotatedElement&#125; interface discusses</div><div class="line"> * compatibility concerns when evolving an annotation type from being</div><div class="line"> * non-repeatable to being repeatable.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@author</span>  Josh Bloch</div><div class="line"> * <span class="doctag">@since</span>   1.5</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Annotation</span> </span>&#123;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们将上节定义的<code>@ValidateInt</code>注解进行反编译来验证这个说法。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">  Last modified Oct 14, 2017; size 479 bytes</div><div class="line">  MD5 checksum 2d9dd2c169fe854db608c7950af3eca7</div><div class="line">  Compiled from "ValidateInt.java"</div><div class="line">public interface com.sun.annotation.ValidateInt extends java.lang.annotation.Annotation</div><div class="line">  minor version: 0</div><div class="line">  major version: 52</div><div class="line">  flags: ACC_PUBLIC, ACC_INTERFACE, ACC_ABSTRACT, ACC_ANNOTATION</div><div class="line">Constant pool:</div><div class="line">   #1 = Class              #18            // com/sun/annotation/ValidateInt</div><div class="line">   #2 = Class              #19            // java/lang/Object</div><div class="line">   #3 = Class              #20            // java/lang/annotation/Annotation</div><div class="line">   #4 = Utf8               maxLength</div><div class="line">   #5 = Utf8               ()I</div><div class="line">   #6 = Utf8               minLength</div><div class="line">   #7 = Utf8               SourceFile</div><div class="line">   #8 = Utf8               ValidateInt.java</div><div class="line">   #9 = Utf8               RuntimeVisibleAnnotations</div><div class="line">  #10 = Utf8               Ljava/lang/annotation/Retention;</div><div class="line">  #11 = Utf8               value</div><div class="line">  #12 = Utf8               Ljava/lang/annotation/RetentionPolicy;</div><div class="line">  #13 = Utf8               RUNTIME</div><div class="line">  #14 = Utf8               Ljava/lang/annotation/Target;</div><div class="line">  #15 = Utf8               Ljava/lang/annotation/ElementType;</div><div class="line">  #16 = Utf8               FIELD</div><div class="line">  #17 = Utf8               Ljava/lang/annotation/Documented;</div><div class="line">  #18 = Utf8               com/sun/annotation/ValidateInt</div><div class="line">  #19 = Utf8               java/lang/Object</div><div class="line">  #20 = Utf8               java/lang/annotation/Annotation</div><div class="line">&#123;</div><div class="line">  public abstract int maxLength();</div><div class="line">    descriptor: ()I</div><div class="line">    flags: ACC_PUBLIC, ACC_ABSTRACT</div><div class="line"></div><div class="line">  public abstract int minLength();</div><div class="line">    descriptor: ()I</div><div class="line">    flags: ACC_PUBLIC, ACC_ABSTRACT</div><div class="line">&#125;</div><div class="line">SourceFile: "ValidateInt.java"</div><div class="line">RuntimeVisibleAnnotations:</div><div class="line">  0: #10(#11=e#12.#13)</div><div class="line">  1: #14(#11=[e#15.#16])</div><div class="line">  2: #17()</div></pre></td></tr></table></figure>
+<p><code>public interface com.sun.annotation.ValidateInt extends java.lang.annotation.Annotation</code>，很明显<code>ValidateInt</code>继承自<code>java.lang.annotation.Annotation</code>。</p>
+<p>那么，如果注解只是一个接口，又是如何实现对属性的设置呢？这是<strong>因为<code>Java</code>使用了动态代理对我们定义的注解接口生成了一个代理类，而对注解的属性设置其实都是在对这个代理类中的变量进行赋值</strong>。所以我们才能用反射获得注解中的各种属性。</p>
+<p>为了证实注解其实是个动态代理对象，接下来我们使用<code>CLHSDB(Command-Line HotSpot Debugger)</code>来查看<code>JVM</code>的运行时数据。如果有童鞋不了解怎么使用的话，可以参考R大的文章<a href="http://rednaxelafx.iteye.com/blog/1847971" target="_blank" rel="external">借HSDB来探索HotSpot VM的运行时数据 - Script Ahead, Code Behind - ITeye博客</a>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="number">0x000000000257f538</span> com/sun/proxy/$Proxy1</div></pre></td></tr></table></figure>
+<p>注解的类型为<code>com/sun/proxy/$Proxy1</code>，这正是动态代理生成代理类的默认类型，<code>com/sun/proxy</code>为默认包名，<code>$Proxy</code>是默认的类名，<code>1</code>为自增的编号。</p>
+<h3 id="实践-包扫描器"><a href="#实践-包扫描器" class="headerlink" title="实践-包扫描器"></a>实践-包扫描器</h3><hr>
+<p>我们在使用<code>Spring</code>的时候，只需要指定一个包名，框架就会去扫描该包下所有带有<code>Spring</code>中的注解的类。实现一个包扫描器很简单，主要思路如下：</p>
+<ul>
+<li><p>先将传入的包名通过类加载器获得项目内的路径。</p>
+</li>
+<li><p>然后遍历并获得该路径下的所有class文件路径（需要处理为包名的格式）。</p>
+</li>
+<li><p>得到了class文件的路径就可以使用反射生成Class对象并获得其中的各种信息了。</p>
+</li>
+</ul>
+<p>定义包扫描器接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PackageScanner</span> </span>&#123;</div><div class="line"></div><div class="line">    List&lt;Class&lt;?&gt;&gt; scan(String packageName);</div><div class="line"></div><div class="line">    List&lt;Class&lt;?&gt;&gt; scan(String packageName, ScannedClassHandler handler);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>函数2需要传入一个<code>ScannedClassHandler</code>接口，该接口是我们定义的回调函数，用于在扫描所有类文件之后执行的处理操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@FunctionalInterface</span> <span class="comment">// 这个注解表示该接口为一个函数接口，用于支持Lambda表达式</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ScannedClassHandler</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">execute</span><span class="params">(Class&lt;?&gt; clazz)</span></span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我想要包扫描器可以识别和支持不同的文件类型，定义一个枚举类<code>ResourceType</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> ResourceType &#123;</div><div class="line"></div><div class="line">    JAR(<span class="string">"jar"</span>),</div><div class="line">    FILE(<span class="string">"file"</span>),</div><div class="line">    CLASS_FILE(<span class="string">"class"</span>),</div><div class="line">    INVALID(<span class="string">"invalid"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String typeName;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getTypeName</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.typeName;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ResourceType</span><span class="params">(String typeName)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.typeName = typeName;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>PathUtils</code>是一个用来处理路径和包转换等操作的工具类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PathUtils</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String FILE_SEPARATOR = System.getProperty(<span class="string">"file.separator"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String CLASS_FILE_SUFFIX = <span class="string">".class"</span>;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String JAR_PROTOCOL = <span class="string">"jar"</span>;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String FILE_PROTOCOL = <span class="string">"file"</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">PathUtils</span><span class="params">()</span> </span>&#123;</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	<span class="comment">// 去除后缀名</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">trimSuffix</span><span class="params">(String filename)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (filename == <span class="keyword">null</span> || <span class="string">""</span>.equals(filename))</div><div class="line">            <span class="keyword">return</span> filename;</div><div class="line"></div><div class="line">        <span class="keyword">int</span> dotIndex = filename.lastIndexOf(<span class="string">"."</span>);</div><div class="line">        <span class="keyword">if</span> (-<span class="number">1</span> == dotIndex)</div><div class="line">            <span class="keyword">return</span> filename;</div><div class="line">        <span class="keyword">return</span> filename.substring(<span class="number">0</span>, dotIndex);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">pathToPackage</span><span class="params">(String path)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (path == <span class="keyword">null</span> || <span class="string">""</span>.equals(path))</div><div class="line">            <span class="keyword">return</span> path;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (path.startsWith(FILE_SEPARATOR))</div><div class="line">            path = path.substring(<span class="number">1</span>);</div><div class="line">        <span class="keyword">return</span> path.replace(FILE_SEPARATOR, <span class="string">"."</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">packageToPath</span><span class="params">(String packageName)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (packageName == <span class="keyword">null</span> || <span class="string">""</span>.equals(packageName))</div><div class="line">            <span class="keyword">return</span> packageName;</div><div class="line">        <span class="keyword">return</span> packageName.replace(<span class="string">"."</span>, FILE_SEPARATOR);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 根据URL的协议来判断资源类型</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ResourceType <span class="title">getResourceType</span><span class="params">(URL url)</span> </span>&#123;</div><div class="line">        String protocol = url.getProtocol();</div><div class="line">        <span class="keyword">switch</span> (protocol) &#123;</div><div class="line">            <span class="keyword">case</span> JAR_PROTOCOL:</div><div class="line">                <span class="keyword">return</span> ResourceType.JAR;</div><div class="line">            <span class="keyword">case</span> FILE_PROTOCOL:</div><div class="line">                <span class="keyword">return</span> ResourceType.FILE;</div><div class="line">            <span class="keyword">default</span>:</div><div class="line">                <span class="keyword">return</span> ResourceType.INVALID;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isClassFile</span><span class="params">(String path)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (path == <span class="keyword">null</span> || <span class="string">""</span>.equals(path))</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        <span class="keyword">return</span> path.endsWith(CLASS_FILE_SUFFIX);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 抽取URL中的主要路径.</div><div class="line">     * Example:</div><div class="line">     * "file:/com/example/hello" to "/com/example/hello"</div><div class="line">     * "jar:file:/com/example/hello.jar!/" to "/com/example/hello.jar"</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getUrlMainPath</span><span class="params">(URL url)</span> <span class="keyword">throws</span> UnsupportedEncodingException </span>&#123;</div><div class="line">        <span class="keyword">if</span> (url == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">return</span> <span class="string">""</span>;</div><div class="line">		</div><div class="line">		<span class="comment">// 如果不使用URLDecoder解码的话，路径会出现中文乱码问题</span></div><div class="line">        String filePath = URLDecoder.decode(url.getFile(), <span class="string">"utf-8"</span>);</div><div class="line">        <span class="comment">// if file is not the jar</span></div><div class="line">        <span class="keyword">int</span> pos = filePath.indexOf(<span class="string">"!"</span>);</div><div class="line">        <span class="keyword">if</span> (-<span class="number">1</span> == pos)</div><div class="line">            <span class="keyword">return</span> filePath;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> filePath.substring(<span class="number">5</span>, pos);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">concat</span><span class="params">(Object... args)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (args == <span class="keyword">null</span> || args.length == <span class="number">0</span>)</div><div class="line">            <span class="keyword">return</span> <span class="string">""</span>;</div><div class="line"></div><div class="line">        StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; args.length; i++)</div><div class="line">            stringBuilder.append(args[i]);</div><div class="line"></div><div class="line">        <span class="keyword">return</span> stringBuilder.toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>定义了这些辅助类之后，就可以去实现包扫描器了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimplePackageScanner</span> <span class="keyword">implements</span> <span class="title">PackageScanner</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">protected</span> String packageName;</div><div class="line"></div><div class="line">    <span class="keyword">protected</span> String packagePath;</div><div class="line"></div><div class="line">    <span class="keyword">protected</span> ClassLoader classLoader;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> Logger logger;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SimplePackageScanner</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.classLoader = Thread.currentThread().getContextClassLoader();</div><div class="line">        <span class="keyword">this</span>.logger = LoggerFactory.getLogger(SimplePackageScanner.class);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="keyword">public</span> List&lt;Class&lt;?&gt;&gt; scan(String packageName) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.scan(packageName, <span class="keyword">null</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="keyword">public</span> List&lt;Class&lt;?&gt;&gt; scan(String packageName, ScannedClassHandler handler) &#123;</div><div class="line">        <span class="keyword">this</span>.initPackageNameAndPath(packageName);</div><div class="line">        <span class="keyword">if</span> (logger.isDebugEnabled())</div><div class="line">            logger.debug(<span class="string">"Start scanning package: &#123;&#125; ...."</span>, <span class="keyword">this</span>.packageName);</div><div class="line">        URL url = <span class="keyword">this</span>.getResource(<span class="keyword">this</span>.packagePath);</div><div class="line">        <span class="keyword">if</span> (url == <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">return</span> <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.parseUrlThenScan(url, handler);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initPackageNameAndPath</span><span class="params">(String packageName)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.packageName = packageName;</div><div class="line">        <span class="keyword">this</span>.packagePath = PathUtils.packageToPath(packageName);</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>函数<code>getResource()</code>会根据包名来通过类加载器获得当前项目下的URL对象，如果这个URL为空则直接返回一个空的<code>ArrayList</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> URL <span class="title">getResource</span><span class="params">(String packagePath)</span> </span>&#123;</div><div class="line">    URL url = <span class="keyword">this</span>.classLoader.getResource(packagePath);</div><div class="line">    <span class="keyword">if</span> (url != <span class="keyword">null</span>)</div><div class="line">        logger.debug(<span class="string">"Get resource: &#123;&#125; success!"</span>, packagePath);</div><div class="line">    <span class="keyword">else</span></div><div class="line">        logger.debug(<span class="string">"Get resource: &#123;&#125; failed,end of scan."</span>, packagePath);</div><div class="line">    <span class="keyword">return</span> url;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>函数<code>parseUrlThenScan()</code>会解析URL对象并进行扫描，最终返回一个类列表。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">  <span class="keyword">protected</span> List&lt;Class&lt;?&gt;&gt; parseUrlThenScan(URL url, ScannedClassHandler handler) &#123;</div><div class="line">      String urlPath = <span class="string">""</span>;</div><div class="line">      <span class="keyword">try</span> &#123;</div><div class="line">    <span class="comment">// 先提取出URL中的路径（不含协议名等信息）</span></div><div class="line">          urlPath = PathUtils.getUrlMainPath(url);</div><div class="line">      &#125; <span class="keyword">catch</span> (UnsupportedEncodingException e) &#123;</div><div class="line">          e.printStackTrace();</div><div class="line">          logger.debug(<span class="string">"Get url path failed."</span>);</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      <span class="comment">// 判断URL的类型</span></div><div class="line">      ResourceType type = PathUtils.getResourceType(url);</div><div class="line">      List&lt;Class&lt;?&gt;&gt; classList = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">      <span class="keyword">try</span> &#123;</div><div class="line">          <span class="keyword">switch</span> (type) &#123;</div><div class="line">              <span class="keyword">case</span> FILE:</div><div class="line">                  classList = <span class="keyword">this</span>.getClassListFromFile(urlPath, <span class="keyword">this</span>.packageName);</div><div class="line">                  <span class="keyword">break</span>;</div><div class="line">              <span class="keyword">case</span> JAR:</div><div class="line">                  classList = <span class="keyword">this</span>.getClassListFromJar(urlPath);</div><div class="line">                  <span class="keyword">break</span>;</div><div class="line">              <span class="keyword">default</span>:</div><div class="line">                  logger.debug(<span class="string">"Unsupported file type."</span>);</div><div class="line">          &#125;</div><div class="line">      &#125; <span class="keyword">catch</span> (IOException | ClassNotFoundException e) &#123;</div><div class="line">          e.printStackTrace();</div><div class="line">          logger.debug(<span class="string">"Get class list failed."</span>);</div><div class="line">      &#125;</div><div class="line"></div><div class="line"><span class="comment">// 执行回调函数</span></div><div class="line">      <span class="keyword">this</span>.invokeCallback(classList, handler);</div><div class="line">      logger.debug(<span class="string">"End of scan &lt;&#123;&#125;&gt;."</span>, urlPath);</div><div class="line">      <span class="keyword">return</span> classList;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>函数<code>getClassListFromFile()</code>会扫描路径下的所有class文件，并拼接包名生成Class对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> List&lt;Class&lt;?&gt;&gt; getClassListFromFile(String path, String packageName) <span class="keyword">throws</span> ClassNotFoundException &#123;</div><div class="line">    File file = <span class="keyword">new</span> File(path);</div><div class="line">    List&lt;Class&lt;?&gt;&gt; classList = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">    File[] listFiles = file.listFiles();</div><div class="line">    <span class="keyword">if</span> (listFiles != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">for</span> (File f : listFiles) &#123;</div><div class="line">            <span class="keyword">if</span> (f.isDirectory()) &#123;</div><div class="line">	<span class="comment">// 如果是一个文件夹，则继续递归调用，注意传递的包名</span></div><div class="line">                List&lt;Class&lt;?&gt;&gt; list = getClassListFromFile(f.getAbsolutePath(),</div><div class="line">                        PathUtils.concat(packageName, <span class="string">"."</span>, f.getName()));</div><div class="line">                classList.addAll(list);</div><div class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (PathUtils.isClassFile(f.getName())) &#123;</div><div class="line">                <span class="comment">// 我们不添加名字带有$的class文件，这些都是JVM动态生成的</span></div><div class="line">                String className = PathUtils.trimSuffix(f.getName());</div><div class="line">                <span class="keyword">if</span> (-<span class="number">1</span> != className.lastIndexOf(<span class="string">"$"</span>))</div><div class="line">                    <span class="keyword">continue</span>;</div><div class="line"></div><div class="line">                String finalClassName = PathUtils.concat(packageName, <span class="string">"."</span>, className);</div><div class="line">                classList.add(Class.forName(finalClassName));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> classList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>函数<code>getClassListFromJar()</code>会扫描Jar中的class文件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> List&lt;Class&lt;?&gt;&gt; getClassListFromJar(String jarPath) <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</div><div class="line">    <span class="keyword">if</span> (logger.isDebugEnabled())</div><div class="line">        logger.debug(<span class="string">"Start scanning jar: &#123;&#125;"</span>, jarPath);</div><div class="line"></div><div class="line">    JarInputStream jarInputStream = <span class="keyword">new</span> JarInputStream(<span class="keyword">new</span> FileInputStream(jarPath));</div><div class="line">    JarEntry jarEntry = jarInputStream.getNextJarEntry();</div><div class="line">    List&lt;Class&lt;?&gt;&gt; classList = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="keyword">while</span> (jarEntry != <span class="keyword">null</span>) &#123;</div><div class="line">        String name = jarEntry.getName();</div><div class="line">        <span class="keyword">if</span> (name.startsWith(<span class="keyword">this</span>.packageName) &amp;&amp; PathUtils.isClassFile(name))</div><div class="line">            classList.add(Class.forName(name));</div><div class="line">        jarEntry = jarInputStream.getNextJarEntry();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> classList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>函数<code>invokeCallback()</code>遍历类对象列表，然后执行回调函数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">invokeCallback</span><span class="params">(List&lt;Class&lt;?&gt;&gt; classList, ScannedClassHandler handler)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (classList != <span class="keyword">null</span> &amp;&amp; handler != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">for</span> (Class&lt;?&gt; clazz : classList) &#123;</div><div class="line">            handler.execute(clazz);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>本节中实现的包扫描器源码地址：<a href="https://gist.github.com/SylvanasSun/6ab31dcfd9670f29a46917decdba36d1" target="_blank" rel="external">https://gist.github.com/SylvanasSun/6ab31dcfd9670f29a46917decdba36d1</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/2017/" rel="tag"># 2017</a>
+          
+            <a href="/tags/后端/" rel="tag"># 后端</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/08/2017-10-08-BrowserRenderOptimization/" rel="next" title="浏览器性能优化-渲染性能">
+                <i class="fa fa-chevron-left"></i> 浏览器性能优化-渲染性能
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!--MOB SHARE BEGIN-->
+ <div class="-mob-share-ui-button -mob-share-open">分享</div>
+ <div class="-mob-share-ui" style="display: none">
+     <ul class="-mob-share-list">
+         <li class="-mob-share-weibo"><p>新浪微博</p></li>
+         <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+         <li class="-mob-share-qzone"><p>QQ空间</p></li>
+         <li class="-mob-share-qq"><p>QQ好友</p></li>
+         <li class="-mob-share-weixin"><p>微信</p></li>
+         <li class="-mob-share-douban"><p>豆瓣</p></li>
+         <li class="-mob-share-renren"><p>人人网</p></li>
+         <li class="-mob-share-kaixin"><p>开心网</p></li>
+         <li class="-mob-share-facebook"><p>Facebook</p></li>
+         <li class="-mob-share-twitter"><p>Twitter</p></li>
+         <li class="-mob-share-pocket"><p>Pocket</p></li>
+         <li class="-mob-share-google"><p>Google+</p></li>
+         <li class="-mob-share-youdao"><p>有道云笔记</p></li>
+         <li class="-mob-share-mingdao"><p>明道</p></li>
+         <li class="-mob-share-pengyou"><p>朋友网</p></li>
+         <li class="-mob-share-tumblr"><p>Tumblr</p></li>
+         <li class="-mob-share-instapaper"><p>Instapaper</p></li>
+         <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+     </ul>
+    <div class="-mob-share-close">取消</div>
+ </div>
+ <div class="-mob-share-ui-bg"></div>
+ <script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=1f85dd74c1b48"></script>
+ <!--MOB SHARE END-->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div id="sidebar-dimmer"></div>
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="SylvanasSun" />
+          <p class="site-author-name" itemprop="name">SylvanasSun</p>
+           
+              <p class="site-description motion-element" itemprop="description">这里是SylvanasSun的个人博客,与你一起发现更大的世界。</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">35</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/SylvanasSun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/1666202315/profile?rightmod=1&wvr=6&mod=personinfo" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/sylvanas-sun/activities" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.oschina.net/" title="oschina" target="_blank">oschina</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.csdn.net/" title="csdn" target="_blank">csdn</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://toutiao.io/" title="开发者头条" target="_blank">开发者头条</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://juejin.im/" title="掘金" target="_blank">掘金</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.nosuchfield.com/" title="御坂研究所" target="_blank">御坂研究所</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是注解"><span class="nav-number">1.</span> <span class="nav-text">什么是注解?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注解的实现"><span class="nav-number">2.</span> <span class="nav-text">注解的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践-包扫描器"><span class="nav-number">3.</span> <span class="nav-text">实践-包扫描器</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SylvanasSun</span>
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-sylvanassun-github-io.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://sylvanassun.github.io/2017/10/15/2017-10-15-JavaAnnotation/';
+          this.page.identifier = '2017/10/15/2017-10-15-JavaAnnotation/';
+          this.page.title = '注解的那点事儿';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-sylvanassun-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("PvA9UJ6yFKF4auJrnukN6hmW-gzGzoHsz", "wfAE2ETw2IfWPPRCprVJW8mm");AV.useAVCloudUS();</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

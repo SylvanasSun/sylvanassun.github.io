@@ -446,8 +446,9 @@
       
         
           
-          
-本文作者为SylvanasSun(sylvanas.sun@gmail.com)，首发于SylvanasSun’s Blog。原文链接：https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/（转载请务必
+          Spring与线程安全
+Spring作为一个IOC/DI容器，帮助我们管理了许许多多的“bean”。但其实，Spring并没有保证这些对象的线程安全，需要由开发者自己编写解决线程安全问题的代码。
+Spring对每个bean提供了一个scope属性来表示该bean的作用域。它是bean的生命周期。例如
           ...
           <!--noindex-->
           <div class="post-button text-center">

@@ -95,17 +95,17 @@
 
 
 
-<meta name="description" content="本文作者为SylvanasSun(sylvanas.sun@gmail.com)，首发于SylvanasSun’s Blog。原文链接：https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/（转载请务必保留本段声明，并且保留超链接。）  Spring与线程安全 Spring作为一个IOC/DI容器，帮">
+<meta name="description" content="Spring与线程安全 Spring作为一个IOC/DI容器，帮助我们管理了许许多多的“bean”。但其实，Spring并没有保证这些对象的线程安全，需要由开发者自己编写解决线程安全问题的代码。 Spring对每个bean提供了一个scope属性来表示该bean的作用域。它是bean的生命周期。例如，一个scope为singleton的bean，在第一次被注入时，会创建为一个单例对象，该对象会一直">
 <meta name="keywords" content="Java,Spring,2017,后端,多线程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="聊一聊Spring中的线程安全性">
 <meta property="og:url" content="https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/index.html">
 <meta property="og:site_name" content="SylvanasSun&#39;s Blog">
-<meta property="og:description" content="本文作者为SylvanasSun(sylvanas.sun@gmail.com)，首发于SylvanasSun’s Blog。原文链接：https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/（转载请务必保留本段声明，并且保留超链接。）  Spring与线程安全 Spring作为一个IOC/DI容器，帮">
-<meta property="og:updated_time" content="2017-11-06T11:11:13.510Z">
+<meta property="og:description" content="Spring与线程安全 Spring作为一个IOC/DI容器，帮助我们管理了许许多多的“bean”。但其实，Spring并没有保证这些对象的线程安全，需要由开发者自己编写解决线程安全问题的代码。 Spring对每个bean提供了一个scope属性来表示该bean的作用域。它是bean的生命周期。例如，一个scope为singleton的bean，在第一次被注入时，会创建为一个单例对象，该对象会一直">
+<meta property="og:updated_time" content="2017-11-06T11:17:45.512Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="聊一聊Spring中的线程安全性">
-<meta name="twitter:description" content="本文作者为SylvanasSun(sylvanas.sun@gmail.com)，首发于SylvanasSun’s Blog。原文链接：https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/（转载请务必保留本段声明，并且保留超链接。）  Spring与线程安全 Spring作为一个IOC/DI容器，帮">
+<meta name="twitter:description" content="Spring与线程安全 Spring作为一个IOC/DI容器，帮助我们管理了许许多多的“bean”。但其实，Spring并没有保证这些对象的线程安全，需要由开发者自己编写解决线程安全问题的代码。 Spring对每个bean提供了一个scope属性来表示该bean的作用域。它是bean的生命周期。例如，一个scope为singleton的bean，在第一次被注入时，会创建为一个单例对象，该对象会一直">
 
 
 
@@ -442,10 +442,7 @@
       
 
       
-        <blockquote>
-<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanas.sun@gmail.com)</a>，首发于<a href="https://sylvanassun.github.io/">SylvanasSun’s Blog</a>。<br>原文链接：<a href="https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/">https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/</a><br>（转载请务必保留本段声明，并且保留超链接。）</p>
-</blockquote>
-<h3 id="Spring与线程安全"><a href="#Spring与线程安全" class="headerlink" title="Spring与线程安全"></a>Spring与线程安全</h3><hr>
+        <h3 id="Spring与线程安全"><a href="#Spring与线程安全" class="headerlink" title="Spring与线程安全"></a>Spring与线程安全</h3><hr>
 <p>Spring作为一个IOC/DI容器，帮助我们管理了许许多多的“bean”。但其实，<strong>Spring并没有保证这些对象的线程安全，需要由开发者自己编写解决线程安全问题的代码。</strong></p>
 <p><strong>Spring对每个bean提供了一个scope属性来表示该bean的作用域</strong>。它是bean的生命周期。例如，一个scope为singleton的bean，在第一次被注入时，会创建为一个单例对象，该对象会一直被复用到应用结束。</p>
 <ul>
@@ -467,6 +464,9 @@
 <p>有人可能会认为，我使用request作用域不就可以避免每个请求之间的安全问题了吗？这是完全错误的，因为Controller默认是单例的，一个HTTP请求是会被多个线程执行的，这就又回到了线程的安全问题。当然，你也可以把Controller的scope改成prototype，实际上Struts2就是这么做的，但有一点要注意，Spring MVC对请求的拦截粒度是基于每个方法的，而Struts2是基于每个类的，所以把Controller设为多例将会频繁的创建与回收对象，严重影响到了性能。</p>
 <p>通过阅读上文其实已经说的很清楚了，<strong>Spring根本就没有对bean的多线程安全问题做出任何保证与措施</strong>。对于每个bean的线程安全问题，根本原因是每个bean自身的设计。<strong>不要在bean中声明任何有状态的实例变量或类变量，如果必须如此，那么就使用ThreadLocal把变量变为线程私有的，如果bean的实例变量或类变量需要在多个线程之间共享，那么就只能使用synchronized、lock、CAS等这些实现线程同步的方法了。</strong></p>
 <p>下面将通过解析ThreadLocal的源码来了解它的实现与作用，ThreadLocal是一个很好用的工具类，它在某些情况下解决了线程安全问题（在变量不需要被多个线程共享时）。</p>
+<blockquote>
+<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanas.sun@gmail.com)</a>，首发于<a href="https://sylvanassun.github.io/">SylvanasSun’s Blog</a>。<br>原文链接：<a href="https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/">https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/</a><br>（转载请务必保留本段声明，并且保留超链接。）</p>
+</blockquote>
 <h3 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h3><hr>
 <p>ThreadLocal是一个为线程提供线程局部变量的工具类。它的思想也十分简单，就是<strong>为线程提供一个线程私有的变量副本</strong>，这样多个线程都可以随意更改自己线程局部的变量，不会影响到其他线程。不过需要注意的是，<strong>ThreadLocal提供的只是一个浅拷贝，如果变量是一个引用类型，那么就要考虑它内部的状态是否会被改变，想要解决这个问题可以通过重写ThreadLocal的initialValue()函数来自己实现深拷贝</strong>，建议在使用ThreadLocal时一开始就重写该函数。</p>
 <p>ThreadLocal与像synchronized这样的锁机制是不同的。首先，它们的应用场景与实现思路就不一样，<strong>锁更强调的是如何同步多个线程去正确地共享一个变量，ThreadLocal则是为了解决同一个变量如何不被多个线程共享</strong>。从性能开销的角度上来讲，如果锁机制是用时间换空间的话，那么ThreadLocal就是用空间换时间。</p>

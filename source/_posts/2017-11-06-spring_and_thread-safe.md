@@ -17,11 +17,6 @@ tags:
 
 
 
-> 本文作者为[SylvanasSun(sylvanas.sun@gmail.com)][1]，首发于[SylvanasSun’s Blog][2]。
-> 原文链接：https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/
-> （转载请务必保留本段声明，并且保留超链接。）
-
-
 
 ### Spring与线程安全
 
@@ -55,6 +50,12 @@ Spring作为一个IOC/DI容器，帮助我们管理了许许多多的“bean”�
 通过阅读上文其实已经说的很清楚了，**Spring根本就没有对bean的多线程安全问题做出任何保证与措施**。对于每个bean的线程安全问题，根本原因是每个bean自身的设计。**不要在bean中声明任何有状态的实例变量或类变量，如果必须如此，那么就使用ThreadLocal把变量变为线程私有的，如果bean的实例变量或类变量需要在多个线程之间共享，那么就只能使用synchronized、lock、CAS等这些实现线程同步的方法了。**
 
 下面将通过解析ThreadLocal的源码来了解它的实现与作用，ThreadLocal是一个很好用的工具类，它在某些情况下解决了线程安全问题（在变量不需要被多个线程共享时）。
+
+
+> 本文作者为[SylvanasSun(sylvanas.sun@gmail.com)][1]，首发于[SylvanasSun’s Blog][2]。
+> 原文链接：https://sylvanassun.github.io/2017/11/06/2017-11-06-spring_and_thread-safe/
+> （转载请务必保留本段声明，并且保留超链接。）
+
 
 ### ThreadLocal
 

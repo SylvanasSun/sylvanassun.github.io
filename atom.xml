@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-11-06T11:17:45.512Z</updated>
+  <updated>2017-11-19T11:54:20.966Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -14,6 +14,83 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Docker的那点事儿</title>
+    <link href="https://sylvanassun.github.io/2017/11/19/2017-11-19-docker_introduction/"/>
+    <id>https://sylvanassun.github.io/2017/11/19/2017-11-19-docker_introduction/</id>
+    <published>2017-11-19T10:00:00.000Z</published>
+    <updated>2017-11-19T11:54:20.966Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Docker是什么？"><a href="#Docker是什么？" class="headerlink" title="Docker是什么？"></a>Docker是什么？</h3><hr>
+<p>Docker是一个基于轻量级虚拟化技术的容器，整个项目基于Go语言开发，并采用了Apache 2.0协议。Docker可以将我们的应用程序打包封装到一个容器中，该容器包含了应用程序的代码、运行环境、依赖库、配置文件等必需的资源，通过容器就可以实现方便快速并且与平台解耦的自动化部署方式，无论你部署时的环境如何，容器中的应用程序都会运行在同一种环境下。</p>
+<p>举个栗子，小明写了一个CMS系统，该系统的技术栈非常广，需要依赖于各种开源库和中间件。如果按照纯手动的部署方式，小明需要安装各种开源软件，还需要写好每个开源软件的配置文件。如果只是部署一次，这点时间开销还是可以接受的，但如果小明每隔几天就需要换个服务器去部署他的程序，那么这些繁琐的重复工作无疑是会令人发狂的。这时候，Docker的用处就派上场了，小明只需要根据应用程序的部署步骤编写一份Dockerfile文件（将安装、配置等操作交由Docker自动化处理），然后构建并发布他的镜像，这样，不管在什么机器上，小明都只需要拉取他需要的镜像，然后就可以直接部署运行了，这正是Docker的魅力所在。</p>
+<p>那么镜像又是什么呢？镜像是Docker中的一个重要概念：</p>
+<ul>
+<li><p>Image（镜像）：它类似于虚拟机中使用到的镜像，由于任何应用程序都需要有它自己的运行环境，Image就是用来提供所需运行环境的一个模板。</p>
+</li>
+<li><p>Container（容器）：Container是Docker提供的一个抽象层，它就像一个轻量级的沙盒，其中包含了一个极简的Linux系统环境与运行在其中的应用程序。Container是Image的运行实例（Image本身是只读的，Container启动时，Docker会在Image的上层创建一个可写层，任何在Container中的修改都不会影响到Image，如果想要在Image保存Container中的修改，Docker采用了基于Container生成新的Image层的策略），Docker引擎利用Container来操作并隔离每个应用（也就是说，每个容器中的应用都是互相独立的）。</p>
+</li>
+</ul>
+<p>其实从Docker与Container的英文单词原意中就可以体会出Docker的思想。Container可以释义为集装箱，集装箱是一个可以便于机械设备装卸的封装货物的通用标准规格，它的发明简化了物流运输的机械化过程，使其建立起了一套标准化的物流运输体系。而Docker的意思为码头工人，可以认为，Docker就像是在码头上辛勤工作的工人，把应用打包成一个个具有某种标准化规格的”集装箱”（其实这里指出的集装箱对应的是Image，在Docker中Container更像是一个运行中的沙盒），当货物运输到目的地后，码头工人们（Docker）就可以把集装箱拆开取出其中的货物（基于Image来创建Container并运行）。这种标准化与隔离性可以很方便地组合使用多个Image来构建你的应用环境（Docker也提倡每个Image都遵循单一职责原则，也就是只做好一件事），或者与其他人共享你的Image。</p>
+<blockquote>
+<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanas.sun@gmail.com)</a>，首发于<a href="https://sylvanassun.github.io/">SylvanasSun’s Blog</a>。<br>原文链接：<a href="https://sylvanassun.github.io/2017/11/19/2017-11-19-docker_introduction/">https://sylvanassun.github.io/2017/11/19/2017-11-19-docker_introduction/</a><br>（转载请务必保留本段声明，并且保留超链接。）</p>
+</blockquote>
+<h3 id="Docker-VS-虚拟机"><a href="#Docker-VS-虚拟机" class="headerlink" title="Docker VS 虚拟机"></a>Docker VS 虚拟机</h3><hr>
+<p>在上文中我们提到了Docker是基于轻量级虚拟化技术的，所以它与我们平常使用的虚拟机是不一样的。虚拟机技术可以分成以下两类：</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Hardware_Virtualization_%28copy%29.svg" alt="系统虚拟机"></p>
+<ul>
+<li><p>系统虚拟机：通过软件对计算机系统的模拟来提供一个真实计算机的替代品。它是物理硬件的抽象并提供了运行完整操作系统所需的功能。虚拟机通过物理机器来管理和共享硬件，这样实现了多个虚拟机环境彼此之间的隔离，一台机器上可以运行多个虚拟机，每个虚拟机包括一个操作系统的完整副本。在系统虚拟机中，所运行的所有软件或操作都只会影响到该虚拟机的环境。我们经常使用的VMWare就是系统虚拟机的实现。</p>
+</li>
+<li><p>程序虚拟机：允许程序独立运行在平台之外。比较典型的例子就是JVM，Java通过JVM这一抽象层使得Java程序与操作系统和硬件平台解耦（因为每个Java程序都是运行在JVM中的），因此实现了所谓的compile once, run everywhere。</p>
+</li>
+</ul>
+<p>Docker所用到的技术与上述两种都不相同，它使用了更轻量级的虚拟化技术，多个Container共享了同一个操作系统内核，并且就像运行在本地上一样。Container技术相对于虚拟机来说，只是一个应用程序层的抽象，它将代码与依赖关系打包到一起，多个Container可以在同一台机器上运行（意味着一个虚拟机上也可以运行多个Container），并与其它Container共享操作系统内核，每一个Container都在用户空间中作为一个独立的进程运行，这些特性都证明了Container要比虚拟机更加灵活与轻量（一般都是结合虚拟机与Docker一起使用）。</p>
+<p><img src="http://wx3.sinaimg.cn/large/63503acbly1flnj7b3v1lj214x0d7mxs.jpg" alt=""></p>
+<p>Container技术其实并不是个新鲜事物，最早可以追溯到UNIX中的chroot（在1979年的V7 Unix中引入），它可以改变当前正在运行的进程及其子目录的根目录，在这种修改过的环境下运行的程序不能在指定的目录树之外访问文件，从而限制用户的活动范围，为进程提供了隔离空间。</p>
+<p>之后各种Unix版本涌现出很多Container技术，在2006年，Google提出了”Process Containers”期望在Linux内核中实现进程资源隔离的相关特性，由于Container在Linux内核中的定义过于宽泛混乱，后来该项目改名为CGroups（Control Groups），实现了对进程的资源限制。</p>
+<p>2008年，LXC（Linux Containers）发布，它是一种在操作系统层级上的虚拟化方法，用于在Linux系统上通过共享一个内核来运行多个互相隔离的程序（Container）。LXC正是结合了Linux内核中的CGroups和对分离的名称空间的支持来为应用程序提供了一个隔离的环境。而Docker也是基于LXC实现的（Docker的前身是dotClound公司中的内部项目，它是一家提供PaaS服务的公司。），并作出了许多改进。</p>
+<h3 id="使用Docker"><a href="#使用Docker" class="headerlink" title="使用Docker"></a>使用Docker</h3><hr>
+<p>在使用Docker之前你需要先安装Docker（这好像是一句废话。。。），根据不同的平台安装方法都不相同，可以去参考<a href="https://docs.docker.com/engine/installation/" target="_blank" rel="external">Install Docker | Docker Documentation</a>或者自行Google。</p>
+<p>安装完毕之后，输入<code>docker --version</code>来确认是否安装成功。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> docker --version</div><div class="line">Docker version 17.05.0-ce-rc1, build 2878a85</div></pre></td></tr></table></figure>
+<p>从<a href="https://hub.docker.com/" target="_blank" rel="external">Docker Hub</a>中可以pull到其他人发布的Image，我们也可以注册一个账号去发布自己的Image与他人共享。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[root@Jack ~]# docker search redis # 查看redis镜像是否存在</div><div class="line">[root@Jack ~]# docker pull redis # 拉取redis镜像到本机</div><div class="line">Using default tag: latest</div><div class="line">Trying to pull repository docker.io/library/redis ... </div><div class="line">latest: Pulling from docker.io/library/redis</div><div class="line">Digest: sha256:cd277716dbff2c0211c8366687d275d2b53112fecbf9d6c86e9853edb0900956</div><div class="line">[root@Jack ~]# docker images # 查看镜像信息</div><div class="line">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</div><div class="line">docker.io/python    3.6-onbuild         7195f9298ffb        2 weeks ago         691.1 MB</div><div class="line">docker.io/mongo     latest              d22888af0ce0        2 weeks ago         360.9 MB</div><div class="line">docker.io/redis     latest              8f2e175b3bd1        2 weeks ago         106.6 MB</div></pre></td></tr></table></figure>
+<p>有了Image，之后就可以在其之上运行一个Container了，命令如下。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">[root@Jack ~]# docker run -d -p 6379:6379 redis # 运行redis，-p代表将本机上6379端口映射到Container的6379端口 -d代表在后台启动</div><div class="line">[root@Jack ~]# docker ps -a # 查看容器信息，如果不加-a只会显示当前运行中的容器</div><div class="line"><span class="meta">#</span> 如果想要进入容器中，那么需要执行以下命令</div><div class="line">[root@Jack ~]# docker ps # 先获得容器的id</div><div class="line">CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES</div><div class="line">1f928073b7eb        redis               "docker-entrypoint.sh"   45 seconds ago      Up 44 seconds       0.0.0.0:6379-&gt;6379/tcp   desperate_khorana</div><div class="line">[root@Jack ~]# docker exec -it 1f928073b7eb /bin/bash # 然后再执行该命令进入到容器中</div><div class="line">root@1f928073b7eb:/data# touch hello_docker.txt # 在容器中创建一个文件</div><div class="line">root@1f928073b7eb:/data# exit # 退出</div><div class="line">exit</div><div class="line">[root@Jack ~]# </div><div class="line"><span class="meta">#</span> 也可以在启动时直接进入 命令如下</div><div class="line">[root@Jack ~]# docker run -d -it -p 6379:6379 redis /bin/bash</div></pre></td></tr></table></figure>
+<p>我们对Container做出了修改，如果想要保留这个修改，可以通过commit命令来生成一个新的Image。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span> -m为描述信息 -a为作者 1f9是你要保存的容器id 取前3个字符 docker可以自行识别</div><div class="line"><span class="meta">#</span> sylvanassun/redis为镜像名 :test 为一个tag 一般用于标识版本</div><div class="line">[root@Jack ~]# docker commit -m "test" -a "SylvanasSun" 1f9 sylvanassun/redis:test</div><div class="line">sha256:e7073e8e5bd70b8d58092fd6bd8c2551e65dd29241c235eddf2a7f4b4b25cbbd</div><div class="line">[root@Jack ~]# docker images</div><div class="line">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</div><div class="line">sylvanassun/redis   test                e7073e8e5bd7        2 seconds ago       106.6 MB</div><div class="line">docker.io/python    3.6-onbuild         7195f9298ffb        2 weeks ago         691.1 MB</div><div class="line">docker.io/mongo     latest              d22888af0ce0        2 weeks ago         360.9 MB</div><div class="line">docker.io/redis     latest              8f2e175b3bd1        2 weeks ago         106.6 MB</div></pre></td></tr></table></figure>
+<p>想删除一个容器或镜像也很简单，但在删除镜像前需要先删除依赖于它的容器。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[root@Jack ~]# docker stop 1f9 # 关闭运行中的容器，相应的也有docker start id命令来启动一个容器</div><div class="line">1f9</div><div class="line">[root@Jack ~]# docker rm 1f9 # 删除容器</div><div class="line">1f9</div><div class="line">[root@Jack ~]# docker rmi e70 # 删除上面保存的镜像</div><div class="line">Untagged: sylvanassun/redis:test</div><div class="line">Deleted: sha256:e7073e8e5bd70b8d58092fd6bd8c2551e65dd29241c235eddf2a7f4b4b25cbbd</div><div class="line">Deleted: sha256:751db4a870e5f703082b31c1614a19c86e0c967334a61f5d22b2511072aef56d</div></pre></td></tr></table></figure>
+<p>如果想要自己构建一个镜像，那么需要编写Dockerfile文件，该文件描述了镜像的依赖环境以及如何配置你的应用环境。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 使用python:2.7-slim 作为父镜像</span></div><div class="line"><span class="keyword">FROM</span> python:<span class="number">2.7</span>-slim</div><div class="line"></div><div class="line"><span class="comment"># 跳转到/app 其实就是cd命令</span></div><div class="line"><span class="keyword">WORKDIR</span> /app</div><div class="line"></div><div class="line"><span class="comment"># 将当前目录的内容(.)复制到镜像的/app目录下</span></div><div class="line"><span class="keyword">ADD</span> . /app</div><div class="line"></div><div class="line"><span class="comment"># RUN代表运行的shell命令，下面这条命令是根据requirements.txt安装python应用的依赖包</span></div><div class="line"><span class="keyword">RUN</span> pip install --trusted-host pypi.python.org -r requirements.txt</div><div class="line"></div><div class="line"><span class="comment"># 暴露80端口让外界访问</span></div><div class="line"><span class="keyword">EXPOSE</span> <span class="number">80</span></div><div class="line"></div><div class="line"><span class="comment"># 定义环境变量</span></div><div class="line"><span class="keyword">ENV</span> NAME World</div><div class="line"></div><div class="line"><span class="comment"># 当容器启动时执行的命令，它与RUN不同，只在容器启动时执行一次</span></div><div class="line"><span class="keyword">CMD</span> ["python", "app.py"]</div></pre></td></tr></table></figure>
+<p>然后就可以通过<code>docker build -t xxx/xxxx .</code>命令来构建镜像，<code>-t</code>后面是镜像名与tag等信息，注意<code>.</code>表示在当前目录下寻找Dockerfile文件。</p>
+<p>学会如何构建自己的镜像之后，你是否也想将它发布到<a href="https://hub.docker.com/" target="_blank" rel="external">Docker Hub</a>上与他人分享呢？要想做到这一点，需要先注册一个<a href="https://hub.docker.com/" target="_blank" rel="external">Docker Hub</a>账号，之后通过<code>docker login</code>命令登录，然后再<code>docker push image name</code>，就像在使用Git一样简单。</p>
+<p>关于Docker的更多命令与使用方法，请参考<a href="https://docs.docker.com/" target="_blank" rel="external">Docker Documentation | Docker Documentation</a>，另外我还推荐使用<a href="https://docs.docker.com/compose/" target="_blank" rel="external">Docker Compose</a>来构建镜像，它可以很方便地组合管理多个镜像。</p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><hr>
+<p>Docker提供了非常强大的自动化部署方式与灵活性，对多个应用程序之间做到了解耦，提供了开发上的敏捷性、可控性以及可移植性。同时，Docker也在不断地帮助越来越多的企业实现了向云端迁移、向微服务转型以及向DevOps模式的实践。</p>
+<p>如今，微服务与DevOps火爆程度日益渐高，你又有何理由选择拒绝Docker呢？让我们一起选择拥抱Docker，拥抱未来！</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;Docker是什么？&quot;&gt;&lt;a href=&quot;#Docker是什么？&quot; class=&quot;headerlink&quot; title=&quot;Docker是什么？&quot;&gt;&lt;/a&gt;Docker是什么？&lt;/h3&gt;&lt;hr&gt;
+&lt;p&gt;Docker是一个基于轻量级虚拟化技术的容器，整个项目基于Go语言
+    
+    </summary>
+    
+      <category term="后端" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/"/>
+    
+      <category term="Docker" scheme="https://sylvanassun.github.io/categories/%E5%90%8E%E7%AB%AF/Docker/"/>
+    
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="后端" scheme="https://sylvanassun.github.io/tags/%E5%90%8E%E7%AB%AF/"/>
+    
+      <category term="Docker" scheme="https://sylvanassun.github.io/tags/Docker/"/>
+    
+  </entry>
   
   <entry>
     <title>聊一聊Spring中的线程安全性</title>
@@ -1484,11 +1561,11 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
+    
+      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
   </entry>
   
@@ -2826,11 +2903,11 @@
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
-      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
+    
+      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
     
   </entry>
   
@@ -2882,67 +2959,11 @@
       <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>深入浅出排序算法(2)-归并排序</title>
-    <link href="https://sylvanassun.github.io/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/"/>
-    <id>https://sylvanassun.github.io/2017/06/12/2017-06-12-sort_algorithmes_mergeSort/</id>
-    <published>2017-06-12T07:00:00.000Z</published>
-    <updated>2017-07-11T07:04:56.002Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
-<p><code>归并排序</code>是基于分治算法实现的一种排序算法,它将数组分割为两个子数组,然后对子数组进行排序,最终将子数组<code>归并</code>为有序的数组.</p>
-<p><code>归并排序</code>的时间复杂度为<code>O(n log n)</code>,空间复杂度为<code>O(1)</code>,并且它是稳定的排序算法(所谓稳定即是不影响值相等元素的相对次序).</p>
-<h3 id="算法过程"><a href="#算法过程" class="headerlink" title="算法过程"></a>算法过程</h3><hr>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Merge-sort-example-300px.gif" alt=""></p>
-<ul>
-<li>首先,<code>归并排序</code>需要将一个大小为<code>n</code>个元素的数组分解为各包含<code>n/2</code>个元素的子数组(这个分解的过程会不断进行,直到子数组元素个数为<code>1</code>).</li>
-</ul>
-<ul>
-<li>当子数组的元素个数为<code>1</code>时,代表这个子数组已经有序,开始两两归并(将两个个数为<code>1</code>的子数组归并为一个个数为<code>2</code>的子数组,不断归并,直到所有子数组个数为<code>2</code>,然后继续将两个个数为<code>2</code>的子数组归并为一个个数为<code>4</code>的子数组….以此类推).</li>
-</ul>
-<ul>
-<li>不断重复步骤2,直到整个数组有序.</li>
-</ul>
-<h3 id="归并"><a href="#归并" class="headerlink" title="归并"></a>归并</h3><hr>
-<p>通过以上的了解,我们发现<code>归并排序</code>中最重要的步骤就是<code>归并</code>.</p>
-<p>采用类似<code>洗牌</code>的方式来理解这个过程.想象辅助数组为一个空牌堆,两个子数组为两堆牌<code>a</code>和<code>b</code>.我们从<code>a</code>堆与<code>b</code>堆中<strong>各取出一张牌进行比较,然后将较小的牌放入空牌堆中</strong>,不断重复比较直到任一牌堆为空.最后,再将未空的牌堆全部放入空牌堆中.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 将两个子序列进行归并</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">merge</span><span class="params">(Comparable[] a, <span class="keyword">int</span> lo, <span class="keyword">int</span> mid, <span class="keyword">int</span> hi)</span> </span>&#123;</div><div class="line">    Comparable[] aux = <span class="keyword">new</span> Comparable[a.length]; <span class="comment">// 辅助数组</span></div><div class="line">    <span class="keyword">int</span> i = lo, j = mid + <span class="number">1</span>;</div><div class="line">    <span class="keyword">int</span> count = lo;</div><div class="line">    <span class="comment">// 对[lo...mid] 与 [mid+1...hi] 两个子序列的首元素进行比较,将较小的元素放入辅助数组</span></div><div class="line">    <span class="keyword">while</span> (i &lt;= mid &amp;&amp; j &lt;= hi) &#123;</div><div class="line">        <span class="keyword">if</span> (less(a[i], a[j]))</div><div class="line">            aux[count++] = a[i++];</div><div class="line">        <span class="keyword">else</span></div><div class="line">            aux[count++] = a[j++];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//将[lo...mid] 与 [mid+1...hi] 两个子序列中剩余的元素放入辅助数组</span></div><div class="line">    <span class="keyword">while</span> (i &lt;= mid) &#123;</div><div class="line">        aux[count++] = a[i++];</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">while</span> (j &lt;= hi) &#123;</div><div class="line">        aux[count++] = a[j++];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 将辅助数组中的元素复制到源数组中</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> k = lo; k &lt;= hi; k++) &#123;</div><div class="line">        a[k] = aux[k];</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="递归实现"><a href="#递归实现" class="headerlink" title="递归实现"></a>递归实现</h3><hr>
-<p>只要理解了<code>归并</code>的过程,剩下就很容易实现了.<code>归并排序</code>的递归实现如下.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span><span class="params">(Comparable[] a)</span> </span>&#123;</div><div class="line">      sort(a, <span class="number">0</span>, a.length - <span class="number">1</span>);</div><div class="line">  &#125;</div><div class="line">	</div><div class="line">  <span class="comment">// 递归实现归并排序</span></div><div class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span><span class="params">(Comparable[] a, <span class="keyword">int</span> lo, <span class="keyword">int</span> hi)</span> </span>&#123;</div><div class="line">      <span class="keyword">if</span> (lo &gt;= hi)</div><div class="line">          <span class="keyword">return</span>;</div><div class="line"></div><div class="line">      <span class="keyword">int</span> mid = (lo + hi) &gt;&gt;&gt; <span class="number">1</span>; <span class="comment">// (lo + hi) / 2</span></div><div class="line"><span class="comment">// 分解数组</span></div><div class="line">      sort(a, lo, mid);</div><div class="line">      sort(a, mid + <span class="number">1</span>, hi);</div><div class="line"><span class="comment">// 归并</span></div><div class="line">      merge(a, lo, mid, hi);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<h3 id="非递归实现"><a href="#非递归实现" class="headerlink" title="非递归实现"></a>非递归实现</h3><hr>
-<p>我们已经知道了<code>归并排序</code>中最小子数组的元素个数为<code>1</code>,非递归实现只需要从<code>1</code>开始自底向上地归并即可(递归实现的真实计算过程也是如此,这是由于递归调用是后进先出的).</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">   <span class="comment">// 非递归实现归并排序</span></div><div class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sortUnRecursive</span><span class="params">(Comparable[] a)</span> </span>&#123;</div><div class="line">       <span class="keyword">int</span> len = <span class="number">1</span>; <span class="comment">// 自底向上实现归并排序,子序列的最小粒度为1</span></div><div class="line">       <span class="keyword">while</span> (len &lt; a.length) &#123;</div><div class="line">           <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; a.length; i += len &lt;&lt; <span class="number">1</span>) &#123;</div><div class="line">               merge(a, i, len);</div><div class="line">           &#125;</div><div class="line">           len = len &lt;&lt; <span class="number">1</span>; <span class="comment">// 子序列规模每次迭代时乘2</span></div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line"><span class="comment">// 与递归实现的归并函数不同,需要注意边界检查</span></div><div class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">merge</span><span class="params">(Comparable[] a, <span class="keyword">int</span> lo, <span class="keyword">int</span> hi)</span> </span>&#123;</div><div class="line">       <span class="keyword">int</span> length = a.length;</div><div class="line">       Comparable[] aux = <span class="keyword">new</span> Comparable[length];</div><div class="line">       <span class="keyword">int</span> count = lo;</div><div class="line">       <span class="comment">// 子数组1</span></div><div class="line">       <span class="keyword">int</span> i = lo;</div><div class="line">       <span class="keyword">int</span> i_bound = lo + hi;</div><div class="line">       <span class="comment">// 子数组2</span></div><div class="line">       <span class="keyword">int</span> j = i_bound;</div><div class="line">       <span class="keyword">int</span> j_bound = j + hi;</div><div class="line"></div><div class="line">       <span class="comment">// 注意j的边界检查</span></div><div class="line">       <span class="keyword">while</span> (i &lt; i_bound &amp;&amp; j &lt; j_bound &amp;&amp; j &lt; length) &#123;</div><div class="line">           <span class="keyword">if</span> (less(a[i], a[j]))</div><div class="line">               aux[count++] = a[i++];</div><div class="line">           <span class="keyword">else</span></div><div class="line">               aux[count++] = a[j++];</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="comment">// i和j都有可能越界</span></div><div class="line">       <span class="keyword">while</span> (i &lt; i_bound &amp;&amp; i &lt; length) &#123;</div><div class="line">           aux[count++] = a[i++];</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">while</span> (j &lt; j_bound &amp;&amp; j &lt; length) &#123;</div><div class="line">           aux[count++] = a[j++];</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="keyword">int</span> k = lo;</div><div class="line">       <span class="keyword">while</span> (k &lt; j &amp;&amp; k &lt; length) &#123;</div><div class="line">           a[k] = aux[k];</div><div class="line">           k++;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<blockquote>
-<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanassun_xtz@163.com)</a>,转载请务必指明原文链接.</p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h3&gt;&lt;hr&gt;
-&lt;p&gt;&lt;code&gt;归并排序&lt;/code&gt;是基于分治算法实现的一种排序算法,它将数组分割为两个子数组,然后对子数组进行排序,最终将子数组&lt;
-    
-    </summary>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/categories/Algorithms/"/>
-    
-      <category term="排序算法" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
-    
     
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
-      <category term="排序算法" scheme="https://sylvanassun.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   

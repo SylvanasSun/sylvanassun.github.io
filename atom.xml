@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-12-24T09:00:59.536Z</updated>
+  <updated>2017-12-24T09:15:46.451Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://sylvanassun.github.io/2017/12/20/2017-12-20-naive_bayes/"/>
     <id>https://sylvanassun.github.io/2017/12/20/2017-12-20-naive_bayes/</id>
     <published>2017-12-20T10:00:00.000Z</published>
-    <updated>2017-12-24T09:00:59.536Z</updated>
+    <updated>2017-12-24T09:15:46.451Z</updated>
     
     <content type="html"><![CDATA[<p>在机器学习领域中，朴素贝叶斯是一种基于贝叶斯定理的简单概率分类器（分类又被称为监督式学习，所谓监督式学习即从已知样本数据中的特征信息去推测可能出现的输出以完成分类，反之聚类问题被称为非监督式学习），朴素贝叶斯在处理文本数据时可以得到较好的分类结果，所以它被广泛应用于文本分类/垃圾邮件过滤/自然语言处理等场景。</p>
 <p>朴素贝叶斯假设了样本的每个特征之间是互相独立、互不影响的，比方说，如果有一个水果是红色的，形状为圆形，并且直径大约为70毫米，那么它就有可能被认为是苹果（具有最高概率的类将会被认为是最有可能的类，这被称为最大后验概率 Maximum A Posteriori），即使上述的这些特征可能会有依赖关系或有其他特征存在，朴素贝叶斯都会认为这些特征都独立地贡献了这个水果是一个苹果的概率，这种假设关系太过于理想，所以这也是朴素贝叶斯的”Naive”之处。</p>
@@ -93,7 +93,7 @@
 <p>$P(f_1|C_1),P(f_2|C_1),\cdots,P(f_n|C_1),\cdots,P(f_1|C_2),P(f_2|C_2),\cdots,P(f_n|C_2),\cdots,P(f_1|C_m),P(f_2|C_m),\cdots,P(f_n|C_m)$</p>
 <p>如果$P(C_k|X) = MAX(P(C_1|X),P(C_2|X),\cdots,P(C_m|X))$，则${X}\in{C_k}$（贝叶斯分类其实就是取概率最大的那一个）。</p>
 <p>朴素贝叶斯会假设每个特征都是独立的，根据贝叶斯定理可推得：$P(C_i|X) = \frac{P(X|C_i)P(C_i)}{P(X)}$，由于分母对于所有类别为常数，因此只需要将分子最大化即可，又因为各特征是互相独立的，所以最终推得：</p>
-<p>$$<br>P(X|C_i)P(C_i) = P(f_1|C_i)P(f_2|C_i),\cdots,P(f_n|C_i)P(C_i) = {P(C<em>i)}{\prod</em>{j=1}^n}{P(f_j|C_i)}<br>$$</p>
+<p><img src="http://wx4.sinaimg.cn/large/63503acbly1fmrz54fusig20ge01hdfm.gif" alt=""></p>
 <p>根据上述的公式推导，朴素贝叶斯的流程可如下图所示：</p>
 <p><img src="http://wx3.sinaimg.cn/large/63503acbly1fmpnscvyl1j20np0sfaeh.jpg" alt=""></p>
 <p>接下来我们通过一个案例来过一遍上图的流程。</p>
@@ -119,7 +119,7 @@
 <ul>
 <li><p>Gaussian Naive Bayes：适合在特征变量具有连续性的时候使用，同时它还假设特征遵从于高斯分布（正态分布）。举个栗子，假设我们有一组人体特征的统计资料，该数据中的特征：身高、体重和脚掌长度等都为连续变量，很明显我们不能采用离散变量的方法来计算概率，由于样本太少，也无法分成区间计算，那么要怎么办呢？解决方法是假设特征项都是正态分布，然后通过样本计算出均值与标准差，这样就得到了正态分布的密度函数，有了密度函数，就可以代入值，进而算出某一点的密度函数的值。</p>
 </li>
-<li><p>MultiNomial Naive Bayes：与Gaussian Naive Bayes相反，多项式模型更适合处理特征是离散变量的情况，该模型会在计算先验概率$P(C_m)$和条件概率$P(F_n|C_m)$时会做一些平滑处理。具体公式为$P(C<em>m) = {T</em>{cm} + a} \over {T + ma}$，其中<code>T</code>为总的样本数，<code>m</code>为总类别数，$T_{cm}$即类别为$C_m$的样本个数，<code>a</code>是一个平滑值。条件概率的公式为$P(F_n|C<em>m) = {T</em>{cmfn} + a} \over {T<em>{cm} + na}$，<code>n</code>为特征的个数，$T</em>{cmfn}$为类别为$C_m$特征为$F_n$的样本个数。当平滑值<code>a = 1</code>与<code>0 &lt; a &lt; 1</code>时，被称作为<code>Laplace</code>平滑，当<code>a = 0</code>时不做平滑。它的思想其实就是对每类别下所有划分的计数加1，这样如果训练样本数量足够大时，就不会对结果产生影响，并且解决了$P(F|C)$的频率为0的现象（某个类别下的某个特征划分没有出现，这会严重影响分类器的质量）。</p>
+<li><p>MultiNomial Naive Bayes：与Gaussian Naive Bayes相反，多项式模型更适合处理特征是离散变量的情况，该模型会在计算先验概率$P(C_m)$和条件概率$P(F_n|C<em>m)$时会做一些平滑处理。具体公式为<img src="http://wx1.sinaimg.cn/large/63503acbly1fmrz54ux0tg20480130nd.gif" alt="">，其中<code>T</code>为总的样本数，<code>m</code>为总类别数，$T</em>{cm}$即类别为$C_m$的样本个数，<code>a</code>是一个平滑值。条件概率的公式为<img src="http://wx1.sinaimg.cn/large/63503acbly1fmrz55ag8ng205j0130sh.gif" alt="">，<code>n</code>为特征的个数，<code>T_cmfn</code>为类别为<code>C_m</code>特征为<code>F_n</code>的样本个数。当平滑值<code>a = 1</code>与<code>0 &lt; a &lt; 1</code>时，被称作为<code>Laplace</code>平滑，当<code>a = 0</code>时不做平滑。它的思想其实就是对每类别下所有划分的计数加1，这样如果训练样本数量足够大时，就不会对结果产生影响，并且解决了$P(F|C)$的频率为0的现象（某个类别下的某个特征划分没有出现，这会严重影响分类器的质量）。</p>
 </li>
 <li><p>Bernoulli Naive Bayes：Bernoulli适用于在特征属性为二进制的场景下，它对每个特征的取值是基于布尔值的，一个典型例子就是判断单词有没有在文本中出现。</p>
 </li>
@@ -2027,11 +2027,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2431,9 +2431,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -2671,9 +2671,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -2812,9 +2812,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -2895,9 +2895,9 @@
       <category term="Other" scheme="https://sylvanassun.github.io/categories/Algorithms/Other/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
   </entry>
   
@@ -3195,9 +3195,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -3272,9 +3272,9 @@
       <category term="动态规划" scheme="https://sylvanassun.github.io/categories/Algorithms/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
       <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="动态规划" scheme="https://sylvanassun.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     

@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://sylvanassun.github.io/"/>
-  <updated>2017-12-02T11:14:08.393Z</updated>
+  <updated>2017-12-24T06:12:57.576Z</updated>
   <id>https://sylvanassun.github.io/</id>
   
   <author>
@@ -14,6 +14,191 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>朴素贝叶斯的那点事儿</title>
+    <link href="https://sylvanassun.github.io/2017/12/20/2017-12-20-naive_bayes/"/>
+    <id>https://sylvanassun.github.io/2017/12/20/2017-12-20-naive_bayes/</id>
+    <published>2017-12-20T10:00:00.000Z</published>
+    <updated>2017-12-24T06:12:57.576Z</updated>
+    
+    <content type="html"><![CDATA[<p>在机器学习领域中，朴素贝叶斯是一种基于贝叶斯定理的简单概率分类器（分类又被称为监督式学习，所谓监督式学习即从已知样本数据中的特征信息去推测可能出现的输出以完成分类，反之聚类问题被称为非监督式学习），朴素贝叶斯在处理文本数据时可以得到较好的分类结果，所以它被广泛应用于文本分类/垃圾邮件过滤/自然语言处理等场景。</p>
+<p>朴素贝叶斯假设了样本的每个特征之间是互相独立、互不影响的，比方说，如果有一个水果是红色的，形状为圆形，并且直径大约为70毫米，那么它就有可能被认为是苹果（具有最高概率的类将会被认为是最有可能的类，这被称为最大后验概率 Maximum A Posteriori），即使上述的这些特征可能会有依赖关系或有其他特征存在，朴素贝叶斯都会认为这些特征都独立地贡献了这个水果是一个苹果的概率，这种假设关系太过于理想，所以这也是朴素贝叶斯的”Naive”之处。</p>
+<p>朴素贝叶斯的原名为Naive Bayes Classifier，朴素本身并不是一个正确的翻译，之所以这样翻译是因为朴素贝叶斯虽然Naive，但不代表它的效率会差，相反它的优点正在于实现简单与只需要少量的训练数据，还有另一个原因是它与贝叶斯网络等算法相比，确实是“朴素”了些。</p>
+<p>在继续探讨朴素贝叶斯之前，我们先需要理解贝叶斯定理与它的前置理论条件概率与全概率公式。</p>
+<blockquote>
+<p>本文作者为<a href="https://github.com/SylvanasSun" target="_blank" rel="external">SylvanasSun(sylvanas.sun@gmail.com)</a>，首发于<a href="https://sylvanassun.github.io/">SylvanasSun’s Blog</a>。<br>原文链接：<a href="https://sylvanassun.github.io/2017/12/20/2017-12-20-naive_bayes/">https://sylvanassun.github.io/2017/12/20/2017-12-20-naive_bayes/</a><br>（转载请务必保留本段声明，并且保留超链接。）</p>
+</blockquote>
+<h3 id="条件概率"><a href="#条件概率" class="headerlink" title="条件概率"></a>条件概率</h3><hr>
+<p>条件概率（Conditional Probability）是指在事件B发生的情况下，事件A发生的概率，用$P(A|B)$表示，读作在B条件下的A的概率。</p>
+<p><img src="http://wx2.sinaimg.cn/large/63503acbly1fmnd8qww3lj20d308fdfw.jpg" alt=""></p>
+<p>在上方的文氏图中，描述了两个事件A和B，与它们的交集<code>A ∩ B</code>，代入条件概率公式，可推出事件A发生的概率为$P(A|B) = \frac{P(A\capB)}{P(B)}$。</p>
+<p>对该公式稍作变换可推得${P(A\capB)} = {P(A|B)}{P(B)}$与${P(A\capB)} = {P(B|A)}{P(A)}$（<code>P(B|A)</code>为在A条件下的B的概率）。</p>
+<p>然后根据这个关系可推得${P(A|B)}{P(B)} = {P(B|A)}{P(A)}$。</p>
+<p>让我们举个栗子，假设有两个人在扔两个个六面的骰子<code>D1</code>与<code>D2</code>，我们来预测<code>D1</code>与<code>D2</code>的向上面的结果的概率。</p>
+<p><img src="http://wx1.sinaimg.cn/large/63503acbly1fmne20wdcpj20a8078q2w.jpg" alt=""></p>
+<p>在<code>Table1</code>中描述了一个含有36个结果的样本空间，标红处为<code>D1</code>的向上面为2的6个结果，概率为${P(D1=2)} = {\frac{6}{36}} = {\frac{1}{6}}}$。</p>
+<p><img src="http://wx3.sinaimg.cn/large/63503acbly1fmne218l47j209l0723yg.jpg" alt=""></p>
+<p><code>Table2</code>描述了<code>D1+D2 &lt;= 5</code>的概率，一共10个结果，用条件概率公式表示为${P(D1+D2\leq5)} = \frac{10}{36}$。</p>
+<p><img src="http://wx2.sinaimg.cn/large/63503acbly1fmne21knj0j20a3071q2w.jpg" alt=""></p>
+<p><code>Table3</code>描述了满足<code>Table2</code>的条件并且也满足<code>D1 = 2</code>的结果，它选中了<code>Table2</code>中的3个结果，用条件概率公式表示为${P(D1=2 | D1+D2\leq5)} = \frac{3}{10} = 0.3$。</p>
+<h3 id="全概率公式"><a href="#全概率公式" class="headerlink" title="全概率公式"></a>全概率公式</h3><hr>
+<p>全概率公式是将边缘概率与条件概率关联起来的基本规则，它表示了一个结果的总概率，同时它可以通过几个不同的事件来实现。</p>
+<p>全概率公式将对一复杂事件A的概率求解问题转化为了在不同情况下发生的简单事件的概率的求和问题，公式为$P(B) = {\sum_{i=1}^n}P(A_i)P(B|A_i)$。</p>
+<p>假定一个样本空间S，它是两个事件A与C之和，同时事件B与它们两个都有交集，如下图所示：</p>
+<p><img src="http://wx4.sinaimg.cn/large/63503acbly1fmnd8rfet4j20ka0imdgo.jpg" alt=""></p>
+<p>那么事件B的概率可以表示为$P(B) = P(B\capA) + P(B\capC)$</p>
+<p>通过条件概率，可以推断出$P(B\capA) = P(B|A)P(A)$，所以$P(B) = P(B|A)P(A) + P(B|C)P(C)$</p>
+<p>这就是全概率公式，即事件B的概率等于事件A与事件C的概率分别乘以B对这两个事件的条件概率之和。</p>
+<p>同样举个栗子来应用这个公式，假设有两家工厂生产并对外提供电灯泡，工厂X生产的电灯泡在99%的情况下能够工作超过5000小时，工厂Y生产的电灯泡在95%的情况下能够工作超过5000小时。工厂X在市场的占有率为60%，工厂Y为40%，如何推测出购买的灯泡的工作时间超过5000小时的概率是多少呢？</p>
+<p>运用全概率公式，可以得出：<br>$$<br>     \begin{align} Pr(A)  &amp; = Pr(A | B_x) \cdot Pr(B_x) + Pr(A|B_y) \cdot Pr(B_y)<br>              \ &amp; = \frac{99}{100} \cdot \frac{6}{10} + \frac{95}{100} \cdot \frac{4}{10}<br>              \ &amp; = \frac{594 + 380}[1000]<br>              \ &amp; = \frac{974}{1000} \end{align}<br>$$</p>
+<ul>
+<li><p>$Pr(B_x) = \frac{6}{10}$：购买到工厂X制造的电灯泡的概率。</p>
+</li>
+<li><p>$Pr(B_y) = \frac{4}{10}$：购买到工厂y制造的电灯泡的概率。</p>
+</li>
+<li><p>$Pr(A|B_x) = \frac{99}{100}$：工厂x制造的电灯泡工作时间超过5000小时的概率。</p>
+</li>
+<li><p>$Pr(A|B_y) = \frac{95}{100}$：工厂y制造的电灯泡工作时间超过5000小时的概率。</p>
+</li>
+</ul>
+<p>因此，可以得知购买一个工作时间超过5000小时的电灯泡的概率为97.4%。</p>
+<h3 id="贝叶斯定理"><a href="#贝叶斯定理" class="headerlink" title="贝叶斯定理"></a>贝叶斯定理</h3><hr>
+<p>贝叶斯定理最早由英国数学家（同时也是神学家和哲学家）Thomas Bayes（1701-1761）提出，有趣的是他生前并没有发表过什么有关数学的学术文章，就连他最著名的成就贝叶斯定理也是由他的朋友Richard Price从他死后的遗物（笔记）中找到并发表的。</p>
+<p>Thomas Bayes在晚年对概率学产生了兴趣，所谓的贝叶斯定理只是他生前为了解决一个逆概率问题（为了证明上帝是否存在，似乎哲学家们都很喜欢这个问题啊）所写的一篇文章。在那个时期，人们已经能够计算出正向概率问题，比方说，有一个袋子中有X个白球，Y个黑球，你伸手进去摸到黑球的概率是多少？这就是一个正向概率问题，而逆概率问题正好反过来，我们事先并不知道袋子中球的比例，而是不断伸手去摸好几个球，然后根据它们的颜色来推测黑球与白球的比例。</p>
+<p>贝叶斯定理是关于随机事件A和B的条件概率的一则定理。通常，事件A在事件B（发生）的条件下的概率，与事件B在事件A（发生）的条件下的概率是不一样的，但它们两者之间是有确定的关系的，贝叶斯定理陈述了这个关系。</p>
+<p>贝叶斯定理的一个主要应用为贝叶斯推理，它是一种建立在主观判断基础之上的推理方法，也就是说，你只需要先预估一个值，然后再去根据实际结果去不断修正，不需要任何客观因素。这种推理方式需要大量的计算，因此一直遭到其他人的诟病，无法得到广泛的应用，直到计算机的高速发展，并且人们发现很多事情都是无法事先进行客观判断的，因此贝叶斯推理才得以东山再起。</p>
+<p>说了这么多理论知识（很多数学理论都像是在说绕口令），让我们来看一看公式吧，其实只需要把我们在上面推导出的条件概率公式继续进行推理，就可以得出贝叶斯公式。</p>
+<p>$$P(A|B) = \frac{P(B|A)P(A)}{P(B)}$$</p>
+<ul>
+<li><p>$P(A|B)$：在B条件下的事件A的概率，在贝叶斯定理中，条件概率也被称为后验概率，即在事件B发生之后，我们对事件A概率的重新评估。</p>
+</li>
+<li><p>$P(B|A)$：在A条件下的事件B的概率，与上一条同理。</p>
+</li>
+<li><p>$P(A)$与$P(B)$被称为先验概率（也被称为边缘概率），即在事件B发生之前，我们对事件A概率的一个推断（不考虑任何事件B方面的因素），后面同理。</p>
+</li>
+<li><p>$\frac{P(B|A)}{P(B)}$被称为标准相似度，它是一个调整因子，主要是为了保证预测概率更接近真实概率。</p>
+</li>
+<li><p>根据这些术语，贝叶斯定理表述为： 后验概率 = 标准相似度 * 先验概率。</p>
+</li>
+</ul>
+<p>让我们以著名的假阳性问题为例，假设某种疾病的发病率为0.001（1000个人中会有一个人得病），现有一种试剂在患者确实得病的情况下，有99%的几率呈现为阳性，而在患者没有得病的情况下，它有5%的几率呈现为阳性（也就是假阳性），如有一位病人的检验成果为阳性，那么他的得病概率是多少呢？</p>
+<p>代入贝叶斯定理，假定事件A表示为得病的概率（<code>P(A) = 0.001</code>），这是我们的先验概率，它是在病人在实际注射试剂（缺乏实验的结果）之前预计的发病率，再假定事件B为试剂结果为阳性的概率，我们需要计算的是条件概率<code>P(A|B)</code>，即在事件B条件下的A概率，这就是后验概率，也就是病人在注射试剂之后（得到实验结果）得出的发病率。</p>
+<p>由于还有未得病的概率，所以还需要假设事件C为未得病的先验概率（<code>P(C) = 1 - 0.001 = 0.999</code>），那么<code>P(B|C)</code>后验概率表示的是未得病条件下的试剂结果为阳性的概率，之后再代入全概率公式就可得出最终结果。</p>
+<p>$$<br>    \begin{align} P(A|B) &amp; = \frac{P(B|A)P(A)}{P(B)}<br>               \ &amp; =  \frac{P(B|A)P(A)}{P(B|A)P(A) + P(B|C)P(C)}<br>               \ &amp; =  \frac{0.99 \times 0.001}{0.99 \times 0.001 + 0.05 \times 0.999}<br>               \approx 0.019 \end{align}<br>$$</p>
+<p>最终结果约等于2%，即使一个病人的试剂结果为阳性，他的患病几率也只有2%而已。</p>
+<h3 id="朴素贝叶斯的概率模型"><a href="#朴素贝叶斯的概率模型" class="headerlink" title="朴素贝叶斯的概率模型"></a>朴素贝叶斯的概率模型</h3><hr>
+<p>我们设一个待分类项$X = {f_1,f_2,\cdots,f_n}$，其中每个<code>f</code>为<code>X</code>的一个特征属性，然后设一个类别集合$C_1,C_2,\cdots,C_m$。</p>
+<p>然后需要计算$P(C_1|X),P(C_2|X),\cdots,P(C_m|X)$，我们可以根据一个训练样本集合（已知分类的待分类项集合），然后统计得到在各类别下各个特征属性的条件概率：</p>
+<p>$P(f_1|C_1),P(f_2|C_1),\cdots,P(f_n|C_1),\cdots,P(f_1|C_2),P(f_2|C_2),\cdots,P(f_n|C_2),\cdots,P(f_1|C_m),P(f_2|C_m),\cdots,P(f_n|C_m)$</p>
+<p>如果$P(C_k|X) = MAX{P(C_1|X),P(C_2|X),\cdots,P(C_m|X)}$，则$X\inC_k$（贝叶斯分类其实就是取概率最大的那一个）。</p>
+<p>朴素贝叶斯会假设每个特征都是独立的，根据贝叶斯定理可推得：$P(C_i|X) = \frac{P(X|C_i)P(C_i)}{P(X)}$，由于分母对于所有类别为常数，因此只需要将分子最大化即可，又因为各特征是互相独立的，所以最终推得：</p>
+<p>$P(X|C_i)P(C_i) = P(f_1|C_i)P(f_2|C_i),\cdots,P(f_n|C_i)P(C_i) = P(C<em>i)\prod^n</em>{j=1}P(f_j|C_i)$</p>
+<p>根据上述的公式推导，朴素贝叶斯的流程可如下图所示：</p>
+<p><img src="http://wx3.sinaimg.cn/large/63503acbly1fmpnscvyl1j20np0sfaeh.jpg" alt=""></p>
+<p>接下来我们通过一个案例来过一遍上图的流程。</p>
+<p>现有一网站想要通过程序自动识别出账号的真实性（将账号分类为真实账号与不真实账号，所谓不真实账号即带有虚假信息或恶意注册的小号）。</p>
+<ul>
+<li><p>首先需要确定特征属性和类别，然后获取训练样本。假设一个账号具有三个特征：日志数量/注册天数（<code>F1</code>）、好友数量/注册天数（<code>F2</code>）、是否使用了真实的头像（True为1，False为0）。</p>
+</li>
+<li><p>该网站使用曾经人工检测过的10000个账号作为训练样本，那么计算每个类别的概率为$P(C_0) = 8900 \div 10000 = 0.89, P(C_1) = 1100 \div 10000 = 0.11$，<code>C0</code>为真实账号的类别概率也就是89%，<code>C1</code>为虚假账号的类别概率也就是11%。</p>
+</li>
+<li><p>之后需要计算每个类别下的各个特征的条件概率，代入朴素贝叶斯分类器，可得$P(F_1|C)P(F_2|C)P(F_3|C)P(C)$，不过有一个问题是，<code>F1</code>与<code>F2</code>是连续变量，不适宜按照某个特定值计算概率。解决方法为将连续值转化为离散值，然后计算区间的概率，比如将<code>F1</code>分解为<code>[0,0.05]、[0.05,0.2]、[0.2,+∞]</code>三个区间，然后计算每个区间的概率即可。</p>
+</li>
+<li><p>已知某一账号的数据如下：$F_1 = 0.1,F_2 = 0.2,F_3 = 0$，推测该账号是真实账号还是虚假账号。在此例中，<code>F1</code>为0.1，落在第二个区间内，所以在计算的时候，就使用第二个区间的发生概率。根据训练样本可得出结果为：<br>  $$</p>
+<pre><code>P(F_1|C_0) = 0.5, P(F_1|C_1) = 0.1
+P(F_2|C_0) = 0.7, P(F_2|C_1) = 0.2
+P(F_3|C_0) = 0.2, P(F_3|C_1) = 0.9
+</code></pre><p>  $$</p>
+<ul>
+<li><p>接下来使用训练后的分类器可得出该账号的真实账号概率与虚假账号概率，然后取最大概率作为它的类别：<br>$$<br>  \begin{align} P(F_1|C_0)P(F_2|C_0)P(F_3|C_0)P(C_0) &amp;  = 0.5 \times 0.7 \times 0.2 \times 0.89</p>
+<pre><code>\\ &amp; = 0.0623 \end{align}
+</code></pre><p> \begin{align} P(F_1|C_1)P(F_2|C_1)P(F_3|C_1)P(C_1) &amp; = 0.1 \times 0.2 \times 0.9 \times 0.11</p>
+<pre><code>\\ &amp; = 0.00198 \end{align}
+</code></pre><p>$$</p>
+<p>最终结果为该账号是一个真实账号。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="朴素贝叶斯的算法模型"><a href="#朴素贝叶斯的算法模型" class="headerlink" title="朴素贝叶斯的算法模型"></a>朴素贝叶斯的算法模型</h3><hr>
+<p>在朴素贝叶斯中含有以下三种算法模型：</p>
+<ul>
+<li><p>Gaussian Naive Bayes：适合在特征变量具有连续性的时候使用，同时它还假设特征遵从于高斯分布（正态分布）。举个栗子，假设我们有一组人体特征的统计资料，该数据中的特征：身高、体重和脚掌长度等都为连续变量，很明显我们不能采用离散变量的方法来计算概率，由于样本太少，也无法分成区间计算，那么要怎么办呢？解决方法是假设特征项都是正态分布，然后通过样本计算出均值与标准差，这样就得到了正态分布的密度函数，有了密度函数，就可以代入值，进而算出某一点的密度函数的值。</p>
+</li>
+<li><p>MultiNomial Naive Bayes：与Gaussian Naive Bayes相反，多项式模型更适合处理特征是离散变量的情况，该模型会在计算先验概率$P(C_m)$和条件概率$P(F_n|C_m)$时会做一些平滑处理。具体公式为$P(C<em>m) = \frac{T</em>{cm} + a}{T + ma}$，其中<code>T</code>为总的样本数，<code>m</code>为总类别数，$T_{cm}$即类别为$C_m$的样本个数，<code>a</code>是一个平滑值。条件概率的公式为$P(F_n|C<em>m) = \frac{T</em>{cm}{fn} + a}{T<em>{cm} + na}$，<code>n</code>为特征的个数，$T</em>{cm}{fn}$为类别为$C_m$特征为$F_n$的样本个数。当平滑值<code>a = 1</code>与<code>0 &lt; a &lt; 1</code>时，被称作为<code>Laplace</code>平滑，当<code>a = 0</code>时不做平滑。它的思想其实就是对每类别下所有划分的计数加1，这样如果训练样本数量足够大时，就不会对结果产生影响，并且解决了$P(F|C)$的频率为0的现象（某个类别下的某个特征划分没有出现，这会严重影响分类器的质量）。</p>
+</li>
+<li><p>Bernoulli Naive Bayes：Bernoulli适用于在特征属性为二进制的场景下，它对每个特征的取值是基于布尔值的，一个典型例子就是判断单词有没有在文本中出现。</p>
+</li>
+</ul>
+<h3 id="朴素贝叶斯的实现"><a href="#朴素贝叶斯的实现" class="headerlink" title="朴素贝叶斯的实现"></a>朴素贝叶斯的实现</h3><hr>
+<p>了解了足够多的理论，接下来我们要动手使用python来实现一个Gaussian Naive Bayes，目的是解决皮马人（一个印第安人部落）的糖尿病问题，<a href="https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/pima-indians-diabetes.data" target="_blank" rel="external">样本数据（请从该超链接中获取）</a>是一个csv格式的文件，每个值都是一个数字，该文件描述了从患者的年龄、怀孕次数和验血结果等方面的即时测量数据。每个记录都有一个类别值（一个布尔值，以0或1表示），该值表述了患者是否在五年内得过糖尿病。这是一个在机器学习文献中被大量研究过的数据集，一个比较好的预测精度应该在70%~76%。样本数据的每列含义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">列1：怀孕次数</div><div class="line">列2：在口服葡萄糖耐量试验中，血浆葡萄糖的浓度（2小时）</div><div class="line">列3：心脏的舒张压（(mm Hg)）</div><div class="line">列4：肱三头肌皮肤褶皱厚度（mm）</div><div class="line">列5：二小时内的血清胰岛素（mu U/ml）</div><div class="line">列6：体质指数 （(weight in kg/(height in m)^2)）</div><div class="line">列7：糖尿病家族作用</div><div class="line">列8：年龄</div><div class="line">列9：类别布尔值，0为5年没得过糖尿病，1为5年内得过糖尿病</div><div class="line">------------------------------------</div><div class="line">6,148,72,35,0,33.6,0.627,50,1</div><div class="line">1,85,66,29,0,26.6,0.351,31,0</div><div class="line">8,183,64,0,0,23.3,0.672,32,1</div><div class="line">1,89,66,23,94,28.1,0.167,21,0</div><div class="line">0,137,40,35,168,43.1,2.288,33,1</div><div class="line">.........</div></pre></td></tr></table></figure>
+<p>首先要做的是读取这个csv文件，并解析成我们可以直接使用的数据结构。由于样本数据文件中没有任何的空行和标记符号，每行都是对应的一行数据，只需要简单地把每一行封装到一个list中即可（返回结果为一个list，它的每一项元素都是包含一行数据的list），注意该文件中的数据都为数字，需要先做类型转换。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> csv</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_csv_file</span><span class="params">(filename)</span>:</span></div><div class="line">    <span class="keyword">with</span> open(filename) <span class="keyword">as</span> f:</div><div class="line">        lines = csv.reader(f)</div><div class="line">        data_set = list(lines)</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(data_set)):</div><div class="line">        data_set[i] = [float(x) <span class="keyword">for</span> x <span class="keyword">in</span> data_set[i]]</div><div class="line">    <span class="keyword">return</span> data_set</div></pre></td></tr></table></figure>
+<p>获得了样本数据后，为了评估模型的准确性还需要将它切分为训练数据集（朴素贝叶斯需要使用它来进行预测）与测试数据集。数据在切分过程中是随机选取的，但我们会选择一个比率来控制训练数据集与测试数据集的大小，一般为67%：33%，这是一个比较常见的比率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> random</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">split_data_set</span><span class="params">(data_set, split_ratio)</span>:</span></div><div class="line">    train_size = int(len(data_set) * split_ratio)</div><div class="line">    train_set = []</div><div class="line">    data_set_copy = list(data_set)</div><div class="line">    <span class="keyword">while</span> len(train_set) &lt; train_size:</div><div class="line">        index = random.randrange(len(data_set_copy))</div><div class="line">        train_set.append(data_set_copy.pop(index))</div><div class="line">    <span class="keyword">return</span> [train_set, data_set_copy]</div></pre></td></tr></table></figure>
+<p>切分了样本数据后，还要对训练数据集进行更细致的处理，由于Gaussian Naive Bayes假设了每个特征都遵循正态分布，所以需要从训练数据集中抽取出摘要，它包含了均值与标准差，摘要的数量由类别和特征属性的组合数决定，例如，如果有3个类别与7个特征属性，那么就需要对每个特征属性和类别计算出均值和标准差，这就是21个摘要。</p>
+<p>在计算训练数据集的摘要之前，我们的第一个任务是要将训练数据集中的特征与类别进行分离，也就是说，构造出一个<code>key</code>为类别，值为所属该类别的数据行的散列表。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">separate_by_class</span><span class="params">(data_set, class_index)</span>:</span></div><div class="line">    result = &#123;&#125;</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(data_set)):</div><div class="line">        vector = data_set[i]</div><div class="line">        class_val = vector[class_index]</div><div class="line">        <span class="keyword">if</span> (class_val <span class="keyword">not</span> <span class="keyword">in</span> result):</div><div class="line">            result[class_val] = []</div><div class="line">        result[class_val].append(vector)</div><div class="line">    <span class="keyword">return</span> result</div></pre></td></tr></table></figure>
+<p>由于已经知道了类别只有一个，而且在每行数据的最后一个，所以只需要将-1传入到class_index参数即可。然后就是计算训练数据集的摘要（每个类别中的每个特征属性的均值与标准差），均值会被作为正态分布的中间值，而标准差则描述了数据的离散程度，在计算概率时，它会被作为正态分布中每个特征属性的期望分布。</p>
+<p>标准差就是方差的平方根，只要先求出方差（每个特征值与平均值的差的平方之和的平均值）就可以得出标准差。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> math</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">mean</span><span class="params">(numbers)</span>:</span></div><div class="line">    <span class="keyword">return</span> sum(numbers) / float(len(numbers))</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">stdev</span><span class="params">(numbers)</span>:</span></div><div class="line">    avg = mean(numbers)</div><div class="line">    variance = sum([pow(x - avg, <span class="number">2</span>) <span class="keyword">for</span> x <span class="keyword">in</span> numbers]) / float(len(numbers))</div><div class="line">    <span class="keyword">return</span> math.sqrt(variance)</div></pre></td></tr></table></figure>
+<p>有了这些辅助函数，计算摘要就很简单了，具体步骤就是先从训练数据集中构造出<code>key</code>为类别的散列表，然后根据类别与每个特征进行计算求出均值与标准差即可。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">summarize</span><span class="params">(data_set)</span>:</span></div><div class="line">    <span class="comment"># 使用zip函数将每个元素中的第n个属性封装为一个元组</span></div><div class="line">	<span class="comment"># 简单地说，就是把每列（特征）都打包到一个元组中</span></div><div class="line">    summaries = [(mean(feature), stdev(feature)) <span class="keyword">for</span> feature <span class="keyword">in</span> zip(*data_set)]</div><div class="line">    <span class="keyword">del</span> summaries[<span class="number">-1</span>] <span class="comment"># 最后一行是类别与类别的摘要 所以删除</span></div><div class="line">    <span class="keyword">return</span> summaries</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">summarize_by_class</span><span class="params">(data_set)</span>:</span></div><div class="line">    class_map = separate_by_class(data_set, <span class="number">-1</span>)</div><div class="line">    summaries = &#123;&#125;</div><div class="line">    <span class="keyword">for</span> class_val, data <span class="keyword">in</span> class_map.items():</div><div class="line">        summaries[class_val] = summarize(data)</div><div class="line">    <span class="keyword">return</span> summaries</div></pre></td></tr></table></figure>
+<p>数据的处理阶段已经完成了，下面的任务是要去根据训练数据集来进行预测，该阶段需要计算类概率与每个特征与类别的条件概率，然后选出概率最大的类别作为分类结果。关键在于计算条件概率，需要用到正态分布的密度函数，而它所依赖的参数（特征，均值，标准差）我们已经准备好了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_probability</span><span class="params">(x, mean, stdev)</span>:</span></div><div class="line">    exponent = math.exp(-(math.pow(x - mean, <span class="number">2</span>) / (<span class="number">2</span> * math.pow(stdev, <span class="number">2</span>))))</div><div class="line">    <span class="keyword">return</span> (<span class="number">1</span> / (math.sqrt(<span class="number">2</span> * math.pi) * stdev)) * exponent</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_conditional_probabilities</span><span class="params">(summaries, input_vector)</span>:</span></div><div class="line">    probabilities = &#123;&#125;</div><div class="line">    <span class="keyword">for</span> class_val, class_summaries <span class="keyword">in</span> summaries.items():</div><div class="line">        probabilities[class_val] = <span class="number">1</span></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(class_summaries)):</div><div class="line">            mean, stdev = class_summaries[i]</div><div class="line">			<span class="comment"># input_vector是test_set的一行数据，x为该行中的某一特征属性</span></div><div class="line">            x = input_vector[i]</div><div class="line">			<span class="comment"># 将概率相乘</span></div><div class="line">            probabilities[class_val] *= calculate_probability(x, mean, stdev)</div><div class="line">    <span class="keyword">return</span> probabilities</div></pre></td></tr></table></figure>
+<p>函数<code>calculate_conditional_probabilities()</code>返回了一个<code>key</code>为类别，值为其概率的散列表，这个散列表记录了每个特征类别的条件概率，之后只需要选出其中最大概率的类别即可。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict</span><span class="params">(summaries, input_vector)</span>:</span></div><div class="line">    probabilities = calculate_conditional_probabilities(summaries, input_vector)</div><div class="line">    best_label, best_prob = <span class="keyword">None</span>, <span class="number">-1</span></div><div class="line">    <span class="keyword">for</span> class_val, probability <span class="keyword">in</span> probabilities.items():</div><div class="line">        <span class="keyword">if</span> best_label <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> probability &gt; best_prob:</div><div class="line">            best_label = class_val</div><div class="line">            best_prob = probability</div><div class="line">    <span class="keyword">return</span> best_label</div></pre></td></tr></table></figure>
+<p>最后我们定义一个函数来对测试数据集中的每个数据实例进行预测以预估模型的准确性，该函数返回了一个预测值列表，包含了每个数据实例的预测值。根据这个返回值，就可以对预测结果进行准确性的评估了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_predictions</span><span class="params">(summaries, test_set)</span>:</span></div><div class="line">    predictions = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(test_set)):</div><div class="line">        result = predict(summaries, test_set[i])</div><div class="line">        predictions.append(result)</div><div class="line">    <span class="keyword">return</span> predictions</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_accuracy</span><span class="params">(predictions, test_set)</span>:</span></div><div class="line">    correct = <span class="number">0</span></div><div class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> range(len(test_set)):</div><div class="line">		<span class="comment"># 分类结果与测试数据集一致，调整值自增</span></div><div class="line">        <span class="keyword">if</span> test_set[x][<span class="number">-1</span>] == predictions[x]:</div><div class="line">            correct += <span class="number">1</span></div><div class="line">    <span class="keyword">return</span> (correct / float(len(test_set))) * <span class="number">100.0</span></div></pre></td></tr></table></figure>
+<p>完整代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> csv, random, math</div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">A simple classifier base on the gaussian naive bayes and</div><div class="line">problem of the pima indians diabetes.</div><div class="line">(https://archive.ics.uci.edu/ml/datasets/Pima+Indians+Diabetes)</div><div class="line">"""</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_csv_file</span><span class="params">(filename)</span>:</span></div><div class="line">    <span class="keyword">with</span> open(filename) <span class="keyword">as</span> f:</div><div class="line">        lines = csv.reader(f)</div><div class="line">        data_set = list(lines)</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(data_set)):</div><div class="line">        data_set[i] = [float(x) <span class="keyword">for</span> x <span class="keyword">in</span> data_set[i]]</div><div class="line">    <span class="keyword">return</span> data_set</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">split_data_set</span><span class="params">(data_set, split_ratio)</span>:</span></div><div class="line">    train_size = int(len(data_set) * split_ratio)</div><div class="line">    train_set = []</div><div class="line">    data_set_copy = list(data_set)</div><div class="line">    <span class="keyword">while</span> len(train_set) &lt; train_size:</div><div class="line">        index = random.randrange(len(data_set_copy))</div><div class="line">        train_set.append(data_set_copy.pop(index))</div><div class="line">    <span class="keyword">return</span> [train_set, data_set_copy]</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">separate_by_class</span><span class="params">(data_set, class_index)</span>:</span></div><div class="line">    result = &#123;&#125;</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(data_set)):</div><div class="line">        vector = data_set[i]</div><div class="line">        class_val = vector[class_index]</div><div class="line">        <span class="keyword">if</span> (class_val <span class="keyword">not</span> <span class="keyword">in</span> result):</div><div class="line">            result[class_val] = []</div><div class="line">        result[class_val].append(vector)</div><div class="line">    <span class="keyword">return</span> result</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">mean</span><span class="params">(numbers)</span>:</span></div><div class="line">    <span class="keyword">return</span> sum(numbers) / float(len(numbers))</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">stdev</span><span class="params">(numbers)</span>:</span></div><div class="line">    avg = mean(numbers)</div><div class="line">    variance = sum([pow(x - avg, <span class="number">2</span>) <span class="keyword">for</span> x <span class="keyword">in</span> numbers]) / float(len(numbers))</div><div class="line">    <span class="keyword">return</span> math.sqrt(variance)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">summarize</span><span class="params">(data_set)</span>:</span></div><div class="line">    summaries = [(mean(feature), stdev(feature)) <span class="keyword">for</span> feature <span class="keyword">in</span> zip(*data_set)]</div><div class="line">    <span class="keyword">del</span> summaries[<span class="number">-1</span>]</div><div class="line">    <span class="keyword">return</span> summaries</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">summarize_by_class</span><span class="params">(data_set)</span>:</span></div><div class="line">    class_map = separate_by_class(data_set, <span class="number">-1</span>)</div><div class="line">    summaries = &#123;&#125;</div><div class="line">    <span class="keyword">for</span> class_val, data <span class="keyword">in</span> class_map.items():</div><div class="line">        summaries[class_val] = summarize(data)</div><div class="line">    <span class="keyword">return</span> summaries</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_probability</span><span class="params">(x, mean, stdev)</span>:</span></div><div class="line">    exponent = math.exp(-(math.pow(x - mean, <span class="number">2</span>) / (<span class="number">2</span> * math.pow(stdev, <span class="number">2</span>))))</div><div class="line">    <span class="keyword">return</span> (<span class="number">1</span> / (math.sqrt(<span class="number">2</span> * math.pi) * stdev)) * exponent</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_conditional_probabilities</span><span class="params">(summaries, input_vector)</span>:</span></div><div class="line">    probabilities = &#123;&#125;</div><div class="line">    <span class="keyword">for</span> class_val, class_summaries <span class="keyword">in</span> summaries.items():</div><div class="line">        probabilities[class_val] = <span class="number">1</span></div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(class_summaries)):</div><div class="line">            mean, stdev = class_summaries[i]</div><div class="line">            x = input_vector[i]</div><div class="line">            probabilities[class_val] *= calculate_probability(x, mean, stdev)</div><div class="line">    <span class="keyword">return</span> probabilities</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict</span><span class="params">(summaries, input_vector)</span>:</span></div><div class="line">    probabilities = calculate_conditional_probabilities(summaries, input_vector)</div><div class="line">    best_label, best_prob = <span class="keyword">None</span>, <span class="number">-1</span></div><div class="line">    <span class="keyword">for</span> class_val, probability <span class="keyword">in</span> probabilities.items():</div><div class="line">        <span class="keyword">if</span> best_label <span class="keyword">is</span> <span class="keyword">None</span> <span class="keyword">or</span> probability &gt; best_prob:</div><div class="line">            best_label = class_val</div><div class="line">            best_prob = probability</div><div class="line">    <span class="keyword">return</span> best_label</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_predictions</span><span class="params">(summaries, test_set)</span>:</span></div><div class="line">    predictions = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(test_set)):</div><div class="line">        result = predict(summaries, test_set[i])</div><div class="line">        predictions.append(result)</div><div class="line">    <span class="keyword">return</span> predictions</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_accuracy</span><span class="params">(predictions, test_set)</span>:</span></div><div class="line">    correct = <span class="number">0</span></div><div class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> range(len(test_set)):</div><div class="line">        <span class="keyword">if</span> test_set[x][<span class="number">-1</span>] == predictions[x]:</div><div class="line">            correct += <span class="number">1</span></div><div class="line">    <span class="keyword">return</span> (correct / float(len(test_set))) * <span class="number">100.0</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></div><div class="line">    filename = <span class="string">'pima-indians-diabetes.data.csv'</span></div><div class="line">    split_ratio = <span class="number">0.67</span></div><div class="line">    data_set = load_csv_file(filename)</div><div class="line">    train_set, test_set = split_data_set(data_set, split_ratio)</div><div class="line">    print(<span class="string">'Split %s rows into train set = %s and test set = %s rows'</span></div><div class="line">                %(len(data_set), len(train_set), len(test_set)))</div><div class="line">    <span class="comment"># prepare model</span></div><div class="line">    summaries = summarize_by_class(train_set)</div><div class="line">    <span class="comment"># predict and test</span></div><div class="line">    predictions = get_predictions(summaries, test_set)</div><div class="line">    accuracy = get_accuracy(predictions, test_set)</div><div class="line">    print(<span class="string">'Accuracy: %s'</span> % accuracy)</div><div class="line"></div><div class="line">main()</div></pre></td></tr></table></figure>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><hr>
+<ul>
+<li><p><a href="https://en.wikipedia.org/wiki/Bayes%27_theorem" target="_blank" rel="external">Bayes’ theorem - Wikipedia</a></p>
+</li>
+<li><p><a href="https://en.wikipedia.org/wiki/Conditional_probability" target="_blank" rel="external">Conditional probability - Wikipedia</a></p>
+</li>
+<li><p><a href="https://en.wikipedia.org/wiki/Law_of_total_probability" target="_blank" rel="external">Law of total probability - Wikipedia</a></p>
+</li>
+<li><p><a href="https://en.wikipedia.org/wiki/Naive_Bayes_classifier" target="_blank" rel="external">Naive Bayes classifier - Wikipedia</a></p>
+</li>
+<li><p><a href="https://www.analyticsvidhya.com/blog/2017/09/naive-bayes-explained/" target="_blank" rel="external"> 6 Easy Steps to Learn Naive Bayes Algorithm (with code in Python)</a></p>
+</li>
+<li><p><a href="https://dataaspirant.com/2017/02/06/naive-bayes-classifier-machine-learning/" target="_blank" rel="external">How the Naive Bayes Classifier works in Machine Learning</a></p>
+</li>
+<li><p><a href="https://machinelearningmastery.com/naive-bayes-classifier-scratch-python/" target="_blank" rel="external">Naive Bayes Classifier From Scratch in Python</a></p>
+</li>
+<li><p><a href="http://mindhacks.cn/2008/09/21/the-magical-bayesian-method/" target="_blank" rel="external">数学之美番外篇：平凡而又神奇的贝叶斯方法 – 刘未鹏 | Mind Hacks</a></p>
+</li>
+<li><p><a href="http://www.ruanyifeng.com/blog/2013/12/naive_bayes_classifier.html" target="_blank" rel="external">朴素贝叶斯分类器的应用 - 阮一峰的网络日志</a></p>
+</li>
+<li><p><a href="http://www.cnblogs.com/leoo2sk/archive/2010/09/17/1829190.html" target="_blank" rel="external">算法杂货铺——分类算法之朴素贝叶斯分类(Naive Bayesian classification) - T2噬菌体 - 博客园</a></p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在机器学习领域中，朴素贝叶斯是一种基于贝叶斯定理的简单概率分类器（分类又被称为监督式学习，所谓监督式学习即从已知样本数据中的特征信息去推测可能出现的输出以完成分类，反之聚类问题被称为非监督式学习），朴素贝叶斯在处理文本数据时可以得到较好的分类结果，所以它被广泛应用于文本分类
+    
+    </summary>
+    
+      <category term="机器学习" scheme="https://sylvanassun.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="监督式学习" scheme="https://sylvanassun.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%9B%91%E7%9D%A3%E5%BC%8F%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
+    
+      <category term="机器学习" scheme="https://sylvanassun.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="监督式学习" scheme="https://sylvanassun.github.io/tags/%E7%9B%91%E7%9D%A3%E5%BC%8F%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="贝叶斯" scheme="https://sylvanassun.github.io/tags/%E8%B4%9D%E5%8F%B6%E6%96%AF/"/>
+    
+  </entry>
   
   <entry>
     <title>Netty的那点事儿</title>
@@ -1849,11 +2034,11 @@
       <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
     
       <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
@@ -2253,9 +2438,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -2493,9 +2678,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -2634,9 +2819,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -2717,9 +2902,9 @@
       <category term="Other" scheme="https://sylvanassun.github.io/categories/Algorithms/Other/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
   </entry>
   
@@ -3017,9 +3202,9 @@
       <category term="Graph" scheme="https://sylvanassun.github.io/categories/Algorithms/Graph/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="Graph" scheme="https://sylvanassun.github.io/tags/Graph/"/>
     
@@ -3094,110 +3279,11 @@
       <category term="动态规划" scheme="https://sylvanassun.github.io/categories/Algorithms/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     
     
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
       <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
+    
+      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
     
       <category term="动态规划" scheme="https://sylvanassun.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>红黑树那点事儿</title>
-    <link href="https://sylvanassun.github.io/2017/06/16/2017-06-16-RedBlackTree/"/>
-    <id>https://sylvanassun.github.io/2017/06/16/2017-06-16-RedBlackTree/</id>
-    <published>2017-06-16T10:00:00.000Z</published>
-    <updated>2017-07-11T07:04:07.062Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><hr>
-<p><code>红黑树</code>是一种<code>自平衡二叉查找树</code>,它相对于<code>二叉查找树</code>性能会更加高效(查找、删除、添加等操作需要<code>O(log n)</code>,其中<code>n</code>为树中元素的个数),但实现较为复杂(需要保持自身的平衡).</p>
-<h3 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h3><hr>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/6/66/Red-black_tree_example.svg" alt=""></p>
-<p><code>红黑树</code>与<code>二叉查找树</code>不同,它的节点多了一个颜色属性,每个节点非黑即红,这也是它名字的由来.</p>
-<p><code>红黑树</code>的节点定义如以下代码: </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span> RED = <span class="keyword">true</span>;</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span> BLACK = <span class="keyword">false</span>;</div><div class="line"><span class="keyword">private</span> Node root;</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> size = <span class="number">0</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> color = RED; <span class="comment">//颜色</span></div><div class="line">    <span class="keyword">private</span> Node parent, left, right;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> orderStatus = <span class="number">0</span>;</div><div class="line">    <span class="keyword">private</span> K key;</div><div class="line">    <span class="keyword">private</span> V value;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.key = key;</div><div class="line">        <span class="keyword">this</span>.value = value;</div><div class="line">        <span class="keyword">this</span>.size = <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>完整的代码我已经放在了我的<code>Gist</code>中,<a href="https://gist.github.com/SylvanasSun/147672912cc5bc6da27e15528542877f" target="_blank" rel="external">点击查看完整代码</a>.</p>
-<p><code>红黑树</code>需要保证以下性质: </p>
-<ol>
-<li>每个节点的颜色非黑即红.</li>
-</ol>
-<ol>
-<li><strong>根节点的颜色为黑色.</strong></li>
-</ol>
-<ol>
-<li>所有叶子节点都为黑色(即NIL节点).</li>
-</ol>
-<ol>
-<li><p><strong>每个红色节点的两个子节点都必须为黑色(不能有两个连续的红节点).</strong></p>
-</li>
-<li><p><strong>从任一节点到其叶子的所有简单路径包含相同数量的黑色节点.</strong></p>
-</li>
-</ol>
-<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><hr>
-<p><code>红黑树</code>的查找操作与<code>二叉查找树</code>一致(因为查找不会影响树的结构),而插入与删除操作需要在最后对树进行调整.</p>
-<p>我们将新的节点的颜色设为红色(如果设为黑色会使根节点到叶子的一条路径上多了一个黑节点,违反了性质5,这个是很难调整的).</p>
-<p>现在我们假设新节点为<code>N</code>,它的父节点为<code>P</code>(且<code>P</code>为<code>G</code>的左节点,如果为右节点则与其操作互为镜像),祖父节点为<code>G</code>,叔叔节点为<code>U</code>.插入一个节点会有以下种情况.</p>
-<h4 id="情况1"><a href="#情况1" class="headerlink" title="情况1"></a>情况1</h4><p><strong><code>N</code>位于根,它没有父节点与子节点,这时候只需要把它重新设置为黑色即可</strong>,无需其他调整.</p>
-<h4 id="情况2"><a href="#情况2" class="headerlink" title="情况2"></a>情况2</h4><p><strong><code>P</code>的颜色为黑色</strong>,这种情况下保持了性质4(<code>N</code>只有两个叶子节点,它们都为黑色)与性质5(<code>N</code>是一个红色节点,不会对其造成影响)的有效,所以<strong>无需调整</strong>.</p>
-<h4 id="情况3"><a href="#情况3" class="headerlink" title="情况3"></a>情况3</h4><p>如果<code>P</code>与<code>U</code>都为红色,我们可以将它们两个重新绘制为黑色,然后将<code>G</code>绘制为红色(保持性质5),最后再从<code>G</code>开始继续向上进行调整.</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Red-black_tree_insert_case_3.png" alt=""></p>
-<h4 id="情况4"><a href="#情况4" class="headerlink" title="情况4"></a>情况4</h4><p><strong><code>P</code>为红色,<code>U</code>为黑色,且<code>N</code>为<code>P</code>的左子节点,这种情况下,我们需要在<code>G</code>处进行一次<code>右旋转</code></strong>,结果满足了性质4与性质5,因为通过这三个节点中任何一个的所有路径以前都通过祖父节点<code>G</code>，现在它们都通过以前的父节点<code>P</code>.</p>
-<p>关于旋转操作,可以查看这篇文章<a href="http://sylvanassun.github.io/2017/03/30/red_black_binary_search_tree/">《Algorithms,4th Edition》读书笔记-红黑二叉查找树</a>.</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/6/66/Red-black_tree_insert_case_5.png" alt=""></p>
-<h4 id="情况5"><a href="#情况5" class="headerlink" title="情况5"></a>情况5</h4><p><code>P</code>为红色,<code>U</code>为黑色,且<code>N</code>为<code>P</code>的右子节点,我们需要先在<code>P</code>处进行一次<code>左旋转</code>,这样就又回到了情况4.</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Red-black_tree_insert_case_4.png" alt=""></p>
-<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fixAfterInsertion</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">      <span class="keyword">while</span> (x != <span class="keyword">null</span> &amp;&amp; x != root &amp;&amp; colorOf(parentOf(x)) == RED) &#123;</div><div class="line">          <span class="keyword">if</span> (parentOf(x) == grandpaOf(x).left) &#123;</div><div class="line">              x = parentIsLeftNode(x);</div><div class="line">          &#125; <span class="keyword">else</span> &#123;</div><div class="line">              x = parentIsRightNode(x);</div><div class="line">          &#125;</div><div class="line">          fixSize(x);</div><div class="line">      &#125;</div><div class="line">      setColor(root, BLACK);</div><div class="line">  &#125;</div><div class="line">	</div><div class="line">  <span class="function"><span class="keyword">private</span> Node <span class="title">parentIsLeftNode</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">      Node xUncle = grandpaOf(x).right;</div><div class="line"><span class="comment">// 情况3</span></div><div class="line">      <span class="keyword">if</span> (colorOf(xUncle) == RED) &#123;</div><div class="line">          x = uncleColorIsRed(x, xUncle);</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">	<span class="comment">// 情况5</span></div><div class="line">          <span class="keyword">if</span> (x == parentOf(x).right) &#123;</div><div class="line">              x = parentOf(x);</div><div class="line">              rotateLeft(x);</div><div class="line">          &#125;</div><div class="line">	<span class="comment">// 情况4</span></div><div class="line">          rotateRight(grandpaOf(x));</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">return</span> x;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">private</span> Node <span class="title">parentIsRightNode</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">      Node xUncle = grandpaOf(x).left;</div><div class="line"></div><div class="line">      <span class="keyword">if</span> (colorOf(xUncle) == RED) &#123;</div><div class="line">          x = uncleColorIsRed(x, xUncle);</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">          <span class="keyword">if</span> (x == parentOf(x).left) &#123;</div><div class="line">              x = parentOf(x);</div><div class="line">              rotateRight(x);</div><div class="line">          &#125;</div><div class="line">          rotateLeft(grandpaOf(x));</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">return</span> x;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">private</span> Node <span class="title">uncleColorIsRed</span><span class="params">(Node x, Node xUncle)</span> </span>&#123;</div><div class="line">      setColor(parentOf(x), BLACK);</div><div class="line">      setColor(xUncle, BLACK);</div><div class="line">      setColor(grandpaOf(x), RED);</div><div class="line">      x = grandpaOf(x);</div><div class="line">      <span class="keyword">return</span> x;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p>我们只考虑删除节点只有一个子节点的情况,且只有后继节点与删除节点都为黑色(如果删除节点为红色,从根节点到叶子节点的每条路径上少了一个红色节点并不会违反<code>红黑树</code>的性质,而如果后继节点为红色,只需要将它重新绘制为黑色即可).</p>
-<p>先将删除节点替换为后继节点,且后继节点定义为<code>N</code>,它的兄弟节点为<code>S</code>.</p>
-<h4 id="情况1-1"><a href="#情况1-1" class="headerlink" title="情况1"></a>情况1</h4><p><code>N</code>为新的根节点,在这种情况下只需要把根节点保持为黑色即可.</p>
-<h4 id="情况2-1"><a href="#情况2-1" class="headerlink" title="情况2"></a>情况2</h4><p><strong><code>S</code>为红色,只需要在<code>P</code>进行一次<code>左旋转</code></strong>,接下来则<strong>继续按以下情况进行处理</strong>(尽管路径上的黑色节点数量没有改变,但<code>N</code>有了一个黑色的兄弟节点与红色的父节点).</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Red-black_tree_delete_case_2.png" alt=""></p>
-<h4 id="情况3-1"><a href="#情况3-1" class="headerlink" title="情况3"></a>情况3</h4><p><code>S</code>和它的子节点都是黑色的,而<code>P</code>为红色.这种情况下只需要将<code>S</code>与<code>P</code>的颜色进行交换</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Red-black_tree_delete_case_4.png" alt=""></p>
-<h4 id="情况4-1"><a href="#情况4-1" class="headerlink" title="情况4"></a>情况4</h4><p><strong><code>S</code>和它的子节点都是黑色的,这种情况下需要把<code>S</code>重新绘制为红色</strong>.这时不通过<code>N</code>的路径都将少一个黑色节点(通过<code>N</code>的路径因为删除节点是黑色的也都少了一个黑色节点),这让它们平衡了起来.</p>
-<p>但现在通过<code>P</code>的路径比不通过<code>P</code>的路径都少了一个黑色节点,所以还需要在<code>P</code>上继续进行调整.</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Red-black_tree_delete_case_3.png" alt=""></p>
-<h4 id="情况5-1"><a href="#情况5-1" class="headerlink" title="情况5"></a>情况5</h4><p><strong><code>S</code>为黑色,它的左子节点为红色,右子节点为黑色.这种情况下,我们在<code>S</code>上做<code>右旋转</code></strong>,这样<code>S</code>的左儿子成为<code>S</code>的父亲和N的新兄弟。我们接着交换<code>S</code>和它的新父亲的颜色。所有路径仍有同样数目的黑色节点，但是现在<code>N</code>有了一个右儿子是红色的黑色兄弟，所以我们进入了情况6。<code>N</code>和<code>P</code>都不受这个变换的影响。</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Red-black_tree_delete_case_5.png" alt=""></p>
-<h4 id="情况6"><a href="#情况6" class="headerlink" title="情况6"></a>情况6</h4><p><strong><code>S</code>是黑色，它的右子节点是红色,我们在<code>N</code>的父亲<code>P</code>上做<code>左旋转</code></strong>.这样<code>S</code>成为<code>N</code>的父亲和<code>S</code>的右儿子的父亲。我们接着交换<code>N</code>的父亲和<code>S</code>的颜色，<strong>并使<code>S</code>的右儿子为黑色</strong>。子树在它的根上的仍是同样的颜色,但是,<code>N</code>现在增加了一个黑色祖先.所以,通过<code>N</code>的路径都增加了一个黑色节点.此时,如果一个路径不通过<code>N</code>,则有两种可能性:</p>
-<ul>
-<li>它通过<code>N</code>的新兄弟.那么它以前和现在都必定通过<code>S</code>和<code>N</code>的父亲,而它们只是交换了颜色.所以路径保持了同样数目的黑色节点.</li>
-</ul>
-<ul>
-<li>它通过<code>N</code>的新叔父,<code>S</code>的右儿子.那么它以前通过<code>S</code>、<code>S</code>的父亲和<code>S</code>的右儿子,但是现在只通过<code>S</code>,它被假定为它以前的父亲的颜色,和<code>S</code>的右儿子,它被从红色改变为黑色.合成效果是这个路径通过了同样数目的黑色节点.</li>
-</ul>
-<p>在任何情况下,在这些路径上的黑色节点数目都没有改变.所以我们恢复了性质4.在示意图中的白色节点可以是红色或黑色,但是在变换前后都必须指定相同的颜色.</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Red-black_tree_delete_case_6.png" alt=""></p>
-<h4 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fixAfterDeletion</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">      <span class="keyword">while</span> (x != <span class="keyword">null</span> &amp;&amp; x != root &amp;&amp; colorOf(x) == BLACK) &#123;</div><div class="line">          <span class="keyword">if</span> (x == parentOf(x).left) &#123;</div><div class="line">              x = successorIsLeftNode(x);</div><div class="line">          &#125; <span class="keyword">else</span> &#123;</div><div class="line">              x = successorIsRightNode(x);</div><div class="line">          &#125;</div><div class="line">      &#125;</div><div class="line">      setColor(x, BLACK);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">private</span> Node <span class="title">successorIsLeftNode</span><span class="params">(Node x)</span> </span>&#123;</div><div class="line">      Node brother = parentOf(x).right;</div><div class="line"><span class="comment">// 情况2</span></div><div class="line">      <span class="keyword">if</span> (colorOf(brother) == RED) &#123;</div><div class="line">          rotateLeft(parentOf(x));</div><div class="line">          brother = parentOf(x).right;</div><div class="line">      &#125;</div><div class="line"><span class="comment">// 情况3,4</span></div><div class="line">      <span class="keyword">if</span> (colorOf(brother.left) == BLACK &amp;&amp; colorOf(brother.right) == BLACK) &#123;</div><div class="line">          x = brotherChildrenColorIsBlack(x, brother);</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">	<span class="comment">// 情况5</span></div><div class="line">          <span class="keyword">if</span> (colorOf(brother.right) == BLACK) &#123;</div><div class="line">              rotateRight(brother);</div><div class="line">              brother = parentOf(x).right;</div><div class="line">          &#125;</div><div class="line">	<span class="comment">// 情况6</span></div><div class="line">          setColor(brother.right, BLACK);</div><div class="line">          rotateLeft(parentOf(x));</div><div class="line">          x = root;</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">return</span> x;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">private</span> Node <span class="title">brotherChildrenColorIsBlack</span><span class="params">(Node x, Node brother)</span> </span>&#123;</div><div class="line">      setColor(brother, RED);</div><div class="line">      x = parentOf(x);</div><div class="line">      <span class="keyword">return</span> x;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
-<li><a href="https://zh.wikipedia.org/wiki/%E7%BA%A2%E9%BB%91%E6%A0%91" target="_blank" rel="external">Wikipedia</a></li>
-</ul>
-<blockquote>
-<p>本文作者为<a href="https://github.com/SylvanasSun/" target="_blank" rel="external">SylvanasSun(sylvanassun_xtz@163.com)</a>,转载请务必指明原文链接.</p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h3&gt;&lt;hr&gt;
-&lt;p&gt;&lt;code&gt;红黑树&lt;/code&gt;是一种&lt;code&gt;自平衡二叉查找树&lt;/code&gt;,它相对于&lt;code&gt;二叉查找树&lt;/code&gt;性能
-    
-    </summary>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/categories/Algorithms/"/>
-    
-      <category term="数据结构" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="Tree" scheme="https://sylvanassun.github.io/categories/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/Tree/"/>
-    
-    
-      <category term="2017" scheme="https://sylvanassun.github.io/tags/2017/"/>
-    
-      <category term="Algorithms" scheme="https://sylvanassun.github.io/tags/Algorithms/"/>
-    
-      <category term="数据结构" scheme="https://sylvanassun.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="Tree" scheme="https://sylvanassun.github.io/tags/Tree/"/>
     
   </entry>
   

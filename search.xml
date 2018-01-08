@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Spring Boot自动配置的"魔法"是如何实现的？]]></title>
+    <url>%2F2018%2F01%2F08%2F2018-01-08-spring_boot_auto_configure%2F</url>
+    <content type="text"><![CDATA[Spring Boot是Spring旗下众多的子项目之一，其理念是约定优于配置，它通过实现了自动配置（大多数用户平时习惯设置的配置作为默认配置）的功能来为用户快速构建出标准化的应用。Spring Boot的特点可以概述为如下几点： 内置了嵌入式的Tomcat、Jetty等Servlet容器，应用可以不用打包成War格式，而是可以直接以Jar格式运行。 提供了多个可选择的”starter”以简化Maven的依赖管理（也支持Gradle），让您可以按需加载需要的功能模块。 尽可能地进行自动配置，减少了用户需要动手写的各种冗余配置项，Spring Boot提倡无XML配置文件的理念，使用Spring Boot生成的应用完全不会生成任何配置代码与XML配置文件。 提供了一整套的对应用状态的监控与管理的功能模块（通过引入spring-boot-starter-actuator），包括应用的线程信息、内存信息、应用是否处于健康状态等，为了满足更多的资源监控需求，Spring Cloud中的很多模块还对其进行了扩展。 有关Spring Boot的使用方法就不做多介绍了，如有兴趣请自行阅读官方文档Spring Boot或其他文章。 如今微服务的概念愈来愈热，转型或尝试微服务的团队也在如日渐增，而对于技术选型，Spring Cloud是一个比较好的选择，它提供了一站式的分布式系统解决方案，包含了许多构建分布式系统与微服务需要用到的组件，例如服务治理、API网关、配置中心、消息总线以及容错管理等模块。可以说，Spring Cloud”全家桶”极其适合刚刚接触微服务的团队。似乎有点跑题了，不过说了这么多，我想要强调的是，Spring Cloud中的每个组件都是基于Spring Boot构建的，而理解了Spring Boot的自动配置的原理，显然也是有好处的。 Spring Boot的自动配置看起来神奇，其实原理非常简单，背后全依赖于@Conditional注解来实现的。 本文作者为SylvanasSun(sylvanas.sun@gmail.com)，首发于SylvanasSun’s Blog。原文链接：https://sylvanassun.github.io/2018/01/08/2018-01-08-spring_boot_auto_configure/（转载请务必保留本段声明，并且保留超链接。） 什么是@Conditional？ @Conditional是由Spring 4提供的一个新特性，用于根据特定条件来控制Bean的创建行为。而在我们开发基于Spring的应用的时候，难免会需要根据条件来注册Bean。 例如，你想要根据不同的运行环境，来让Spring注册对应环境的数据源Bean，对于这种简单的情况，完全可以使用@Profile注解实现，就像下面代码所示： 1234567891011121314@Configurationpublic class AppConfig &#123; @Bean @Profile("DEV") public DataSource devDataSource() &#123; ... &#125; @Bean @Profile("PROD") public DataSource prodDataSource() &#123; ... &#125;&#125; 剩下只需要设置对应的Profile属性即可，设置方法有如下三种： 通过context.getEnvironment().setActiveProfiles(&quot;PROD&quot;)来设置Profile属性。 通过设定jvm的spring.profiles.active参数来设置环境（Spring Boot中可以直接在application.properties配置文件中设置该属性）。 通过在DispatcherServlet的初始参数中设置。 12345678&lt;servlet&gt; &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt; &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt; &lt;init-param&gt; &lt;param-name&gt;spring.profiles.active&lt;/param-name&gt; &lt;param-value&gt;PROD&lt;/param-value&gt; &lt;/init-param&gt;&lt;/servlet&gt; 但这种方法只局限于简单的情况，而且通过源码我们可以发现@Profile自身也使用了@Conditional注解。 123456789101112131415161718192021222324252627282930313233343536373839package org.springframework.context.annotation;@Target(&#123;ElementType.TYPE, ElementType.METHOD&#125;)@Retention(RetentionPolicy.RUNTIME)@Documented@Conditional(&#123;ProfileCondition.class&#125;) // 组合了Conditional注解public @interface Profile &#123; String[] value();&#125;package org.springframework.context.annotation;class ProfileCondition implements Condition &#123; ProfileCondition() &#123; &#125; // 通过提取出@Profile注解中的value值来与profiles配置信息进行匹配 public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) &#123; if(context.getEnvironment() != null) &#123; MultiValueMap attrs = metadata.getAllAnnotationAttributes(Profile.class.getName()); if(attrs != null) &#123; Iterator var4 = ((List)attrs.get("value")).iterator(); Object value; do &#123; if(!var4.hasNext()) &#123; return false; &#125; value = var4.next(); &#125; while(!context.getEnvironment().acceptsProfiles((String[])((String[])value))); return true; &#125; &#125; return true; &#125;&#125; 在业务复杂的情况下，显然需要使用到@Conditional注解来提供更加灵活的条件判断，例如以下几个判断条件： 在类路径中是否存在这样的一个类。 在Spring容器中是否已经注册了某种类型的Bean（如未注册，我们可以让其自动注册到容器中，上一条同理）。 一个文件是否在特定的位置上。 一个特定的系统属性是否存在。 在Spring的配置文件中是否设置了某个特定的值。 举个栗子，假设我们有两个基于不同数据库实现的DAO，它们全都实现了UserDao，其中JdbcUserDAO与MySql进行连接，MongoUserDAO与MongoDB进行连接。现在，我们有了一个需求，需要根据命令行传入的系统参数来注册对应的UserDao，就像java -jar app.jar -DdbType=MySQL会注册JdbcUserDao，而java -jar app.jar -DdbType=MongoDB则会注册MongoUserDao。使用@Conditional可以很轻松地实现这个功能，仅仅需要在你自定义的条件类中去实现Condition接口，让我们来看下面的代码。（以下案例来自：https://dzone.com/articles/how-springboot-autoconfiguration-magic-works） 123456789101112131415161718192021222324252627282930313233343536373839404142434445public interface UserDAO &#123; ....&#125;public class JdbcUserDAO implements UserDAO &#123; ....&#125;public class MongoUserDAO implements UserDAO &#123; ....&#125;public class MySQLDatabaseTypeCondition implements Condition &#123; @Override public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata metadata) &#123; String enabledDBType = System.getProperty("dbType"); // 获得系统参数 dbType // 如果该值等于MySql，则条件成立 return (enabledDBType != null &amp;&amp; enabledDBType.equalsIgnoreCase("MySql")); &#125;&#125;// 与上述逻辑一致public class MongoDBDatabaseTypeCondition implements Condition &#123; @Override public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata metadata) &#123; String enabledDBType = System.getProperty("dbType"); return (enabledDBType != null &amp;&amp; enabledDBType.equalsIgnoreCase("MongoDB")); &#125;&#125;// 根据条件来注册不同的Bean@Configurationpublic class AppConfig &#123; @Bean @Conditional(MySQLDatabaseTypeCondition.class) public UserDAO jdbcUserDAO() &#123; return new JdbcUserDAO(); &#125; @Bean @Conditional(MongoDBDatabaseTypeCondition.class) public UserDAO mongoUserDAO() &#123; return new MongoUserDAO(); &#125;&#125; 现在，我们又有了一个新需求，我们想要根据当前工程的类路径中是否存在MongoDB的驱动类来确认是否注册MongoUserDAO。为了实现这个需求，可以创建检查MongoDB驱动是否存在的两个条件类。 1234567891011121314151617181920212223public class MongoDriverPresentsCondition implements Condition &#123; @Override public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata metadata) &#123; try &#123; Class.forName("com.mongodb.Server"); return true; &#125; catch (ClassNotFoundException e) &#123; return false; &#125; &#125;&#125;public class MongoDriverNotPresentsCondition implements Condition &#123; @Override public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata metadata) &#123; try &#123; Class.forName("com.mongodb.Server"); return false; &#125; catch (ClassNotFoundException e) &#123; return true; &#125; &#125;&#125; 假如，你想要在UserDAO没有被注册的情况下去注册一个UserDAOBean，那么我们可以定义一个条件类来检查某个类是否在容器中已被注册。 1234567public class UserDAOBeanNotPresentsCondition implements Condition &#123; @Override public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata metadata) &#123; UserDAO userDAO = conditionContext.getBeanFactory().getBean(UserDAO.class); return (userDAO == null); &#125;&#125; 如果你想根据配置文件中的某项属性来决定是否注册MongoDAO，例如app.dbType是否等于MongoDB，我们可以实现以下的条件类。 1234567public class MongoDbTypePropertyCondition implements Condition &#123; @Override public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata metadata) &#123; String dbType = conditionContext.getEnvironment().getProperty("app.dbType"); return "MONGO".equalsIgnoreCase(dbType); &#125;&#125; 我们已经尝试并实现了各种类型的条件判断，接下来，我们可以选择一种更为优雅的方式，就像@Profile一样，以注解的方式来完成条件判断。首先，我们需要定义一个注解类。 1234567@Target(&#123; ElementType.TYPE, ElementType.METHOD &#125;)@Retention(RetentionPolicy.RUNTIME)@Documented@Conditional(DatabaseTypeCondition.class)public @interface DatabaseType &#123; String value();&#125; 具体的条件判断逻辑在DatabaseTypeCondition类中，它会根据系统参数dbType来判断注册哪一个Bean。 1234567891011public class DatabaseTypeCondition implements Condition &#123; @Override public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata metadata) &#123; Map&lt;String, Object&gt; attributes = metadata .getAnnotationAttributes(DatabaseType.class.getName()); String type = (String) attributes.get("value"); // 默认值为MySql String enabledDBType = System.getProperty("dbType", "MySql"); return (enabledDBType != null &amp;&amp; type != null &amp;&amp; enabledDBType.equalsIgnoreCase(type)); &#125;&#125; 最后，在配置类应用该注解即可。 123456789101112131415@Configuration@ComponentScanpublic class AppConfig &#123; @Bean @DatabaseType("MySql") public UserDAO jdbcUserDAO() &#123; return new JdbcUserDAO(); &#125; @Bean @DatabaseType("mongoDB") public UserDAO mongoUserDAO() &#123; return new MongoUserDAO(); &#125;&#125; AutoConfigure源码分析 通过了解@Conditional注解的机制其实已经能够猜到自动配置是如何实现的了，接下来我们通过源码来看看它是怎么做的。本文中讲解的源码基于Spring Boot 1.5.9版本（最新的正式版本）。 使用过Spring Boot的童鞋应该都很清楚，它会替我们生成一个入口类，其命名规格为ArtifactNameApplication，通过这个入口类，我们可以发现一些信息。 12345678@SpringBootApplicationpublic class DemoApplication &#123; public static void main(String[] args) &#123; SpringApplication.run(DemoApplication.class, args); &#125;&#125; 首先该类被@SpringBootApplication注解修饰，我们可以先从它开始分析，查看源码后可以发现它是一个包含许多注解的组合注解。 12345678910111213141516171819202122232425262728293031323334353637383940@Target(&#123;ElementType.TYPE&#125;)@Retention(RetentionPolicy.RUNTIME)@Documented@Inherited@SpringBootConfiguration@EnableAutoConfiguration@ComponentScan( excludeFilters = &#123;@Filter( type = FilterType.CUSTOM, classes = &#123;TypeExcludeFilter.class&#125;), @Filter( type = FilterType.CUSTOM, classes = &#123;AutoConfigurationExcludeFilter.class&#125;)&#125;)public @interface SpringBootApplication &#123; @AliasFor( annotation = EnableAutoConfiguration.class, attribute = "exclude" ) Class&lt;?&gt;[] exclude() default &#123;&#125;; @AliasFor( annotation = EnableAutoConfiguration.class, attribute = "excludeName" ) String[] excludeName() default &#123;&#125;; @AliasFor( annotation = ComponentScan.class, attribute = "basePackages" ) String[] scanBasePackages() default &#123;&#125;; @AliasFor( annotation = ComponentScan.class, attribute = "basePackageClasses" ) Class&lt;?&gt;[] scanBasePackageClasses() default &#123;&#125;;&#125; 该注解相当于同时声明了@Configuration、@EnableAutoConfiguration与@ComponentScan三个注解（如果我们想定制自定义的自动配置实现，声明这三个注解就足够了），而@EnableAutoConfiguration是我们的关注点，从它的名字可以看出来，它是用来开启自动配置的，源码如下： 12345678910111213@Target(&#123;ElementType.TYPE&#125;)@Retention(RetentionPolicy.RUNTIME)@Documented@Inherited@AutoConfigurationPackage@Import(&#123;EnableAutoConfigurationImportSelector.class&#125;)public @interface EnableAutoConfiguration &#123; String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration"; Class&lt;?&gt;[] exclude() default &#123;&#125;; String[] excludeName() default &#123;&#125;;&#125; 我们发现@Import（Spring 提供的一个注解，可以导入配置类或者Bean到当前类中）导入了EnableAutoConfigurationImportSelector类，根据名字来看，它应该就是我们要找到的目标了。不过查看它的源码发现它已经被Deprecated了，而官方API中告知我们去查看它的父类AutoConfigurationImportSelector。 12345678910/** @deprecated */@Deprecatedpublic class EnableAutoConfigurationImportSelector extends AutoConfigurationImportSelector &#123; public EnableAutoConfigurationImportSelector() &#123; &#125; protected boolean isEnabled(AnnotationMetadata metadata) &#123; return this.getClass().equals(EnableAutoConfigurationImportSelector.class)?((Boolean)this.getEnvironment().getProperty("spring.boot.enableautoconfiguration", Boolean.class, Boolean.valueOf(true))).booleanValue():true; &#125;&#125; 由于AutoConfigurationImportSelector的源码太长了，这里我只截出关键的地方，显然方法selectImports是选择自动配置的主入口，它调用了其他的几个方法来加载元数据等信息，最后返回一个包含许多自动配置类信息的字符串数组。 123456789101112131415161718192021public String[] selectImports(AnnotationMetadata annotationMetadata) &#123; if(!this.isEnabled(annotationMetadata)) &#123; return NO_IMPORTS; &#125; else &#123; try &#123; AutoConfigurationMetadata ex = AutoConfigurationMetadataLoader.loadMetadata(this.beanClassLoader); AnnotationAttributes attributes = this.getAttributes(annotationMetadata); List configurations = this.getCandidateConfigurations(annotationMetadata, attributes); configurations = this.removeDuplicates(configurations); configurations = this.sort(configurations, ex); Set exclusions = this.getExclusions(annotationMetadata, attributes); this.checkExcludedClasses(configurations, exclusions); configurations.removeAll(exclusions); configurations = this.filter(configurations, ex); this.fireAutoConfigurationImportEvents(configurations, exclusions); return (String[])configurations.toArray(new String[configurations.size()]); &#125; catch (IOException var6) &#123; throw new IllegalStateException(var6); &#125; &#125;&#125; 重点在于方法getCandidateConfigurations()返回了自动配置类的信息列表，而它通过调用SpringFactoriesLoader.loadFactoryNames()来扫描加载含有META-INF/spring.factories文件的jar包，该文件记录了具有哪些自动配置类。（建议还是用IDE去看源码吧，这些源码单行实在太长了，估计文章中的观看效果很差） 12345678910111213141516171819202122232425262728protected List&lt;String&gt; getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) &#123; List configurations = SpringFactoriesLoader .loadFactoryNames(this.getSpringFactoriesLoaderFactoryClass(), this.getBeanClassLoader()); Assert.notEmpty(configurations, "No auto configuration classes found in META-INF spring.factories. If you are using a custom packaging, make sure that file is correct."); return configurations;&#125; public static List&lt;String&gt; loadFactoryNames(Class&lt;?&gt; factoryClass, ClassLoader classLoader) &#123; String factoryClassName = factoryClass.getName(); try &#123; Enumeration ex = classLoader != null?classLoader.getResources("META-INF/spring.factories"):ClassLoader.getSystemResources("META-INF/spring.factories"); ArrayList result = new ArrayList(); while(ex.hasMoreElements()) &#123; URL url = (URL)ex.nextElement(); Properties properties = PropertiesLoaderUtils.loadProperties(new UrlResource(url)); String factoryClassNames = properties.getProperty(factoryClassName); result.addAll(Arrays.asList(StringUtils.commaDelimitedListToStringArray(factoryClassNames))); &#125; return result; &#125; catch (IOException var8) &#123; throw new IllegalArgumentException("Unable to load [" + factoryClass.getName() + "] factories from location [" + "META-INF/spring.factories" + "]", var8); &#125;&#125; 自动配置类中的条件注解 接下来，我们在spring.factories文件中随便找一个自动配置类，来看看是怎样实现的。我查看了MongoDataAutoConfiguration的源码，发现它声明了@ConditionalOnClass注解，通过看该注解的源码后可以发现，这是一个组合了@Conditional的组合注解，它的条件类是OnClassCondition。 1234567891011121314151617@Configuration@ConditionalOnClass(&#123;Mongo.class, MongoTemplate.class&#125;)@EnableConfigurationProperties(&#123;MongoProperties.class&#125;)@AutoConfigureAfter(&#123;MongoAutoConfiguration.class&#125;)public class MongoDataAutoConfiguration &#123; ....&#125;@Target(&#123;ElementType.TYPE, ElementType.METHOD&#125;)@Retention(RetentionPolicy.RUNTIME)@Documented@Conditional(&#123;OnClassCondition.class&#125;)public @interface ConditionalOnClass &#123; Class&lt;?&gt;[] value() default &#123;&#125;; String[] name() default &#123;&#125;;&#125; 然后，我们开始看OnClassCondition的源码，发现它并没有直接实现Condition接口，只好往上找，发现它的父类SpringBootCondition实现了Condition接口。 123456789101112131415161718192021222324252627class OnClassCondition extends SpringBootCondition implements AutoConfigurationImportFilter, BeanFactoryAware, BeanClassLoaderAware &#123; .....&#125;public abstract class SpringBootCondition implements Condition &#123; private final Log logger = LogFactory.getLog(this.getClass()); public SpringBootCondition() &#123; &#125; public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) &#123; String classOrMethodName = getClassOrMethodName(metadata); try &#123; ConditionOutcome ex = this.getMatchOutcome(context, metadata); this.logOutcome(classOrMethodName, ex); this.recordEvaluation(context, classOrMethodName, ex); return ex.isMatch(); &#125; catch (NoClassDefFoundError var5) &#123; throw new IllegalStateException("Could not evaluate condition on " + classOrMethodName + " due to " + var5.getMessage() + " not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)", var5); &#125; catch (RuntimeException var6) &#123; throw new IllegalStateException("Error processing condition on " + this.getName(metadata), var6); &#125; &#125; public abstract ConditionOutcome getMatchOutcome(ConditionContext var1, AnnotatedTypeMetadata var2);&#125; SpringBootCondition实现的matches方法依赖于一个抽象方法this.getMatchOutcome(context, metadata)，我们在它的子类OnClassCondition中可以找到这个方法的具体实现。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) &#123; ClassLoader classLoader = context.getClassLoader(); ConditionMessage matchMessage = ConditionMessage.empty(); // 找出所有ConditionalOnClass注解的属性 List onClasses = this.getCandidates(metadata, ConditionalOnClass.class); List onMissingClasses; if(onClasses != null) &#123; // 找出不在类路径中的类 onMissingClasses = this.getMatches(onClasses, OnClassCondition.MatchType.MISSING, classLoader); // 如果存在不在类路径中的类，匹配失败 if(!onMissingClasses.isEmpty()) &#123; return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnClass.class, new Object[0]).didNotFind("required class", "required classes").items(Style.QUOTE, onMissingClasses)); &#125; matchMessage = matchMessage.andCondition(ConditionalOnClass.class, new Object[0]).found("required class", "required classes").items(Style.QUOTE, this.getMatches(onClasses, OnClassCondition.MatchType.PRESENT, classLoader)); &#125; // 接着找出所有ConditionalOnMissingClass注解的属性 // 它与ConditionalOnClass注解的含义正好相反，所以以下逻辑也与上面相反 onMissingClasses = this.getCandidates(metadata, ConditionalOnMissingClass.class); if(onMissingClasses != null) &#123; List present = this.getMatches(onMissingClasses, OnClassCondition.MatchType.PRESENT, classLoader); if(!present.isEmpty()) &#123; return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnMissingClass.class, new Object[0]).found("unwanted class", "unwanted classes").items(Style.QUOTE, present)); &#125; matchMessage = matchMessage.andCondition(ConditionalOnMissingClass.class, new Object[0]).didNotFind("unwanted class", "unwanted classes").items(Style.QUOTE, this.getMatches(onMissingClasses, OnClassCondition.MatchType.MISSING, classLoader)); &#125; return ConditionOutcome.match(matchMessage);&#125;// 获得所有annotationType注解的属性private List&lt;String&gt; getCandidates(AnnotatedTypeMetadata metadata, Class&lt;?&gt; annotationType) &#123; MultiValueMap attributes = metadata.getAllAnnotationAttributes(annotationType.getName(), true); ArrayList candidates = new ArrayList(); if(attributes == null) &#123; return Collections.emptyList(); &#125; else &#123; this.addAll(candidates, (List)attributes.get("value")); this.addAll(candidates, (List)attributes.get("name")); return candidates; &#125;&#125;private void addAll(List&lt;String&gt; list, List&lt;Object&gt; itemsToAdd) &#123; if(itemsToAdd != null) &#123; Iterator var3 = itemsToAdd.iterator(); while(var3.hasNext()) &#123; Object item = var3.next(); Collections.addAll(list, (String[])((String[])item)); &#125; &#125;&#125; // 根据matchType.matches方法来进行匹配private List&lt;String&gt; getMatches(Collection&lt;String&gt; candidates, OnClassCondition.MatchType matchType, ClassLoader classLoader) &#123; ArrayList matches = new ArrayList(candidates.size()); Iterator var5 = candidates.iterator(); while(var5.hasNext()) &#123; String candidate = (String)var5.next(); if(matchType.matches(candidate, classLoader)) &#123; matches.add(candidate); &#125; &#125; return matches;&#125; 关于match的具体实现在MatchType中，它是一个枚举类，提供了PRESENT和MISSING两种实现，前者返回类路径中是否存在该类，后者相反。 1234567891011121314151617181920212223242526272829303132333435private static enum MatchType &#123; PRESENT &#123; public boolean matches(String className, ClassLoader classLoader) &#123; return OnClassCondition.MatchType.isPresent(className, classLoader); &#125; &#125;, MISSING &#123; public boolean matches(String className, ClassLoader classLoader) &#123; return !OnClassCondition.MatchType.isPresent(className, classLoader); &#125; &#125;; private MatchType() &#123; &#125; // 跟我们之前看过的案例一样，都利用了类加载功能来进行判断 private static boolean isPresent(String className, ClassLoader classLoader) &#123; if(classLoader == null) &#123; classLoader = ClassUtils.getDefaultClassLoader(); &#125; try &#123; forName(className, classLoader); return true; &#125; catch (Throwable var3) &#123; return false; &#125; &#125; private static Class&lt;?&gt; forName(String className, ClassLoader classLoader) throws ClassNotFoundException &#123; return classLoader != null?classLoader.loadClass(className):Class.forName(className); &#125; public abstract boolean matches(String var1, ClassLoader var2);&#125; 现在终于真相大白，@ConditionalOnClass的含义是指定的类必须存在于类路径下，MongoDataAutoConfiguration类中声明了类路径下必须含有Mongo.class, MongoTemplate.class这两个类，否则该自动配置类不会被加载。 在Spring Boot中到处都有类似的注解，像@ConditionalOnBean（容器中是否有指定的Bean），@ConditionalOnWebApplication（当前工程是否为一个Web工程）等等，它们都只是@Conditional注解的扩展。当你揭开神秘的面纱，去探索本质时，发现其实Spring Boot自动配置的原理就是如此简单，在了解这些知识后，你完全可以自己去实现自定义的自动配置类，然后编写出自定义的starter。]]></content>
+      <categories>
+        <category>后端</category>
+        <category>Java</category>
+        <category>Spring Boot</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Spring Boot</tag>
+        <tag>后端</tag>
+        <tag>2018</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[SkipList的那点事儿]]></title>
     <url>%2F2017%2F12%2F31%2F2017-12-31-skip_list%2F</url>
     <content type="text"><![CDATA[Skip List的工作原理 Skip List（跳跃表）是一种支持快速查找的数据结构，插入、查找和删除操作都仅仅只需要O(log n)对数级别的时间复杂度，它的效率甚至可以与红黑树等二叉平衡树相提并论，而且实现的难度要比红黑树简单多了。 Skip List主要思想是将链表与二分查找相结合，它维护了一个多层级的链表结构（用空间换取时间），可以把Skip List看作一个含有多个行的链表集合，每一行就是一条链表，这样的一行链表被称为一层，每一层都是下一层的”快速通道”，即如果x层和y层都含有元素a，那么x层的a会与y层的a相互连接（垂直）。最底层的链表是含有所有节点的普通序列，而越接近顶层的链表，含有的节点则越少。 对一个目标元素的搜索会从顶层链表的头部元素开始，然后遍历该链表，直到找到元素大于或等于目标元素的节点，如果当前元素正好等于目标，那么就直接返回它。如果当前元素小于目标元素，那么就垂直下降到下一层继续搜索，如果当前元素大于目标或到达链表尾部，则移动到前一个节点的位置，然后垂直下降到下一层。正因为Skip List的搜索过程会不断地从一层跳跃到下一层的，所以被称为跳跃表。 Skip List还有一个明显的特征，即它是一个不准确的概率性结构，这是因为Skip List在决定是否将节点冗余复制到上一层的时候（而在到达或超过顶层时，需要构建新的顶层）依赖于一个概率函数，举个栗子，我们使用一个最简单的概率函数：丢硬币，即概率P为0.5，那么依赖于该概率函数实现的Skip List会不断地”丢硬币”，如果硬币为正面就将节点复制到上一层，直到硬币为反。 理解Skip List的原理并不困难，下面我们将使用Java来动手实现一个支持基本需求（查找，插入和删除）的Skip List。 本文作者为SylvanasSun(sylvanas.sun@gmail.com)，首发于SylvanasSun’s Blog。原文链接：https://sylvanassun.github.io/2017/12/31/2017-12-31-skip_list/（转载请务必保留本段声明，并且保留超链接。） 节点与基本实现 对于一个普通的链表节点一般只含有一个指向后续节点的指针（双向链表的节点含有两个指针，一个指向前节点，一个指向后节点），由于Skip List是一个多层级的链表结构，我们的设计要让节点拥有四个指针，分别对应该节点的前后左右，为了方便地将头链表永远置于顶层，还需要设置一个int属性表示该链表所处的层级。 1234567891011121314151617181920212223242526272829303132333435363738 protected static class Node&lt;K extends Comparable&lt;K&gt;, V&gt; &#123; private K key; private V value; private int level; // 该节点所处的层级 private Node&lt;K, V&gt; up, down, next, previous; public Node(K key, V value, int level) &#123; this.key = key; this.value = value; this.level = level; &#125; @Override public String toString() &#123; StringBuilder sb = new StringBuilder(); sb.append("Node[") .append("key:"); if (this.key == null) sb.append("None"); else sb.append(this.key.toString()); sb.append(" value:"); if (this.value == null) sb.append("None"); else sb.append(this.value.toString()); sb.append("]"); return sb.toString(); &#125; // 余下都是get,set方法, 这里省略 .....&#125; 接下来是SkipList的基本实现，为了能够让Key进行比较，我们规定Key的类型必须实现了Comparable接口，同时为了支持ForEach循环，该类还实现了Iterable接口。 123456789101112131415161718192021222324252627public class SkipList&lt;K extends Comparable&lt;K&gt;, V&gt; implements Iterable&lt;K&gt; &#123; // 一个随机数生成器 protected static final Random randomGenerator = new Random(); // 默认的概率 protected static final double DEFAULT_PROBABILITY = 0.5; // 头节点 private Node&lt;K, V&gt; head; private double probability; // SkipList中的元素数量（不计算多个层级中的冗余元素） private int size; public SkipList() &#123; this(DEFAULT_PROBABILITY); &#125; public SkipList(double probability) &#123; this.head = new Node&lt;K, V&gt;(null, null, 0); this.probability = probability; this.size = 0; &#125; .....&#125; 我们还需要定义几个辅助方法，如下所示（都很简单）： 12345678910111213141516171819202122232425262728293031// 对key进行检查// 因为每条链表的头节点就是一个key为null的节点，所以不允许其他节点的key也为null protected void checkKeyValidity(K key) &#123; if (key == null) throw new IllegalArgumentException("Key must be not null!"); &#125;// a是否小于等于b protected boolean lessThanOrEqual(K a, K b) &#123; return a.compareTo(b) &lt;= 0; &#125;// 概率函数 protected boolean isBuildLevel() &#123; return randomGenerator.nextDouble() &lt; probability; &#125;// 将y水平插入到x的后面 protected void horizontalInsert(Node&lt;K, V&gt; x, Node&lt;K, V&gt; y) &#123; y.setPrevious(x); y.setNext(x.getNext()); if (x.getNext() != null) x.getNext().setPrevious(y); x.setNext(y); &#125;// x与y进行垂直连接 protected void verticalLink(Node&lt;K, V&gt; x, Node&lt;K, V&gt; y) &#123; x.setDown(y); y.setUp(x); &#125; 查找 查找一个节点的过程如下： 从顶层链表的头部开始进行遍历，比较每一个节点的元素与目标元素的大小。 如果当前元素小于目标元素，则继续遍历。 如果当前元素等于目标元素，返回该节点。 如果当前元素大于目标元素，移动到前一个节点（必须小于等于目标元素），然后跳跃到下一层继续遍历。 如果遍历至链表尾部，跳跃到下一层继续遍历。 1234567891011121314151617181920212223242526272829303132333435363738 protected Node&lt;K, V&gt; findNode(K key) &#123; Node&lt;K, V&gt; node = head; Node&lt;K, V&gt; next = null; Node&lt;K, V&gt; down = null; K nodeKey = null; while (true) &#123; // 不断遍历直到遇见大于目标元素的节点 next = node.getNext(); while (next != null &amp;&amp; lessThanOrEqual(next.getKey(), key)) &#123; node = next; next = node.getNext(); &#125; // 当前元素等于目标元素，中断循环 nodeKey = node.getKey(); if (nodeKey != null &amp;&amp; nodeKey.compareTo(key) == 0) break; // 否则，跳跃到下一层级 down = node.getDown(); if (down != null) &#123; node = down; &#125; else &#123; break; &#125; &#125; return node; &#125; public V get(K key) &#123; checkKeyValidity(key); Node&lt;K, V&gt; node = findNode(key);// 如果找到的节点并不等于目标元素，则目标元素不存在于SkipList中 if (node.getKey().compareTo(key) == 0) return node.getValue(); else return null; &#125; 插入 插入操作的过程要稍微复杂些，主要在于复制节点到上一层与构建新层的操作上。 123456789101112131415161718192021222324252627282930313233343536373839 public void add(K key, V value) &#123; checkKeyValidity(key);// 直接找到key，然后修改对应的value即可 Node&lt;K, V&gt; node = findNode(key); if (node.getKey() != null &amp;&amp; node.getKey().compareTo(key) == 0) &#123; node.setValue(value); return; &#125; // 将newNode水平插入到node之后 Node&lt;K, V&gt; newNode = new Node&lt;K, V&gt;(key, value, node.getLevel()); horizontalInsert(node, newNode); int currentLevel = node.getLevel(); int headLevel = head.getLevel(); while (isBuildLevel()) &#123; // 如果当前层级已经到达或超越顶层 // 那么需要构建一个新的顶层 if (currentLevel &gt;= headLevel) &#123; Node&lt;K, V&gt; newHead = new Node&lt;K, V&gt;(null, null, headLevel + 1); verticalLink(newHead, head); head = newHead; headLevel = head.getLevel(); &#125; // 找到node对应的上一层节点 while (node.getUp() == null) &#123; node = node.getPrevious(); &#125; node = node.getUp(); // 将newNode复制到上一层 Node&lt;K, V&gt; tmp = new Node&lt;K, V&gt;(key, value, node.getLevel()); horizontalInsert(node, tmp); verticalLink(tmp, newNode); newNode = tmp; currentLevel++; &#125; size++; &#125; 删除 对于删除一个节点，需要先找到节点所在的位置（位于最底层链表中的位置），之后再自底向上地删除该节点在每一行中的冗余复制。 12345678910111213141516171819202122232425262728public void remove(K key) &#123; checkKeyValidity(key); Node&lt;K, V&gt; node = findNode(key); if (node == null || node.getKey().compareTo(key) != 0) throw new NoSuchElementException("The key is not exist!"); // 移动到最底层 while (node.getDown() != null) node = node.getDown(); // 自底向上地进行删除 Node&lt;K, V&gt; prev = null; Node&lt;K, V&gt; next = null; for (; node != null; node = node.getUp()) &#123; prev = node.getPrevious(); next = node.getNext(); if (prev != null) prev.setNext(next); if (next != null) next.setPrevious(prev); &#125; // 对顶层链表进行调整，去除无效的顶层链表 while (head.getNext() == null &amp;&amp; head.getDown() != null) &#123; head = head.getDown(); head.setUp(null); &#125; size--;&#125; 迭代器 由于我们的SkipList实现了Iterable接口，所以还需要实现一个迭代器。对于迭代一个Skip List，只需要找到最底层的链表并且移动到它的首节点，然后进行遍历即可。 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364 @Override public String toString() &#123; StringBuilder sb = new StringBuilder(); Node&lt;K, V&gt; node = head; // 移动到最底层 while (node.getDown() != null) node = node.getDown(); while (node.getPrevious() != null) node = node.getPrevious(); // 第一个节点是头部节点，没有任何意义，所以需要移动到后一个节点 if (node.getNext() != null) node = node.getNext();// 遍历 while (node != null) &#123; sb.append(node.toString()).append("\n"); node = node.getNext(); &#125; return sb.toString(); &#125; @Override public Iterator&lt;K&gt; iterator() &#123; return new SkipListIterator&lt;K, V&gt;(head); &#125; protected static class SkipListIterator&lt;K extends Comparable&lt;K&gt;, V&gt; implements Iterator&lt;K&gt; &#123; private Node&lt;K, V&gt; node; public SkipListIterator(Node&lt;K, V&gt; node) &#123; while (node.getDown() != null) node = node.getDown(); while (node.getPrevious() != null) node = node.getPrevious(); if (node.getNext() != null) node = node.getNext(); this.node = node; &#125; @Override public boolean hasNext() &#123; return this.node != null; &#125; @Override public K next() &#123; K result = node.getKey(); node = node.getNext(); return result; &#125; @Override public void remove() &#123; throw new UnsupportedOperationException(); &#125; &#125; 本文中实现的SkipList完整代码地址 参考文献 Skip list - Wikipedia]]></content>
@@ -10,8 +26,8 @@
       </categories>
       <tags>
         <tag>Algorithms</tag>
-        <tag>数据结构</tag>
         <tag>2017</tag>
+        <tag>数据结构</tag>
       </tags>
   </entry>
   <entry>
@@ -183,8 +199,8 @@
       </categories>
       <tags>
         <tag>Algorithms</tag>
-        <tag>数据结构</tag>
         <tag>2017</tag>
+        <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -309,8 +325,8 @@
       </categories>
       <tags>
         <tag>Algorithms</tag>
-        <tag>数据结构</tag>
         <tag>2017</tag>
+        <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -323,9 +339,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
+        <tag>排序算法</tag>
         <tag>Algorithms</tag>
         <tag>2017</tag>
-        <tag>排序算法</tag>
       </tags>
   </entry>
   <entry>
@@ -337,9 +353,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
+        <tag>排序算法</tag>
         <tag>Algorithms</tag>
         <tag>2017</tag>
-        <tag>排序算法</tag>
       </tags>
   </entry>
   <entry>
@@ -351,9 +367,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
+        <tag>排序算法</tag>
         <tag>Algorithms</tag>
         <tag>2017</tag>
-        <tag>排序算法</tag>
       </tags>
   </entry>
   <entry>
@@ -396,10 +412,10 @@
         <category>HashTable</category>
       </categories>
       <tags>
-        <tag>HashTable</tag>
         <tag>Algorithms</tag>
-        <tag>数据结构</tag>
         <tag>2017</tag>
+        <tag>HashTable</tag>
+        <tag>数据结构</tag>
       </tags>
   </entry>
   <entry>
@@ -413,8 +429,8 @@
       </categories>
       <tags>
         <tag>Algorithms</tag>
-        <tag>数据结构</tag>
         <tag>2017</tag>
+        <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -429,8 +445,8 @@
       </categories>
       <tags>
         <tag>Algorithms</tag>
-        <tag>数据结构</tag>
         <tag>2017</tag>
+        <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -445,8 +461,8 @@
       </categories>
       <tags>
         <tag>Algorithms</tag>
-        <tag>数据结构</tag>
         <tag>2017</tag>
+        <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -461,8 +477,8 @@
       </categories>
       <tags>
         <tag>Algorithms</tag>
-        <tag>数据结构</tag>
         <tag>2017</tag>
+        <tag>数据结构</tag>
         <tag>Tree</tag>
       </tags>
   </entry>
@@ -475,9 +491,9 @@
         <category>排序算法</category>
       </categories>
       <tags>
+        <tag>排序算法</tag>
         <tag>Algorithms</tag>
         <tag>2017</tag>
-        <tag>排序算法</tag>
       </tags>
   </entry>
   <entry>
@@ -490,8 +506,8 @@
         <category>LinkedTable</category>
       </categories>
       <tags>
-        <tag>数据结构</tag>
         <tag>2017</tag>
+        <tag>数据结构</tag>
         <tag>LinkedTable</tag>
       </tags>
   </entry>
@@ -505,8 +521,8 @@
         <category>HashTable</category>
       </categories>
       <tags>
-        <tag>HashTable</tag>
         <tag>Algorithms</tag>
+        <tag>HashTable</tag>
         <tag>数据结构</tag>
       </tags>
   </entry>

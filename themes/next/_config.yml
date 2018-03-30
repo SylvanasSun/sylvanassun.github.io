@@ -144,6 +144,9 @@ social:
   GitHub: https://github.com/SylvanasSun
   微博: http://weibo.com/1666202315/profile?rightmod=1&wvr=6&mod=personinfo
   知乎: https://www.zhihu.com/people/sylvanas-sun/activities
+  开发者头条: https://toutiao.io/subjects/122020
+  掘金: https://juejin.im/user/575242642e958a0068ad5712
+  StackOverflow: https://stackoverflow.com/users/8675475/sylvanas-sun
 
 
 # Social Links Icons
@@ -157,7 +160,8 @@ social_icons:
   # KeyMapsToSocialItemKey: NameOfTheIconFromFontAwesome
   GitHub: github
   Twitter: twitter
-  Weibo: weibo
+  微博: weibo
+  StackOverflow: stack-overflow
 
 
 # Sidebar Avatar
@@ -219,9 +223,8 @@ links_title: Links
 links:
   oschina: http://www.oschina.net/
   csdn: http://www.csdn.net/
-  开发者头条: https://toutiao.io/
-  掘金: https://juejin.im/
-  御坂研究所: https://www.nosuchfield.com/
+  StackOverflow: https://stackoverflow.com/
+
 
 
 # ---------------------------------------------------------------
